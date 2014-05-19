@@ -17,7 +17,8 @@ let mapleader=','
 " General config
 
 colorscheme molokai
-set  t_Co=256
+set guifont=Meslo\ LG\ S\ DZ\ for\ Powerline
+set t_Co=256
 set number                      "Line numbers are good
 set backspace=indent,eol,start  "Allow backspace in insert mode
 set history=1000                "Store lots of :cmdline history
@@ -26,12 +27,13 @@ set showmode                    "Show current mode down the bottom
 "set gcr=a:blinkon0              "Disable cursor blink
 "set visualbell                  "No sounds
 set autoread                    "Reload files changed outside vim
-set ruler	                    	" show the cursor position all the time
+set ruler	                " show the cursor position all the time
 set expandtab                   " expand spaces into tabs in insert mode
 set shiftwidth=2
-set tabstop=2
+set softtabstop=2
 set nowrap
 set linebreak                   " wrap at convenient places
+set autoindent
 
 " display tabs and trailing spaces visually
 set list listchars=tab:\ \ ,trail:·
@@ -104,12 +106,24 @@ map <C-k> <C-w>k
 map <C-l> <C-w>l
 nnoremap <C-e> 3<C-e>
 nnoremap <C-y> 3<C-y>
+nnoremap <C-Left> :bp<CR>
+nnoremap <C-Right> :bn<CR>
+nnoremap <C-S-Left> :tabprevious<CR>
+nnoremap <C-S-Right> :tabnext<CR>
+nnoremap <D-[> :tabprevious<CR>
+nnoremap <D-]> :tabnext<CR>
+nnoremap <leader>yr :YRShow<CR>
+nnoremap <leader>wc :bp<bar>sp<bar>bn<bar>bd<CR>
 
 " curly brackets, create closing ones, new line, move to input stuff
-inoremap {<CR> {<CR>}<Esc>O<TAB>
+inoremap {<CR> {<CR>}<Esc>O
+"inoremap {<CR> {<CR>}<Esc>0<TAB>
 
 " NERDTree
 nmap <leader>n :NERDTreeTabsToggle<CR>
+
+" Gundo
+nmap ,u :GundoToggle<CR>
 
 " == Plugin Stuff ==
 
@@ -117,7 +131,17 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 set laststatus=2
 
+" Gundo settings
+let g:gundo_right = 1
+
+" a little wider for wider screens
+let g:gundo_width = 60
+
 " Make nerdtree look nice
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
 let g:NERDTreeWinSize = 30
+
+let g:LustyJugglerSuppressRubyWarning = 1
+let g:LustyJugglerAltTabMode = 1
+let g:LustyJugglerShowKeys = 'a' " show a/s/d/f keys
