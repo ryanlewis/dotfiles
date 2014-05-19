@@ -1,0 +1,25 @@
+'exception-reporting':
+  'userId': '9629449a-0f78-8528-6fdf-8104af901fb7'
+'release-notes':
+  'viewedVersion': '0.95.0'
+'welcome':
+  'showOnStartup': false
+'metrics':
+  'userId': '97d65a17a0557659278d5302966880b6cf963e03'
+'editor':
+  'showIndentGuide': true
+  'fontSize': 13
+  'showInvisibles': true
+'core':
+  'themes': [
+    'spacegray-dark-ui'
+    'base16-tomorrow-dark-theme'
+  ]
+  'ignoredNames': [
+    '.git'
+    '.svn'
+    '.DS_Store'
+  ]
+  'projectHome': '/Users/ryan/repos'
+'autocomplete-plus':
+  'enableAutoActivation': false
