@@ -9,7 +9,6 @@
 'editor':
   'showIndentGuide': true
   'fontSize': 13
-  'showInvisibles': true
 'core':
   'themes': [
     'spacegray-dark-ui'
@@ -21,5 +20,9 @@
     '.DS_Store'
   ]
   'projectHome': '/Users/ryan/repos'
+  'disabledPackages': [
+    'vim-mode'
+  ]
+  'useReactEditor': true
 'autocomplete-plus':
   'enableAutoActivation': false
