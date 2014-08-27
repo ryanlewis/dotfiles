@@ -83,7 +83,9 @@ export PATH=$GOPATH/bin:$PATH
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
-source /etc/zsh/zprofile
+if [[ -e /etc/zsh/profile ]]; then
+	source /etc/zsh/zprofile
+fi
 
 # vim mode
 bindkey -v
