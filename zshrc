@@ -78,6 +78,8 @@ export PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 
+source /etc/zsh/zprofile
+
 # vim mode
 bindkey -v
 lmv() { [ -e $1 -a -e $2 ] && mv $1 $2 && ln -s $2/$(basename $1) $(dirname $1); }
