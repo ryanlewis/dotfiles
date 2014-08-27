@@ -22,6 +22,7 @@ Bundle 'Raimondi/delimitMate'
 Bundle 'pangloss/vim-javascript'
 Bundle 'jelera/vim-javascript-syntax'
 Bundle 'vim-scripts/JavaScript-Indent'
+Plugin 'fatih/vim-go'
 
 call vundle#end()
 
