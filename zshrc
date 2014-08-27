@@ -89,3 +89,4 @@ mvln() {
     echo "Moved $1 to $2 and left a symlink"
 }
 lsl() { ls -l }
+v() { vim `"$@"`}
