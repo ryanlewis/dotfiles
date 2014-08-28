@@ -7,7 +7,8 @@ export ZSH=$HOME/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 #ZSH_THEME="robbyrussell"
 #ZSH_THEME="bira"
-ZSH_THEME="terminalparty"
+#ZSH_THEME="terminalparty"
+ZSH_THEME="lukerandall"
 DEFAULT_USER="ryan"
 
 # Example aliases
