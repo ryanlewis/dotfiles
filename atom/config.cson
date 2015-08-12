@@ -1,28 +1,40 @@
-'exception-reporting':
-  'userId': '9629449a-0f78-8528-6fdf-8104af901fb7'
-'release-notes':
-  'viewedVersion': '0.95.0'
-'welcome':
-  'showOnStartup': false
-'metrics':
-  'userId': '97d65a17a0557659278d5302966880b6cf963e03'
-'editor':
-  'showIndentGuide': true
-  'fontSize': 13
-'core':
-  'themes': [
-    'spacegray-dark-ui'
-    'base16-tomorrow-dark-theme'
-  ]
-  'ignoredNames': [
-    '.git'
-    '.svn'
-    '.DS_Store'
-  ]
-  'projectHome': '/Users/ryan/repos'
-  'disabledPackages': [
-    'vim-mode'
-  ]
-  'useReactEditor': true
-'autocomplete-plus':
-  'enableAutoActivation': false
+"*":
+  "exception-reporting":
+    userId: "9629449a-0f78-8528-6fdf-8104af901fb7"
+  "release-notes":
+    viewedVersion: "0.95.0"
+  welcome:
+    showOnStartup: false
+  metrics:
+    userId: "97d65a17a0557659278d5302966880b6cf963e03"
+  editor:
+    showIndentGuide: true
+    fontSize: 13
+    invisibles: {}
+  core:
+    themes: [
+      "one-dark-ui"
+      "one-dark-syntax"
+    ]
+    ignoredNames: [
+      ".git"
+      ".svn"
+      ".DS_Store"
+    ]
+    projectHome: "/Users/ryan/repos"
+    disabledPackages: [
+      "vim-mode"
+      "atom-handlebars"
+      "Stylus"
+      "omnisharp-atom"
+    ]
+    useReactEditor: true
+  "autocomplete-plus": {}
+  "go-plus":
+    goPath: "~/go"
+  linter: {}
+  emmet: {}
+  "linter-jshint": {}
+  "linter-jscs": {}
+  "atom-beautify":
+    _analyticsUserId: "a9b6e823-ac0f-4d1d-9694-b77c5d5abaa8"
