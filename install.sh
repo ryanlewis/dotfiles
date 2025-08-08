@@ -539,16 +539,17 @@ if ! command -v duf &> /dev/null; then
             sudo pacman -S --noconfirm duf
         else
             # Fallback to binary download for other distros
+            DUF_VERSION="0.8.1"
             ARCH=$(uname -m)
             if [[ "$ARCH" == "x86_64" ]]; then
                 echo "  Downloading duf binary..."
-                wget -q -O /tmp/duf.tar.gz https://github.com/muesli/duf/releases/download/v0.8.1/duf_0.8.1_linux_x86_64.tar.gz
+                wget -q -O /tmp/duf.tar.gz "https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_x86_64.tar.gz"
                 tar -xzf /tmp/duf.tar.gz -C /tmp duf
                 mv /tmp/duf "$HOME/.local/bin/"
                 chmod +x "$HOME/.local/bin/duf"
             elif [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]]; then
                 echo "  Downloading duf binary..."
-                wget -q -O /tmp/duf.tar.gz https://github.com/muesli/duf/releases/download/v0.8.1/duf_0.8.1_linux_arm64.tar.gz
+                wget -q -O /tmp/duf.tar.gz "https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_linux_arm64.tar.gz"
                 tar -xzf /tmp/duf.tar.gz -C /tmp duf
                 mv /tmp/duf "$HOME/.local/bin/"
                 chmod +x "$HOME/.local/bin/duf"

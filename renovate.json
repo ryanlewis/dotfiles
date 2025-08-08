@@ -110,7 +110,7 @@
         "/^install\\.sh$/"
       ],
       "matchStrings": [
-        "github\\.com/muesli/duf/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
+        "DUF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
       "depNameTemplate": "muesli/duf",
       "datasourceTemplate": "github-releases",
