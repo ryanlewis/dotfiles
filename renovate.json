@@ -123,7 +123,7 @@
         "/^install\\.sh$/"
       ],
       "matchStrings": [
-        "github\\.com/bootandy/dust/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
+        "DUST_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
       "depNameTemplate": "bootandy/dust",
       "datasourceTemplate": "github-releases",

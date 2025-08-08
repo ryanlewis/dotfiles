@@ -565,16 +565,17 @@ if ! command -v dust &> /dev/null; then
     if [[ "$OS_TYPE" == "macos" ]]; then
         brew install dust
     elif [[ "$OS_TYPE" == "linux" ]]; then
+        DUST_VERSION="1.2.3"
         ARCH=$(uname -m)
         if [[ "$ARCH" == "x86_64" ]]; then
-            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.2-x86_64-unknown-linux-gnu.tar.gz
+            wget -O /tmp/dust.tar.gz "https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
             tar -xzf /tmp/dust.tar.gz -C /tmp
-            mv /tmp/dust-v1.2.2-x86_64-unknown-linux-gnu/dust "$HOME/.local/bin/"
+            mv "/tmp/dust-v${DUST_VERSION}-x86_64-unknown-linux-gnu/dust" "$HOME/.local/bin/"
             chmod +x "$HOME/.local/bin/dust"
         elif [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]]; then
-            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.2-aarch64-unknown-linux-gnu.tar.gz
+            wget -O /tmp/dust.tar.gz "https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-aarch64-unknown-linux-gnu.tar.gz"
             tar -xzf /tmp/dust.tar.gz -C /tmp
-            mv /tmp/dust-v1.2.2-aarch64-unknown-linux-gnu/dust "$HOME/.local/bin/"
+            mv "/tmp/dust-v${DUST_VERSION}-aarch64-unknown-linux-gnu/dust" "$HOME/.local/bin/"
             chmod +x "$HOME/.local/bin/dust"
         else
             if command -v cargo &> /dev/null; then
