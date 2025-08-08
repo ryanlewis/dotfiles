@@ -676,7 +676,7 @@ if ! command -v just &> /dev/null; then
             continue
         fi
         # renovate: datasource=github-releases depName=casey/just
-        JUST_VERSION="1.41.0"
+        JUST_VERSION="1.42.4"
         wget -qO /tmp/just.tar.gz "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${JUST_ARCH}.tar.gz"
         tar -xzf /tmp/just.tar.gz -C /tmp just
         mv /tmp/just "$HOME/.local/bin/"
