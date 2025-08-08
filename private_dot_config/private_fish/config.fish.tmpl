@@ -29,7 +29,14 @@ if test -e ~/.asdf/completions/asdf.fish
 end
 
 # asdf Go environment setup
-source (echo $ASDF_DATA_DIR | if test -z $ASDF_DATA_DIR; echo $HOME/.asdf; else echo $ASDF_DATA_DIR; end)/plugins/golang/set-env.fish
+if test -z "$ASDF_DATA_DIR"
+    set -l asdf_dir "$HOME/.asdf"
+else
+    set -l asdf_dir "$ASDF_DATA_DIR"
+end
+if test -e "$asdf_dir/plugins/golang/set-env.fish"
+    source "$asdf_dir/plugins/golang/set-env.fish"
+end
 
 # zoxide - smarter cd command
 if type -q zoxide
