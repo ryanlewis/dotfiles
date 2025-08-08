@@ -201,10 +201,10 @@ if ! asdf list python 2>/dev/null | grep -q "miniconda"; then
 fi
 
 # Install Go
-if ! asdf list golang 2>/dev/null | grep -q "1.23.5"; then
-    echo "Installing Go 1.23.5..."
-    asdf install golang 1.23.5
-    asdf global golang 1.23.5
+if ! asdf list golang 2>/dev/null | grep -q "1.24.6"; then
+    echo "Installing Go 1.24.6..."
+    asdf install golang 1.24.6
+    asdf global golang 1.24.6
 fi
 
 # Bun is installed separately using official installer

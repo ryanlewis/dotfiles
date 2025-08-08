@@ -372,7 +372,7 @@ Last updated: January 2025
 ### Programming Languages
 - Node.js: 22.11.0 (LTS) - via asdf
 - Python: miniconda3-latest - via asdf
-- Go: 1.23.5 - via asdf
+- Go: 1.24.6 - via asdf
 - Bun: latest - via official installer
 
 ## License
