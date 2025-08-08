@@ -540,12 +540,12 @@ if ! command -v dust &> /dev/null; then
     elif [[ "$OS_TYPE" == "linux" ]]; then
         ARCH=$(uname -m)
         if [[ "$ARCH" == "x86_64" ]]; then
-            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.2/dust-v1.2.2-x86_64-unknown-linux-gnu.tar.gz
+            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.2-x86_64-unknown-linux-gnu.tar.gz
             tar -xzf /tmp/dust.tar.gz -C /tmp
             mv /tmp/dust-v1.2.2-x86_64-unknown-linux-gnu/dust "$HOME/.local/bin/"
             chmod +x "$HOME/.local/bin/dust"
         elif [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]]; then
-            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.2/dust-v1.2.2-aarch64-unknown-linux-gnu.tar.gz
+            wget -O /tmp/dust.tar.gz https://github.com/bootandy/dust/releases/download/v1.2.3/dust-v1.2.2-aarch64-unknown-linux-gnu.tar.gz
             tar -xzf /tmp/dust.tar.gz -C /tmp
             mv /tmp/dust-v1.2.2-aarch64-unknown-linux-gnu/dust "$HOME/.local/bin/"
             chmod +x "$HOME/.local/bin/dust"
