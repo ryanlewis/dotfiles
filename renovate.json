@@ -1,0 +1,111 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "branchPrefix": "renovate/",
+  "labels": ["dependencies", "renovate"],
+  "prConcurrentLimit": 5,
+  "prCreation": "immediate",
+  "automerge": false,
+  "packageRules": [
+    {
+      "description": "Automerge patch and minor updates",
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update asdf version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "git checkout v(?<currentValue>\\d+\\.\\d+\\.\\d+)",
+        "git clone[^\\n]+--branch v(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+      ],
+      "depNameTemplate": "asdf-vm/asdf",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update FZF version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "FZF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "junegunn/fzf",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update delta version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "DELTA_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "dandavison/delta",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update atuin version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "ATUIN_VERSION=\"v(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "atuinsh/atuin",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update just version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "JUST_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "casey/just",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update kubectx version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "KUBECTX_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "ahmetb/kubectx",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update duf version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "github\\.com/muesli/duf/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
+      ],
+      "depNameTemplate": "muesli/duf",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update dust version in install.sh",
+      "fileMatch": ["^install\\.sh$"],
+      "matchStrings": [
+        "github\\.com/bootandy/dust/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
+      ],
+      "depNameTemplate": "bootandy/dust",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "asdf": {
+    "enabled": true
+  },
+  "github-actions": {
+    "enabled": true,
+    "fileMatch": [".github/workflows/*.yml", ".github/workflows/*.yaml"]
+  }
+}

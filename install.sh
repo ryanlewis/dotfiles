@@ -117,11 +117,13 @@ if ! command -v asdf &> /dev/null; then
         # Try to update existing asdf installation
         if [[ -d "$HOME/.asdf/.git" ]]; then
             echo "🔄 Updating existing asdf installation..."
+            # renovate: datasource=github-releases depName=asdf-vm/asdf
             (cd "$HOME/.asdf" && git fetch --tags && git checkout v0.14.1 2>/dev/null || true)
         else
             echo "⚠️  Invalid asdf directory found, removing and reinstalling..."
             rm -rf "$HOME/.asdf"
             echo "🔧 Installing asdf..."
+            # renovate: datasource=github-releases depName=asdf-vm/asdf
             git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
         fi
     else
@@ -240,6 +242,7 @@ if ! command -v fzf &> /dev/null; then
         brew install fzf
     elif [[ "$OS_TYPE" == "linux" ]]; then
         # Download binary release instead of using git installer
+        # renovate: datasource=github-releases depName=junegunn/fzf
         FZF_VERSION="0.65.1"
         ARCH=$(uname -m)
         if [[ "$ARCH" == "x86_64" ]]; then
@@ -341,6 +344,7 @@ if ! command -v delta &> /dev/null; then
         brew install git-delta
     elif [[ "$OS_TYPE" == "linux" ]]; then
         # Download binary release directly - package managers often don't have it
+        # renovate: datasource=github-releases depName=dandavison/delta
         DELTA_VERSION="0.18.2"
         ARCH=$(uname -m)
         if [[ "$ARCH" == "x86_64" ]]; then
@@ -599,6 +603,7 @@ if ! command -v atuin &> /dev/null; then
         fi
         
         if [[ -n "$ATUIN_ARCH" ]]; then
+            # renovate: datasource=github-releases depName=atuinsh/atuin
             ATUIN_VERSION="v18.8.0"
             echo "  Downloading atuin ${ATUIN_VERSION} for ${ATUIN_ARCH}..."
             if wget -O /tmp/atuin.tar.gz "https://github.com/atuinsh/atuin/releases/download/${ATUIN_VERSION}/atuin-${ATUIN_ARCH}.tar.gz" 2>/dev/null; then
@@ -670,6 +675,7 @@ if ! command -v just &> /dev/null; then
             echo "⚠️  Just not available for $ARCH"
             continue
         fi
+        # renovate: datasource=github-releases depName=casey/just
         JUST_VERSION="1.41.0"
         wget -qO /tmp/just.tar.gz "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${JUST_ARCH}.tar.gz"
         tar -xzf /tmp/just.tar.gz -C /tmp just
@@ -716,6 +722,7 @@ if command -v kubectl &> /dev/null; then
         if [[ "$OS_TYPE" == "macos" ]]; then
             brew install kubectx
         elif [[ "$OS_TYPE" == "linux" ]]; then
+            # renovate: datasource=github-releases depName=ahmetb/kubectx
             KUBECTX_VERSION="0.9.5"
             ARCH=$(uname -m)
             if [[ "$ARCH" == "x86_64" ]]; then

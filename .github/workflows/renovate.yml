@@ -1,0 +1,47 @@
+name: Renovate
+
+on:
+  # Run on pushes to main branch for testing
+  push:
+    branches:
+      - master
+      - main
+  # Run on a schedule (weekly on Monday at 3am UTC)
+  schedule:
+    - cron: '0 3 * * 1'
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: false
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+      repoCache:
+        description: 'Reset or disable cache'
+        required: false
+        default: 'enabled'
+        type: choice
+        options:
+          - enabled
+          - disabled
+          - reset
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v40.4.0
+        env:
+          LOG_LEVEL: ${{ inputs.logLevel || 'info' }}
+          RENOVATE_REPOSITORY_CACHE: ${{ inputs.repoCache || 'enabled' }}
+        with:
+          token: ${{ secrets.RENOVATE_TOKEN || secrets.GITHUB_TOKEN }}
+          configurationFile: renovate.json

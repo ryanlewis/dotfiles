@@ -352,6 +352,59 @@ source ~/.asdf/asdf.sh
 fish
 ```
 
+## Automated Dependency Updates with Renovate Bot
+
+This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatically keep dependencies up-to-date. Renovate creates pull requests when new versions are available.
+
+### What Renovate Updates
+
+#### 1. **asdf Tool Versions** (`dot_tool-versions.tmpl`)
+- Node.js versions
+- Go versions  
+- Bun versions
+- Python/Miniconda versions
+
+#### 2. **GitHub Actions** (`.github/workflows/*.yml`)
+- Action versions (e.g., `actions/checkout`)
+- GitHub-hosted runner versions
+
+#### 3. **Binary Tools in install.sh**
+- asdf version manager
+- fzf (fuzzy finder)
+- delta (git diff viewer)
+- atuin (shell history)
+- just (command runner)
+- kubectx/kubens (Kubernetes tools)
+- duf (disk usage)
+- dust (du alternative)
+
+### How It Works
+
+1. **Scheduled Runs**: Renovate runs weekly on Mondays at 3am UTC
+2. **Pull Requests**: Creates PRs for each dependency update
+3. **Auto-merge**: Minor and patch updates are auto-merged if tests pass
+4. **Major Updates**: Require manual review and approval
+
+### Manual Trigger
+
+To manually run Renovate:
+1. Go to Actions tab
+2. Select "Renovate" workflow
+3. Click "Run workflow"
+4. Optionally set debug log level
+
+### Configuration
+
+- Main config: `renovate.json`
+- GitHub workflow: `.github/workflows/renovate.yml`
+
+### Setup Requirements
+
+For contributors who fork this repo:
+1. Create a GitHub Personal Access Token with `repo` scope
+2. Add it as `RENOVATE_TOKEN` in repository secrets
+3. Renovate will start creating update PRs automatically
+
 ## Contributing
 
 Feel free to fork and customize for your own use!
