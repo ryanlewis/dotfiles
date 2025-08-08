@@ -8,6 +8,9 @@
 
 set -e
 
+# Get the directory of this script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Parse arguments
 CI_MODE=false
 NO_CONFIRM=false
@@ -110,6 +113,46 @@ if ! command -v chezmoi &> /dev/null; then
     exit 1
 fi
 
+# Apply chezmoi dotfiles early to get .tool-versions file
+echo "🔧 Applying dotfiles with chezmoi to setup configuration files..."
+
+# Check for existing git config values first
+if [[ -z "$CHEZMOI_USER_NAME" ]]; then
+    EXISTING_NAME=$(git config --global user.name 2>/dev/null || true)
+    if [[ -n "$EXISTING_NAME" ]]; then
+        echo "ℹ️  Using existing git config name: $EXISTING_NAME"
+        export CHEZMOI_USER_NAME="$EXISTING_NAME"
+    fi
+fi
+
+if [[ -z "$CHEZMOI_USER_EMAIL" ]]; then
+    EXISTING_EMAIL=$(git config --global user.email 2>/dev/null || true)
+    if [[ -n "$EXISTING_EMAIL" ]]; then
+        echo "ℹ️  Using existing git config email: $EXISTING_EMAIL"
+        export CHEZMOI_USER_EMAIL="$EXISTING_EMAIL"
+    fi
+fi
+
+# If still not set, use defaults for non-interactive
+if [[ -z "$CHEZMOI_USER_NAME" ]]; then
+    export CHEZMOI_USER_NAME="${USER:-User}"
+fi
+if [[ -z "$CHEZMOI_USER_EMAIL" ]]; then
+    export CHEZMOI_USER_EMAIL="${USER:-user}@$(hostname)"
+fi
+
+# Initialize and apply chezmoi to get config files including .tool-versions
+# Check if chezmoi is already initialized
+if [[ -d "$HOME/.local/share/chezmoi" ]]; then
+    echo "  Updating chezmoi dotfiles..."
+    # Update pulls latest changes from the source repo and applies them
+    chezmoi update -v
+else
+    # First time initialization
+    echo "  Initializing chezmoi with $SCRIPT_DIR..."
+    chezmoi init --apply "$SCRIPT_DIR"
+fi
+
 # Install asdf if not present
 if ! command -v asdf &> /dev/null; then
     if [[ -d "$HOME/.asdf" ]]; then
@@ -170,55 +213,39 @@ if [[ "$QUICK_MODE" == "false" ]]; then
         asdf plugin add nodejs
     fi
 
-# Python
-if ! asdf plugin list | grep -q "^python$"; then
-    echo "📦 Adding python plugin..."
-    asdf plugin add python
-fi
+    # Python
+    if ! asdf plugin list | grep -q "^python$"; then
+        echo "📦 Adding python plugin..."
+        asdf plugin add python
+    fi
 
-# Go
-if ! asdf plugin list | grep -q "^golang$"; then
-    echo "📦 Adding golang plugin..."
-    asdf plugin add golang
-fi
+    # Go
+    if ! asdf plugin list | grep -q "^golang$"; then
+        echo "📦 Adding golang plugin..."
+        asdf plugin add golang
+    fi
 
-# Bun - Using official installer instead of asdf for latest version
-# We'll install Bun directly later
-
-# Install latest stable versions
-echo "🚀 Installing runtime versions..."
-
-# Install Node.js
-if ! asdf list nodejs 2>/dev/null | grep -q "22.11.0"; then
-    echo "Installing Node.js 22.11.0..."
-    asdf install nodejs 22.11.0
-    asdf global nodejs 22.11.0
-fi
-
-# Install Python via Miniconda (pre-compiled, no building)
-if ! asdf list python 2>/dev/null | grep -q "miniconda"; then
-    echo "Installing Python via Miniconda (pre-compiled)..."
-    asdf install python miniconda3-latest || echo "⚠️  Python installation failed, continuing..."
-    asdf global python miniconda3-latest 2>/dev/null || true
-fi
-
-# Install Go
-if ! asdf list golang 2>/dev/null | grep -q "1.24.6"; then
-    echo "Installing Go 1.24.6..."
-    asdf install golang 1.24.6
-    asdf global golang 1.24.6
-fi
-
-# Bun is installed separately using official installer
-
-# Reshim to ensure all binaries are available
-asdf reshim
-
-# Verify runtimes are available
-echo "✅ Verifying runtimes..."
-command -v node >/dev/null && echo "  ✓ Node.js: $(node --version)"
-command -v python3 >/dev/null && echo "  ✓ Python: $(python3 --version)"
-command -v go >/dev/null && echo "  ✓ Go: $(go version)"
+    # Now that we have .tool-versions from chezmoi, use asdf install to read from it
+    echo "🚀 Installing runtime versions from .tool-versions..."
+    
+    # Change to home directory where .tool-versions was created by chezmoi
+    cd "$HOME"
+    
+    # Install all versions specified in .tool-versions
+    echo "📦 Installing all tool versions specified in ~/.tool-versions..."
+    asdf install || echo "⚠️  Some tool installations may have failed, continuing..."
+    
+    # Reshim to ensure all binaries are available
+    asdf reshim
+    
+    # Verify runtimes are available
+    echo "✅ Verifying runtimes..."
+    command -v node >/dev/null && echo "  ✓ Node.js: $(node --version)"
+    command -v python3 >/dev/null && echo "  ✓ Python: $(python3 --version)"
+    command -v go >/dev/null && echo "  ✓ Go: $(go version)"
+    
+    # Change back to script directory
+    cd "$SCRIPT_DIR"
 fi  # End of language runtime installation
 
 # Install Bun using official installer (always gets latest version)
@@ -756,79 +783,36 @@ fi
 
 # Chezmoi already installed at the beginning of the script
 
-# Get the directory of this script
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Note: Chezmoi dotfiles already applied earlier in the script
 
-# Initialize chezmoi with this repository
-echo "🔧 Initializing chezmoi..."
-
-# Check if we need to prompt for user details
-if [[ -z "$CHEZMOI_USER_NAME" ]] && [[ "$NO_CONFIRM" == "false" ]] && [ -t 0 ]; then
-    read -p "Enter your name for git config: " CHEZMOI_USER_NAME
-    read -p "Enter your email for git config: " CHEZMOI_USER_EMAIL
-    export CHEZMOI_USER_NAME
-    export CHEZMOI_USER_EMAIL
-elif [[ -z "$CHEZMOI_USER_NAME" ]]; then
-    # Set defaults for non-interactive mode
-    echo "ℹ️  Using default values for git config (set CHEZMOI_USER_NAME and CHEZMOI_USER_EMAIL to customize)"
-    export CHEZMOI_USER_NAME="${USER:-User}"
-    export CHEZMOI_USER_EMAIL="${USER:-user}@$(hostname)"
-fi
-
-# Ask for confirmation (skip in non-interactive mode or with --no-confirm)
-if [[ "$NO_CONFIRM" == "true" ]]; then
-    echo "📤 Applying dotfiles without confirmation..."
-    APPLY_CHANGES="y"
-elif [ -t 0 ]; then
-    # Show what would be changed
-    echo "📋 Preview of changes:"
-    chezmoi init "$SCRIPT_DIR"
-    chezmoi diff
-    read -p "Apply these changes? (y/N) " -n 1 -r
-    echo
-    APPLY_CHANGES=$REPLY
-else
-    echo "Non-interactive mode detected, applying changes automatically..."
-    APPLY_CHANGES="y"
-fi
-
-if [[ $APPLY_CHANGES =~ ^[Yy]$ ]]; then
-    # Initialize and apply in one step
-    chezmoi init --apply "$SCRIPT_DIR"
-    echo "✅ Dotfiles installed successfully!"
+# Install Fisher plugin manager for Fish
+if command -v fish &> /dev/null; then
+    echo "🐟 Installing Fisher plugin manager..."
+    fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher" 2>/dev/null || {
+        echo "⚠️  Fisher installation may require running Fish interactively"
+    }
     
-    # Install Fisher plugin manager for Fish
-    if command -v fish &> /dev/null; then
-        echo "🐟 Installing Fisher plugin manager..."
-        fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher" 2>/dev/null || {
-            echo "⚠️  Fisher installation may require running Fish interactively"
+    # Install fzf.fish plugin for better FZF integration
+    if fish -c "type -q fisher" 2>/dev/null; then
+        echo "🔍 Installing fzf.fish plugin..."
+        fish -c "fisher install PatrickF1/fzf.fish" 2>/dev/null || {
+            echo "⚠️  fzf.fish installation may require running Fish interactively"
         }
-        
-        # Install fzf.fish plugin for better FZF integration
-        if fish -c "type -q fisher" 2>/dev/null; then
-            echo "🔍 Installing fzf.fish plugin..."
-            fish -c "fisher install PatrickF1/fzf.fish" 2>/dev/null || {
-                echo "⚠️  fzf.fish installation may require running Fish interactively"
-            }
-        fi
     fi
-    
-    # Set Fish as default shell if not already (skip in CI mode)
-    if [[ "$CI_MODE" == "false" ]] && [[ "$SHELL" != *"fish"* ]]; then
-        echo "🐟 Setting Fish as default shell..."
-        if grep -q "$(which fish)" /etc/shells; then
-            chsh -s "$(which fish)"
-        else
-            echo "$(which fish)" | sudo tee -a /etc/shells
-            chsh -s "$(which fish)"
-        fi
-        echo "🎉 Please log out and back in for the shell change to take effect."
-    elif [[ "$CI_MODE" == "true" ]]; then
-        echo "📌 Skipping shell change in CI mode"
+fi
+
+# Set Fish as default shell if not already (skip in CI mode)
+if [[ "$CI_MODE" == "false" ]] && [[ "$SHELL" != *"fish"* ]]; then
+    echo "🐟 Setting Fish as default shell..."
+    if grep -q "$(which fish)" /etc/shells; then
+        chsh -s "$(which fish)"
+    else
+        echo "$(which fish)" | sudo tee -a /etc/shells
+        chsh -s "$(which fish)"
     fi
-else
-    echo "❌ Installation cancelled."
-    exit 1
+    echo "🎉 Please log out and back in for the shell change to take effect."
+elif [[ "$CI_MODE" == "true" ]]; then
+    echo "📌 Skipping shell change in CI mode"
 fi
 
 # Export paths for current session
