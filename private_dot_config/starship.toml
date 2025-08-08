@@ -1,0 +1,117 @@
+# Starship prompt configuration
+# https://starship.rs/config/
+
+# Format of the prompt
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$docker_context\
+$package\
+$c\
+$cmake\
+$golang\
+$helm\
+$java\
+$kotlin\
+$nodejs\
+$python\
+$rust\
+$terraform\
+$vagrant\
+$nix_shell\
+$conda\
+$memory_usage\
+$aws\
+$gcloud\
+$openstack\
+$azure\
+$env_var\
+$cmd_duration\
+$line_break\
+$jobs\
+$battery\
+$time\
+$status\
+$shell\
+$character"""
+
+# Wait 10 milliseconds for starship to check files
+scan_timeout = 10
+
+# Disable the blank line at the start of the prompt
+add_newline = false
+
+[character]
+success_symbol = "[➜](bold green)"
+error_symbol = "[➜](bold red)"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+format = "[$path]($style)[$read_only]($read_only_style) "
+style = "bold cyan"
+
+[git_branch]
+format = "[$symbol$branch(:$remote_branch)]($style) "
+symbol = " "
+style = "bold purple"
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style) )'
+style = "bold red"
+
+[git_metrics]
+disabled = false
+format = "([+$added]($added_style) )([-$deleted]($deleted_style) )"
+
+[cmd_duration]
+min_time = 500
+format = "[$duration]($style) "
+style = "bold yellow"
+
+[docker_context]
+format = "[$symbol$context]($style) "
+symbol = "🐳 "
+
+[golang]
+format = "[$symbol($version )]($style)"
+symbol = "🐹 "
+
+[nodejs]
+format = "[$symbol($version )]($style)"
+symbol = " "
+
+[package]
+format = "[$symbol$version]($style) "
+symbol = "📦 "
+
+[python]
+format = '[${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
+symbol = "🐍 "
+
+[rust]
+format = "[$symbol($version )]($style)"
+symbol = "🦀 "
+
+[time]
+disabled = false
+format = '[$time]($style) '
+time_format = "%T"
+style = "bold dimmed white"
+
+[username]
+show_always = false
+format = "[$user]($style) "
+style_user = "bold yellow"
+style_root = "bold red"
+
+[hostname]
+ssh_only = true
+format = "[@$hostname]($style) "
+style = "bold green"

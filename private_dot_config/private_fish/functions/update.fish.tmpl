@@ -1,0 +1,27 @@
+function update --description "Update system packages"
+    {{- if eq .chezmoi.os "darwin" }}
+    echo "Updating Homebrew..."
+    brew update
+    brew upgrade
+    brew cleanup
+    echo "Homebrew update complete!"
+    {{- else if eq .chezmoi.os "linux" }}
+        {{- if eq .packageManager "apt" }}
+    echo "Updating APT packages..."
+    sudo apt update && sudo apt upgrade -y
+    sudo apt autoremove -y
+    echo "APT update complete!"
+        {{- else if eq .packageManager "dnf" }}
+    echo "Updating DNF packages..."
+    sudo dnf update -y
+    echo "DNF update complete!"
+        {{- else if eq .packageManager "pacman" }}
+    echo "Updating Pacman packages..."
+    sudo pacman -Syu
+    echo "Pacman update complete!"
+        {{- else }}
+    echo "Unknown package manager"
+    return 1
+        {{- end }}
+    {{- end }}
+end

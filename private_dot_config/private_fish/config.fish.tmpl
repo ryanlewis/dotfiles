@@ -1,0 +1,183 @@
+# Fish Shell Configuration
+# Cross-platform configuration with OS-specific settings
+
+# Universal PATH additions
+set -gx PATH $HOME/.local/bin $HOME/.bun/bin $PATH
+
+# Enable vi mode
+fish_vi_key_bindings
+
+# Configure vi mode cursor
+set fish_cursor_default block
+set fish_cursor_insert line
+set fish_cursor_replace_one underscore
+set fish_cursor_visual block
+
+{{- if .homebrew }}
+# Homebrew configuration for macOS
+eval ({{ .brewPrefix }}/bin/brew shellenv)
+{{- end }}
+
+# asdf version manager
+if test -e ~/.asdf/asdf.fish
+    source ~/.asdf/asdf.fish
+end
+
+# asdf completions for Fish
+if test -e ~/.asdf/completions/asdf.fish
+    source ~/.asdf/completions/asdf.fish
+end
+
+# zoxide - smarter cd command
+if type -q zoxide
+    zoxide init fish | source
+    # Optional: replace cd with z
+    alias cd="z"
+end
+
+# starship prompt
+if type -q starship
+    starship init fish | source
+end
+
+# atuin - better shell history
+if type -q atuin
+    atuin init fish | source
+    # Enable vi mode in atuin
+    set -gx ATUIN_EDIT_MODE "vi"
+end
+
+# direnv - automatic environment loading
+if type -q direnv
+    direnv hook fish | source
+end
+
+# broot launcher
+if test -f ~/.config/broot/launcher/fish/br
+    source ~/.config/broot/launcher/fish/br
+end
+
+# OS-specific PATH additions
+{{- if eq .chezmoi.os "darwin" }}
+# macOS specific paths
+set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+{{- else if eq .chezmoi.os "linux" }}
+# Linux specific paths
+set -gx PATH /usr/local/go/bin $PATH
+{{- end }}
+
+# Editor configuration
+set -gx EDITOR {{ if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+set -gx VISUAL $EDITOR
+
+# fzf configuration with vi keybindings
+if type -q fzf
+    # Enable vi-style movement in fzf
+    set -gx FZF_DEFAULT_OPTS '--height 40% --layout=reverse --border --bind=ctrl-j:down,ctrl-k:up,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:page-down,ctrl-b:page-up'
+    
+    # Use fd/fdfind for better performance
+    if type -q fd
+        set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
+        set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
+        set -gx FZF_ALT_C_COMMAND 'fd --type d --hidden --follow --exclude .git'
+    else if type -q fdfind
+        set -gx FZF_DEFAULT_COMMAND 'fdfind --type f --hidden --follow --exclude .git'
+        set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
+        set -gx FZF_ALT_C_COMMAND 'fdfind --type d --hidden --follow --exclude .git'
+    end
+end
+
+# Pager configuration
+set -gx PAGER "less"
+set -gx LESS "-R"
+# Enable vi keys in less
+set -gx LESSKEY "$HOME/.lesskey"
+
+# Fish greeting
+set -g fish_greeting ""
+
+# Key bindings
+bind \c_ 'commandline -f repaint; and stty raw -echo; and printf "\033[Z"; and stty -raw echo'
+
+# Aliases (cross-platform)
+{{- if lookPath "eza" }}
+# Use eza instead of ls
+alias ls="eza --icons --group-directories-first"
+alias ll="eza -la --icons --group-directories-first"
+alias la="eza -a --icons --group-directories-first"
+alias l="eza -F --icons --group-directories-first"
+alias lt="eza --tree --icons --group-directories-first"
+alias tree="eza --tree --icons --group-directories-first"
+{{- else }}
+alias ll="ls -la"
+alias la="ls -A"
+alias l="ls -CF"
+{{- end }}
+
+# Git aliases
+alias g="git"
+alias gs="git status"
+alias gc="git commit"
+alias gp="git push"
+alias gl="git log --oneline --graph"
+alias gd="git diff"
+
+# Modern CLI tool aliases
+{{- if or (lookPath "bat") (lookPath "batcat") }}
+# Use bat instead of cat
+{{ if lookPath "batcat" -}}
+alias cat="batcat"
+alias bat="batcat"
+{{- else -}}
+alias cat="bat"
+{{- end }}
+{{- end }}
+
+{{- if or (lookPath "fd") (lookPath "fdfind") }}
+# Use fd instead of find
+{{ if lookPath "fdfind" -}}
+alias fd="fdfind"
+{{- end }}
+{{- end }}
+
+# Useful aliases combining tools
+alias preview="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
+
+# Additional modern tool aliases
+{{- if lookPath "lazygit" }}
+alias lg="lazygit"
+{{- end }}
+{{- if lookPath "btop" }}
+alias top="btop"
+alias htop="btop"
+{{- end }}
+{{- if lookPath "duf" }}
+alias df="duf"
+{{- end }}
+{{- if lookPath "dust" }}
+alias du="dust"
+{{- end }}
+{{- if lookPath "httpie" }}
+alias https="http --default-scheme=https"
+{{- end }}
+
+# Platform-specific aliases
+{{- if eq .chezmoi.os "darwin" }}
+# macOS aliases
+alias updatedb="sudo /usr/libexec/locate.updatedb"
+alias showfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hidefiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+{{- else if eq .chezmoi.os "linux" }}
+# Linux aliases
+alias open="xdg-open"
+{{- end }}
+
+# Load custom functions
+for f in ~/.config/fish/functions/*.fish
+    source $f
+end
+
+# Load local configuration if it exists
+if test -f ~/.config/fish/config.local.fish
+    source ~/.config/fish/config.local.fish
+end

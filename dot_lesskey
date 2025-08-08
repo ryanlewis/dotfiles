@@ -1,0 +1,24 @@
+# Less key bindings with vi navigation
+
+#command
+h left-scroll
+l right-scroll
+^D forw-scroll
+^U back-scroll
+^F forw-screen
+^B back-screen
+g goto-line
+G goto-end
+
+# Search
+/  forw-search
+?  back-search
+n  repeat-search
+N  reverse-search
+
+# Quit
+q quit
+:q quit
+
+#line-edit
+^U kill-line

@@ -1,0 +1,109 @@
+[user]
+    name = {{ .name | default (env "CHEZMOI_USER_NAME") | default "Your Name" }}
+    email = {{ .email | default (env "CHEZMOI_USER_EMAIL") | default "your.email@example.com" }}
+
+[core]
+    editor = {{ if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+{{- if lookPath "delta" }}
+    pager = delta
+{{- end }}
+
+[init]
+    defaultBranch = main
+
+{{- if lookPath "delta" }}
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true                      # use n and N to move between diff sections
+    line-numbers = true                  # show line numbers
+    side-by-side = true                  # show diffs side-by-side
+    syntax-theme = Dracula               # or try: OneHalfDark, Monokai Extended
+    file-style = bold yellow ul
+    file-decoration-style = none
+    commit-decoration-style = bold yellow box ul
+    hunk-header-decoration-style = blue box
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-zero-style = "#444444"
+    minus-style = syntax "#3f0001"
+    minus-emph-style = syntax "#780000"
+    plus-style = syntax "#003800"
+    plus-emph-style = syntax "#006000"
+    whitespace-error-style = "#fb0120" reverse
+    
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+{{- end }}
+
+[pull]
+    rebase = true
+
+[push]
+    default = current
+    autoSetupRemote = true               # automatically set up tracking
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+    
+    # Enhanced diff commands with delta
+    d = diff
+    ds = diff --staged
+    dw = diff --word-diff
+    dc = diff --cached
+    
+    # Better log visualization
+    ll = log --pretty=format:'%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]' --decorate --numstat
+    ld = log --pretty=format:'%C(yellow)%h %ad%Cred%d %Creset%s%Cblue [%cn]' --decorate --date=short
+    hist = log --graph --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ar%C(reset) %C(bold blue)%an%C(reset) %C(red)%d%C(reset) %s' --all
+    
+    # Show what changed
+    changes = diff --name-status
+    diffstat = diff --stat
+    
+    # Interactive staging with delta
+    ai = add --interactive
+    ap = add --patch
+    
+    # Useful shortcuts
+    amend = commit --amend --no-edit
+    undo = reset HEAD~1 --mixed
+    wip = !git add -A && git commit -m "WIP"
+    unwip = !git log -n 1 | grep -q -c "WIP" && git reset HEAD~1
+    
+    # Branch management
+    branches = branch -a
+    remotes = remote -v
+    cleanup = !git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = red
+
+[rerere]
+    enabled = true                       # remember resolved conflicts
+
+[fetch]
+    prune = true                         # remove deleted remote branches

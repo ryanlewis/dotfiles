@@ -1,0 +1,17 @@
+# Files to ignore based on OS
+{{ if ne .chezmoi.os "darwin" }}
+.config/fish/conf.d/macos.fish
+{{ end }}
+
+{{ if ne .chezmoi.os "linux" }}
+.config/fish/conf.d/linux.fish
+{{ end }}
+
+# Always ignore
+README.md
+LICENSE
+.DS_Store
+*.swp
+*~
+.git
+.gitignore

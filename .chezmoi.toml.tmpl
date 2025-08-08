@@ -1,0 +1,49 @@
+{{- $name := "" -}}
+{{- $email := "" -}}
+{{- if env "CI" -}}
+    {{- $name = env "CHEZMOI_USER_NAME" | default "CI User" -}}
+    {{- $email = env "CHEZMOI_USER_EMAIL" | default "ci@example.com" -}}
+{{- else if env "CHEZMOI_USER_NAME" -}}
+    {{- $name = env "CHEZMOI_USER_NAME" -}}
+    {{- $email = env "CHEZMOI_USER_EMAIL" | default "user@example.com" -}}
+{{- else -}}
+    {{- $name = promptStringOnce . "name" "Your name" -}}
+    {{- $email = promptStringOnce . "email" "Your email" -}}
+{{- end -}}
+{{- $hostname := .chezmoi.hostname -}}
+{{- $os := .chezmoi.os -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    hostname = {{ $hostname | quote }}
+    
+    # OS-specific settings
+    {{- if eq $os "darwin" }}
+    homebrew = true
+    brewPrefix = {{ if eq .chezmoi.arch "arm64" }}"/opt/homebrew"{{ else }}"/usr/local"{{ end }}
+    {{- else if eq $os "linux" }}
+    homebrew = false
+    {{- end }}
+    
+    # Package manager
+    {{- if eq $os "darwin" }}
+    packageManager = "brew"
+    {{- else if eq $os "linux" }}
+        {{- if lookPath "apt" }}
+    packageManager = "apt"
+        {{- else if lookPath "dnf" }}
+    packageManager = "dnf"
+        {{- else if lookPath "pacman" }}
+    packageManager = "pacman"
+        {{- else }}
+    packageManager = "unknown"
+        {{- end }}
+    {{- end }}
+
+[edit]
+    command = {{ if lookPath "nvim" }}"nvim"{{ else if lookPath "vim" }}"vim"{{ else }}"vi"{{ end }}
+
+[git]
+    autoCommit = false
+    autoPush = false

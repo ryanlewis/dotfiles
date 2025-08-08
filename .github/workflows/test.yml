@@ -1,0 +1,74 @@
+name: Test Dotfiles Installation
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+# Note: Docker testing is available locally via ./docker-test.sh
+# It's not included in CI to reduce complexity and runtime
+
+jobs:
+  test-ubuntu:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-24.04, ubuntu-24.04-arm64]
+    
+    name: Ubuntu 24.04 LTS (${{ matrix.runs-on }})
+    runs-on: ${{ matrix.runs-on }}
+    
+    steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git curl wget
+        
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Run installation script
+      run: |
+        ./install.sh --ci
+      env:
+        CI: true
+        CHEZMOI_USER_NAME: "GitHub Actions"
+        CHEZMOI_USER_EMAIL: "actions@github.com"
+        
+    - name: Verify installation
+      run: |
+        fish -c "echo 'Fish shell is working!'"
+        
+    - name: Run test suite
+      run: |
+        fish -c "./test.sh"
+        
+  test-macos:
+    runs-on: macos-15
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Install Homebrew (if needed)
+      run: |
+        if ! command -v brew &> /dev/null; then
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+        
+    - name: Run installation script
+      run: |
+        ./install.sh --ci
+      env:
+        CI: true
+        CHEZMOI_USER_NAME: "GitHub Actions"
+        CHEZMOI_USER_EMAIL: "actions@github.com"
+        
+    - name: Verify installation
+      run: |
+        fish -c "echo 'Fish shell is working!'"
+        
+    - name: Run test suite
+      run: |
+        fish -c "./test.sh"

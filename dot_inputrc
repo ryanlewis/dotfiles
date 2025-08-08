@@ -1,0 +1,31 @@
+# Readline configuration
+# Enable vi mode for all readline-based applications
+
+# Set vi mode
+set editing-mode vi
+
+# Show vi mode in prompt
+set show-mode-in-prompt on
+set vi-ins-mode-string \1\e[6 q\2
+set vi-cmd-mode-string \1\e[2 q\2
+
+# Key bindings for vi mode
+set keymap vi-command
+# These are for vi-command mode
+Control-l: clear-screen
+
+set keymap vi-insert
+# These are for vi-insert mode
+Control-l: clear-screen
+
+# Better tab completion
+set completion-ignore-case on
+set show-all-if-ambiguous on
+set mark-symlinked-directories on
+
+# No bell
+set bell-style none
+
+# Better history search
+"\e[A": history-search-backward
+"\e[B": history-search-forward

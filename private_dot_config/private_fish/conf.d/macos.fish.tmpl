@@ -1,0 +1,48 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# macOS-specific Fish configuration
+
+# Homebrew setup
+if test -e {{ .brewPrefix }}/bin/brew
+    eval ({{ .brewPrefix }}/bin/brew shellenv)
+end
+
+# Add Homebrew's completion path
+if test -d {{ .brewPrefix }}/share/fish/completions
+    set -gx fish_complete_path {{ .brewPrefix }}/share/fish/completions $fish_complete_path
+end
+
+if test -d {{ .brewPrefix }}/share/fish/vendor_completions.d
+    set -gx fish_complete_path {{ .brewPrefix }}/share/fish/vendor_completions.d $fish_complete_path
+end
+
+# iTerm2 Shell Integration
+if test -e ~/.iterm2_shell_integration.fish
+    source ~/.iterm2_shell_integration.fish
+end
+
+# macOS specific environment variables
+set -gx HOMEBREW_NO_ANALYTICS 1
+set -gx HOMEBREW_NO_ENV_HINTS 1
+
+# Use GNU coreutils if installed
+if test -d {{ .brewPrefix }}/opt/coreutils/libexec/gnubin
+    set -gx PATH {{ .brewPrefix }}/opt/coreutils/libexec/gnubin $PATH
+end
+
+# Add GNU sed if installed
+if test -d {{ .brewPrefix }}/opt/gnu-sed/libexec/gnubin
+    set -gx PATH {{ .brewPrefix }}/opt/gnu-sed/libexec/gnubin $PATH
+end
+
+# macOS specific aliases
+alias flushdns="sudo dscacheutil -flushcache"
+alias afk="open -a ScreenSaverEngine"
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+
+# Quick Look alias for macOS
+alias ql="qlmanage -p &>/dev/null"
+
+# Show/hide desktop icons
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+{{- end -}}
