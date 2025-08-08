@@ -118,17 +118,17 @@ if ! command -v asdf &> /dev/null; then
         if [[ -d "$HOME/.asdf/.git" ]]; then
             echo "🔄 Updating existing asdf installation..."
             # renovate: datasource=github-releases depName=asdf-vm/asdf
-            (cd "$HOME/.asdf" && git fetch --tags && git checkout v0.14.1 2>/dev/null || true)
+            (cd "$HOME/.asdf" && git fetch --tags && git checkout v0.18.0 2>/dev/null || true)
         else
             echo "⚠️  Invalid asdf directory found, removing and reinstalling..."
             rm -rf "$HOME/.asdf"
             echo "🔧 Installing asdf..."
             # renovate: datasource=github-releases depName=asdf-vm/asdf
-            git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
+            git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.18.0
         fi
     else
         echo "🔧 Installing asdf..."
-        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1
+        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.18.0
     fi
 fi
 
