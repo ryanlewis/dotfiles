@@ -380,30 +380,21 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### How It Works
 
-1. **Scheduled Runs**: Renovate runs weekly on Mondays at 3am UTC
-2. **Pull Requests**: Creates PRs for each dependency update
+1. **Automated Runs**: Renovate app runs automatically on its schedule
+2. **Pull Requests**: Creates PRs for each dependency update with conventional commits
 3. **Auto-merge**: Minor and patch updates are auto-merged if tests pass
 4. **Major Updates**: Require manual review and approval
-
-### Manual Trigger
-
-To manually run Renovate:
-1. Go to Actions tab
-2. Select "Renovate" workflow
-3. Click "Run workflow"
-4. Optionally set debug log level
 
 ### Configuration
 
 - Main config: `renovate.json`
-- GitHub workflow: `.github/workflows/renovate.yml`
+- Managed by: GitHub Renovate App (no additional setup needed)
 
-### Setup Requirements
+### For Contributors
 
-For contributors who fork this repo:
-1. Create a GitHub Personal Access Token with `repo` scope
-2. Add it as `RENOVATE_TOKEN` in repository secrets
-3. Renovate will start creating update PRs automatically
+If you fork this repo, you'll need to:
+1. Install the [Renovate GitHub App](https://github.com/apps/renovate) on your fork
+2. Renovate will automatically detect the configuration and start creating PRs
 
 ## Contributing
 
