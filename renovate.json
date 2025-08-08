@@ -4,7 +4,10 @@
     "config:recommended"
   ],
   "branchPrefix": "renovate/",
-  "labels": ["dependencies", "renovate"],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "commitMessagePrefix": "chore(deps):",
   "commitMessageAction": "update",
   "commitMessageTopic": "{{depName}}",
@@ -18,7 +21,10 @@
   "packageRules": [
     {
       "description": "Automerge patch and minor updates",
-      "matchUpdateTypes": ["patch", "minor"],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
       "automerge": true
     }
   ],
@@ -26,7 +32,9 @@
     {
       "customType": "regex",
       "description": "Update asdf version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "git checkout v(?<currentValue>\\d+\\.\\d+\\.\\d+)",
         "git clone[^\\n]+--branch v(?<currentValue>\\d+\\.\\d+\\.\\d+)"
@@ -37,7 +45,9 @@
     {
       "customType": "regex",
       "description": "Update FZF version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "FZF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
@@ -47,7 +57,9 @@
     {
       "customType": "regex",
       "description": "Update delta version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "DELTA_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
@@ -57,7 +69,9 @@
     {
       "customType": "regex",
       "description": "Update atuin version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "ATUIN_VERSION=\"v(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
@@ -68,7 +82,9 @@
     {
       "customType": "regex",
       "description": "Update just version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "JUST_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
@@ -78,7 +94,9 @@
     {
       "customType": "regex",
       "description": "Update kubectx version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "KUBECTX_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
@@ -88,7 +106,9 @@
     {
       "customType": "regex",
       "description": "Update duf version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "github\\.com/muesli/duf/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
       ],
@@ -99,7 +119,9 @@
     {
       "customType": "regex",
       "description": "Update dust version in install.sh",
-      "fileMatch": ["^install\\.sh$"],
+      "managerFilePatterns": [
+        "/^install\\.sh$/"
+      ],
       "matchStrings": [
         "github\\.com/bootandy/dust/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/"
       ],
@@ -113,6 +135,9 @@
   },
   "github-actions": {
     "enabled": true,
-    "fileMatch": [".github/workflows/*.yml", ".github/workflows/*.yaml"]
+    "managerFilePatterns": [
+      "/.github/workflows/*.yml/",
+      "/.github/workflows/*.yaml/"
+    ]
   }
 }
