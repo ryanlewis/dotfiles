@@ -12,12 +12,8 @@ on:
 
 jobs:
   test-ubuntu:
-    strategy:
-      matrix:
-        runs-on: [ubuntu-24.04, ubuntu-24.04-arm64]
-    
-    name: Ubuntu 24.04 LTS (${{ matrix.runs-on }})
-    runs-on: ${{ matrix.runs-on }}
+    name: Ubuntu 24.04 LTS
+    runs-on: ubuntu-24.04
     
     steps:
     - name: Install dependencies
