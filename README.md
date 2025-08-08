@@ -9,10 +9,10 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🐧 Linux compatibility
 - 🛠️ Useful Fish functions and utilities
 - 📦 Template-based configuration for different environments
-- 🔧 asdf version manager for Node.js, Python, Go, and Bun
+- 🔧 asdf version manager for Node.js, Python, and Go
 - 🔍 Modern CLI tools: Complete suite of modern replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
-- 📜 Atuin for synced shell history across machines
+- 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
 
 ## Prerequisites
 
@@ -61,7 +61,7 @@ The `install.sh` script handles the complete setup:
 1. **Installs Fish shell** if not present
 2. **Installs chezmoi** to `~/.local/bin`
 3. **Sets up asdf** version manager
-4. **Installs language runtimes** (Node.js, Python, Go, Bun)
+4. **Installs language runtimes** (Node.js, Python, Go via asdf; Bun via official installer)
 5. **Installs modern CLI tools** (eza, bat, ripgrep, fzf, etc.)
 6. **Applies dotfiles** using chezmoi
 7. **Configures Fish** as your default shell (optional)
@@ -114,7 +114,7 @@ This configuration includes several useful Fish functions:
 - `update` - Update system packages (brew/apt/dnf/pacman)
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
-- `asdf-setup` - Install and configure asdf plugins for Node.js, Python, Go, and Bun
+- `asdf-setup` - Install and configure asdf plugins for Node.js, Python, and Go
 - `asdf-install-latest` - Install latest stable versions of all tools
 - `asdf-update` - Update asdf and all plugins
 
@@ -197,7 +197,7 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - Fast, customizable, git-aware
   - Pre-configured with icons
 - **[atuin](https://github.com/atuinsh/atuin)** - Better shell history
-  - Sync across machines, advanced search
+  - Advanced fuzzy search, statistics, intelligent deduplication
 - **[direnv](https://direnv.net/)** - Directory environments
   - Auto-load .envrc files
 - **[broot](https://github.com/Canop/broot)** - Better `tree`
@@ -210,9 +210,10 @@ This configuration includes a comprehensive suite of modern CLI tools:
 This configuration includes [asdf](https://asdf-vm.com/) for managing programming language versions. The following tools are pre-configured:
 
 - Node.js
-- Python
+- Python  
 - Go
-- Bun
+
+Note: Bun is installed separately using its official installer for always getting the latest version.
 
 To set up asdf after installation:
 
@@ -368,11 +369,11 @@ Last updated: January 2025
 - dust: 1.2.2
 - Other tools: Latest available from package managers
 
-### Programming Languages (via asdf)
-- Node.js: 22.11.0 (LTS)
-- Python: 3.13.3
-- Go: 1.23.5
-- Bun: 1.2.1
+### Programming Languages
+- Node.js: 22.11.0 (LTS) - via asdf
+- Python: miniconda3-latest - via asdf
+- Go: 1.23.5 - via asdf
+- Bun: latest - via official installer
 
 ## License
 
