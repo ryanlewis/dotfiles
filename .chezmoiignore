@@ -9,6 +9,7 @@
 
 # Always ignore
 README.md
+CLAUDE.md
 LICENSE
 .DS_Store
 *.swp
