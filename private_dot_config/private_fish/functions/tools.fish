@@ -149,14 +149,11 @@ function tools --description "Show TLDR of all available commands and tools"
     end
     
     # Default colorful output
-    # Fancy header with gum
-    echo "
-╔══════════════════════════════════════════════╗
-║       🛠️   Available Tools & Commands  🛠️       ║
-╚══════════════════════════════════════════════╝" | gum style \
-        --foreground "#FF6B6B" \
-        --bold \
-        --align center
+    # Fancy header
+    echo ""
+    echo (set_color brred)"╔══════════════════════════════════════════════╗"(set_color normal)
+    echo (set_color brred)"║      🛠️   Available Tools & Commands  🛠️      ║"(set_color normal)
+    echo (set_color brred)"╚══════════════════════════════════════════════╝"(set_color normal)
     
     echo ""
     
