@@ -151,9 +151,9 @@ function tools --description "Show TLDR of all available commands and tools"
     # Default colorful output
     # Fancy header
     echo ""
-    echo (set_color brred)"╔══════════════════════════════════════════════╗"(set_color normal)
+    echo (set_color brred)"╔═══════════════════════════════════════════════╗"(set_color normal)
     echo (set_color brred)"║      🛠️   Available Tools & Commands  🛠️      ║"(set_color normal)
-    echo (set_color brred)"╚══════════════════════════════════════════════╝"(set_color normal)
+    echo (set_color brred)"╚═══════════════════════════════════════════════╝"(set_color normal)
     
     echo ""
     
