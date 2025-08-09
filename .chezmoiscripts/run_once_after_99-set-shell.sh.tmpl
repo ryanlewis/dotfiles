@@ -1,0 +1,49 @@
+#!/bin/bash
+# Set Fish as default shell - runs once after everything else
+set -e
+
+# Skip in CI mode
+if [[ "${CI:-}" == "true" ]]; then
+    echo "⏭️  Skipping shell change (CI mode)"
+    exit 0
+fi
+
+# Skip if already using fish
+if [[ "$SHELL" == *"fish" ]]; then
+    echo "✓ Fish is already your default shell"
+    exit 0
+fi
+
+# Check if fish is installed
+if ! command -v fish &> /dev/null; then
+    echo "⚠️  Fish shell not found, skipping shell change"
+    exit 0
+fi
+
+FISH_PATH=$(which fish)
+
+# Add fish to valid shells if not already there
+if ! grep -q "^${FISH_PATH}$" /etc/shells; then
+    echo "Adding Fish to /etc/shells..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    # macOS
+    echo "${FISH_PATH}" | sudo tee -a /etc/shells >/dev/null
+    {{ else -}}
+    # Linux
+    echo "${FISH_PATH}" | sudo tee -a /etc/shells >/dev/null
+    {{ end -}}
+fi
+
+# Prompt user to change shell
+echo ""
+echo "🐟 Fish shell is installed but not set as your default shell."
+echo ""
+echo "To set Fish as your default shell, run:"
+echo "  chsh -s ${FISH_PATH}"
+echo ""
+echo "Or to try Fish without changing your default shell:"
+echo "  fish"
+echo ""
+
+# Create marker file so this doesn't run again
+touch "$HOME/.config/fish/.shell_setup_complete" 2>/dev/null || true

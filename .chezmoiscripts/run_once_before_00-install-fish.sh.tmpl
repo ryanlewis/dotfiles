@@ -1,0 +1,43 @@
+#!/bin/bash
+# Install Fish shell - runs once before other scripts
+set -e
+
+# Check if fish is already installed
+if command -v fish &> /dev/null; then
+    echo "✓ Fish shell already installed"
+    exit 0
+fi
+
+echo "🐟 Installing Fish shell..."
+
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS
+if command -v brew &> /dev/null; then
+    brew install fish
+else
+    echo "❌ Homebrew not found. Please install Homebrew first."
+    exit 1
+fi
+{{ else if eq .chezmoi.os "linux" -}}
+# Linux
+if command -v apt &> /dev/null; then
+    # Ubuntu/Debian
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq fish
+elif command -v dnf &> /dev/null; then
+    # Fedora
+    sudo dnf install -y fish
+elif command -v pacman &> /dev/null; then
+    # Arch
+    sudo pacman -S --noconfirm fish
+elif command -v zypper &> /dev/null; then
+    # openSUSE
+    sudo zypper install -y fish
+else
+    echo "⚠️  Unable to install Fish automatically on this system"
+    echo "Please install Fish manually: https://fishshell.com"
+    exit 1
+fi
+{{ end -}}
+
+echo "✓ Fish shell installed successfully"

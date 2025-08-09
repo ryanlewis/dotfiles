@@ -8,19 +8,16 @@ This is a cross-platform dotfiles repository managed by chezmoi. It provides a c
 
 ## Essential Commands
 
-### Installation and Setup
+### Installation
 ```bash
-# Full installation with all tools and language runtimes
-./install.sh
+# One-liner installation (recommended)
+curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 
-# Quick installation (tools only, no language runtimes)
-./install.sh --quick
+# With environment variables
+QUICK_INSTALL=true curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 
-# CI mode (non-interactive, no confirmations)
-./install.sh --ci --no-confirm
-
-# Non-interactive with custom git config
-CHEZMOI_USER_NAME="Your Name" CHEZMOI_USER_EMAIL="you@example.com" ./install.sh --no-confirm
+# Or using chezmoi directly
+chezmoi init --apply ryanlewis/dotfiles
 ```
 
 ### Testing
@@ -38,22 +35,38 @@ CHEZMOI_USER_NAME="Your Name" CHEZMOI_USER_EMAIL="you@example.com" ./install.sh 
 ./docker-test.sh --ci
 ```
 
-### Chezmoi Workflow
+### Development Workflow
+
+After installation, your dotfiles live in chezmoi's source directory at `~/.local/share/chezmoi`.
+
+#### Quick Commands (using Fish function)
 ```bash
-# Apply changes from source
-chezmoi apply
+dotfiles edit      # Go to chezmoi source for editing
+dotfiles diff      # Preview changes before applying
+dotfiles apply     # Apply changes locally
+dotfiles push      # Commit and push all changes
+dotfiles pull      # Pull latest from GitHub and apply
+dotfiles status    # Check git status
+```
 
-# Add new files to be managed
+#### Standard Chezmoi Workflow
+```bash
+# Make changes
+chezmoi cd                      # Go to source directory
+# Edit files
+chezmoi diff                    # Preview changes
+chezmoi apply                   # Apply locally
+
+# Version control
+chezmoi git add -A
+chezmoi git commit -m "Update"
+chezmoi git push
+
+# Update from GitHub
+chezmoi update                  # Pull and apply latest
+
+# Add new files
 chezmoi add ~/.config/fish/newfile.fish
-
-# Edit managed files
-chezmoi edit ~/.config/fish/config.fish
-
-# See what would change
-chezmoi diff
-
-# Update from repository
-chezmoi update
 ```
 
 ## Architecture and Key Technologies
@@ -77,19 +90,15 @@ chezmoi update
 - `dot_*`: Files that become `~/.*` (e.g., `dot_gitconfig.tmpl` → `~/.gitconfig`)
 - Templates process during `chezmoi apply` based on OS and environment
 
-### Tool Installation Strategy
-- **chezmoi installed first** at line 100 to ensure dotfiles can be applied
-- All tools install to `~/.local/bin`
-- Prefers downloading pre-built binaries over compilation
-- Automatic architecture detection (x86_64, arm64)
-- Fallback installation methods for different platforms
-- **Graceful error handling**: Script continues if individual tools fail (e.g., Python/Miniconda ToS issue)
-
-### Installation Script Behavior
-- Handles existing `~/.asdf` directory gracefully (updates instead of failing)
-- Prompts for git config values in interactive mode
-- Sets sensible defaults in non-interactive mode
-- Python installation may fail due to Conda ToS - script continues anyway
+### Installation Architecture
+- **Minimal bootstrap**: `install.sh` only installs chezmoi and runs `chezmoi init`
+- **Chezmoi scripts**: All tool installation happens via `.chezmoiscripts/`
+  - `run_once_*` scripts run once for initial setup
+  - `run_onchange_*` scripts re-run when tool versions change
+  - Templates handle OS-specific logic
+- **Tool installation**: Binary downloads to `~/.local/bin` when possible
+- **Architecture detection**: Automatic for x86_64, arm64
+- **Error handling**: Scripts continue on failure (e.g., Python/Conda ToS issue)
 
 ## Development Patterns
 

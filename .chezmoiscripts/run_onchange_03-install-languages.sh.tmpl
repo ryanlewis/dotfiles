@@ -1,0 +1,84 @@
+#!/bin/bash
+# Install programming language runtimes via asdf - runs when versions change
+# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+set -e
+
+# Skip if quick install mode
+if [[ "${QUICK_INSTALL:-}" == "true" ]]; then
+    echo "⏭️  Skipping language runtime installation (quick mode)"
+    exit 0
+fi
+
+# Skip in CI mode to save time
+if [[ "${CI:-}" == "true" ]]; then
+    echo "⏭️  Skipping language runtime installation (CI mode)"
+    exit 0
+fi
+
+# Ensure asdf is available
+if [[ ! -f "$HOME/.asdf/asdf.sh" ]]; then
+    echo "⚠️  asdf not found, skipping language installation"
+    exit 0
+fi
+
+# Source asdf
+export ASDF_DIR="$HOME/.asdf"
+. "$HOME/.asdf/asdf.sh"
+
+echo "🚀 Setting up programming language runtimes..."
+
+# Add asdf plugins if not already added
+add_plugin() {
+    local plugin=$1
+    if ! asdf plugin list | grep -q "^${plugin}$"; then
+        echo "📦 Adding ${plugin} plugin..."
+        asdf plugin add "${plugin}"
+    fi
+}
+
+# Install Node.js
+add_plugin nodejs
+echo "📦 Installing Node.js..."
+if [[ -f "$HOME/.tool-versions" ]]; then
+    NODE_VERSION=$(grep "^nodejs " "$HOME/.tool-versions" | awk '{print $2}')
+    if [[ -n "$NODE_VERSION" ]]; then
+        asdf install nodejs "${NODE_VERSION}" || echo "⚠️  Node.js installation failed, continuing..."
+        asdf global nodejs "${NODE_VERSION}"
+    fi
+fi
+
+# Install Python (via Miniconda)
+add_plugin python
+echo "📦 Installing Python..."
+if [[ -f "$HOME/.tool-versions" ]]; then
+    PYTHON_VERSION=$(grep "^python " "$HOME/.tool-versions" | awk '{print $2}')
+    if [[ -n "$PYTHON_VERSION" ]]; then
+        # Note: Python installation may fail due to Conda ToS - that's OK
+        asdf install python "${PYTHON_VERSION}" 2>/dev/null || echo "⚠️  Python installation failed (likely Conda ToS issue), continuing..."
+        asdf global python "${PYTHON_VERSION}" 2>/dev/null || true
+    fi
+fi
+
+# Install Go
+add_plugin golang
+echo "📦 Installing Go..."
+if [[ -f "$HOME/.tool-versions" ]]; then
+    GO_VERSION=$(grep "^golang " "$HOME/.tool-versions" | awk '{print $2}')
+    if [[ -n "$GO_VERSION" ]]; then
+        asdf install golang "${GO_VERSION}" || echo "⚠️  Go installation failed, continuing..."
+        asdf global golang "${GO_VERSION}"
+    fi
+fi
+
+# Reshim to ensure all binaries are available
+asdf reshim
+
+# Verify installations
+echo ""
+echo "✅ Verifying language runtimes:"
+command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
+command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
+command -v go >/dev/null 2>&1 && echo "  ✓ Go: $(go version)" || echo "  ⚠️  Go not available"
+
+echo ""
+echo "✓ Language runtime setup complete"

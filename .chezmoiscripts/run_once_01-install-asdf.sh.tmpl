@@ -1,0 +1,56 @@
+#!/bin/bash
+# Install asdf version manager - runs once
+set -e
+
+# Skip if asdf is already installed and working
+if [[ -f "$HOME/.asdf/asdf.sh" ]] && command -v asdf &> /dev/null; then
+    echo "✓ asdf already installed"
+    exit 0
+fi
+
+echo "🔧 Installing asdf..."
+
+# Install dependencies for building languages
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS dependencies
+if command -v brew &> /dev/null; then
+    brew install coreutils curl git
+fi
+{{ else if eq .chezmoi.os "linux" -}}
+# Linux dependencies
+if command -v apt &> /dev/null; then
+    echo "📦 Installing build dependencies..."
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq \
+        curl git build-essential libssl-dev zlib1g-dev \
+        libbz2-dev libreadline-dev libsqlite3-dev wget unzip llvm libncurses5-dev \
+        libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl
+elif command -v dnf &> /dev/null; then
+    sudo dnf groupinstall -y "Development Tools"
+    sudo dnf install -y curl git openssl-devel zlib-devel bzip2-devel \
+        readline-devel sqlite-devel wget unzip llvm ncurses-devel
+elif command -v pacman &> /dev/null; then
+    sudo pacman -S --noconfirm base-devel curl git
+fi
+{{ end -}}
+
+# Clone or update asdf
+if [[ -d "$HOME/.asdf" ]]; then
+    echo "📁 asdf directory exists, updating..."
+    if [[ -d "$HOME/.asdf/.git" ]]; then
+        (cd "$HOME/.asdf" && git fetch --tags && git checkout v0.18.0 2>/dev/null || true)
+    else
+        echo "⚠️  Invalid asdf directory found, reinstalling..."
+        rm -rf "$HOME/.asdf"
+        git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.18.0
+    fi
+else
+    echo "📥 Cloning asdf repository..."
+    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.18.0
+fi
+
+# Source asdf for current session
+export ASDF_DIR="$HOME/.asdf"
+. "$HOME/.asdf/asdf.sh"
+
+echo "✓ asdf installed successfully"

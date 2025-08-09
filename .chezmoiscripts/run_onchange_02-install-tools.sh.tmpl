@@ -1,0 +1,269 @@
+#!/bin/bash
+# Install command-line tools - runs when versions change
+# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+set -e
+
+# Ensure ~/.local/bin exists and is in PATH
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+echo "🛠️ Installing/updating command-line tools..."
+
+# Helper function to get architecture
+get_arch() {
+    local arch=$(uname -m)
+    case "$arch" in
+        x86_64) echo "x86_64" ;;
+        aarch64|arm64) echo "arm64" ;;
+        *) echo "$arch" ;;
+    esac
+}
+
+ARCH=$(get_arch)
+
+# Install fzf
+if ! command -v fzf &> /dev/null || [[ "$(fzf --version 2>/dev/null | cut -d' ' -f1)" != "0.65.1" ]]; then
+    echo "🔍 Installing fzf..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install fzf
+    {{ else if eq .chezmoi.os "linux" -}}
+    FZF_VERSION="0.65.1"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        FZF_ARCH="linux_amd64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        FZF_ARCH="linux_arm64"
+    else
+        echo "⚠️  FZF not available for $ARCH"
+    fi
+    
+    if [[ -n "${FZF_ARCH:-}" ]]; then
+        wget -qO /tmp/fzf.tar.gz "https://github.com/junegunn/fzf/releases/download/v${FZF_VERSION}/fzf-${FZF_VERSION}-${FZF_ARCH}.tar.gz"
+        tar -xzf /tmp/fzf.tar.gz -C /tmp fzf
+        mv /tmp/fzf "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/fzf"
+        rm -f /tmp/fzf.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install bat
+if ! command -v bat &> /dev/null && ! command -v batcat &> /dev/null; then
+    echo "🦇 Installing bat..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install bat
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq bat
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y bat
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm bat
+    fi
+    {{ end -}}
+fi
+
+# Install fd
+if ! command -v fd &> /dev/null && ! command -v fdfind &> /dev/null; then
+    echo "🔎 Installing fd..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install fd
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq fd-find
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y fd-find
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm fd
+    fi
+    {{ end -}}
+fi
+
+# Install ripgrep
+if ! command -v rg &> /dev/null; then
+    echo "🔍 Installing ripgrep..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install ripgrep
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq ripgrep
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y ripgrep
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm ripgrep
+    fi
+    {{ end -}}
+fi
+
+# Install zoxide
+if ! command -v zoxide &> /dev/null; then
+    echo "📂 Installing zoxide..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install zoxide
+    {{ else if eq .chezmoi.os "linux" -}}
+    curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+    {{ end -}}
+fi
+
+# Install eza
+if ! command -v eza &> /dev/null; then
+    echo "📁 Installing eza..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install eza
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq gpg
+        sudo mkdir -p /etc/apt/keyrings
+        wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq eza
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y eza
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm eza
+    fi
+    {{ end -}}
+fi
+
+# Install starship
+if ! command -v starship &> /dev/null; then
+    echo "🚀 Installing starship..."
+    curl -sS https://starship.rs/install.sh | sh -s -- -y -b "$HOME/.local/bin"
+fi
+
+# Install btop
+if ! command -v btop &> /dev/null; then
+    echo "📊 Installing btop..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install btop
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq btop
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y btop
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm btop
+    else
+        # Binary installation fallback
+        BTOP_VERSION="1.3.2"
+        if [[ "$ARCH" == "x86_64" ]]; then
+            BTOP_ARCH="x86_64"
+        elif [[ "$ARCH" == "arm64" ]]; then
+            BTOP_ARCH="aarch64"
+        fi
+        
+        if [[ -n "${BTOP_ARCH:-}" ]]; then
+            wget -qO /tmp/btop.tbz "https://github.com/aristocratos/btop/releases/download/v${BTOP_VERSION}/btop-${BTOP_ARCH}-linux-musl.tbz"
+            tar -xjf /tmp/btop.tbz -C /tmp
+            cp -r /tmp/btop/bin/btop "$HOME/.local/bin/"
+            chmod +x "$HOME/.local/bin/btop"
+            rm -rf /tmp/btop /tmp/btop.tbz
+        fi
+    fi
+    {{ end -}}
+fi
+
+# Install duf
+if ! command -v duf &> /dev/null; then
+    echo "💾 Installing duf..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install duf
+    {{ else if eq .chezmoi.os "linux" -}}
+    DUF_VERSION="0.8.1"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        DUF_ARCH="linux_x86_64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        DUF_ARCH="linux_arm64"
+    fi
+    
+    if [[ -n "${DUF_ARCH:-}" ]]; then
+        wget -qO /tmp/duf.tar.gz "https://github.com/muesli/duf/releases/download/v${DUF_VERSION}/duf_${DUF_VERSION}_${DUF_ARCH}.tar.gz"
+        tar -xzf /tmp/duf.tar.gz -C /tmp duf
+        mv /tmp/duf "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/duf"
+        rm -f /tmp/duf.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install dust
+if ! command -v dust &> /dev/null; then
+    echo "📈 Installing dust..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install dust
+    {{ else if eq .chezmoi.os "linux" -}}
+    DUST_VERSION="1.1.1"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        DUST_ARCH="x86_64-unknown-linux-gnu"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        DUST_ARCH="aarch64-unknown-linux-gnu"
+    fi
+    
+    if [[ -n "${DUST_ARCH:-}" ]]; then
+        wget -qO /tmp/dust.tar.gz "https://github.com/bootandy/dust/releases/download/v${DUST_VERSION}/dust-v${DUST_VERSION}-${DUST_ARCH}.tar.gz"
+        tar -xzf /tmp/dust.tar.gz -C /tmp --strip-components=1
+        mv /tmp/dust "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/dust"
+        rm -f /tmp/dust.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install gum
+if ! command -v gum &> /dev/null; then
+    echo "🍬 Installing gum..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install gum
+    {{ else if eq .chezmoi.os "linux" -}}
+    GUM_VERSION="0.15.0"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        GUM_ARCH="Linux_x86_64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        GUM_ARCH="Linux_arm64"
+    fi
+    
+    if [[ -n "${GUM_ARCH:-}" ]]; then
+        wget -qO /tmp/gum.tar.gz "https://github.com/charmbracelet/gum/releases/download/v${GUM_VERSION}/gum_${GUM_VERSION}_${GUM_ARCH}.tar.gz"
+        tar -xzf /tmp/gum.tar.gz -C /tmp gum
+        mv /tmp/gum "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/gum"
+        rm -f /tmp/gum.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install direnv
+if ! command -v direnv &> /dev/null; then
+    echo "📁 Installing direnv..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install direnv
+    {{ else if eq .chezmoi.os "linux" -}}
+    curl -sfL https://direnv.net/install.sh | bash -s -- -b "$HOME/.local/bin"
+    {{ end -}}
+fi
+
+# Install just
+if ! command -v just &> /dev/null; then
+    echo "🔨 Installing just..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install just
+    {{ else if eq .chezmoi.os "linux" -}}
+    JUST_VERSION="1.42.4"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        JUST_ARCH="x86_64-unknown-linux-musl"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        JUST_ARCH="aarch64-unknown-linux-musl"
+    fi
+    
+    if [[ -n "${JUST_ARCH:-}" ]]; then
+        wget -qO /tmp/just.tar.gz "https://github.com/casey/just/releases/download/${JUST_VERSION}/just-${JUST_VERSION}-${JUST_ARCH}.tar.gz"
+        tar -xzf /tmp/just.tar.gz -C /tmp just
+        mv /tmp/just "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/just"
+        rm -f /tmp/just.tar.gz
+    fi
+    {{ end -}}
+fi
+
+echo "✓ All tools installed/updated successfully"

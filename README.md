@@ -22,77 +22,64 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 
 ## Installation
 
-### One-Line Install
+### Quick Install (Recommended)
 
 ```bash
-# Clone and run the install script
-git clone https://github.com/yourusername/dotfiles ~/dev/dotfiles && cd ~/dev/dotfiles && ./install.sh
+# One-liner installation
+curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 ```
 
-### Step-by-Step Install
+Or if you prefer using `wget`:
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/dotfiles ~/dev/dotfiles
-   cd ~/dev/dotfiles
-   ```
+```bash
+wget -qO- https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
+```
 
-2. Run the install script:
-   ```bash
-   # Full installation (all tools and language runtimes)
-   ./install.sh
-   
-   # Quick installation (tools only, no language runtimes)
-   ./install.sh --quick
-   
-   # Non-interactive installation (for automation)
-   ./install.sh --no-confirm
-   ```
+### Alternative: Using Chezmoi Directly
 
-3. Restart your shell or start Fish:
-   ```bash
-   fish
-   ```
+If you already have chezmoi installed:
 
-### What the Install Script Does
-
-The `install.sh` script handles the complete setup:
-
-1. **Installs Fish shell** if not present
-2. **Installs chezmoi** to `~/.local/bin`
-3. **Sets up asdf** version manager
-4. **Installs language runtimes** (Node.js, Python, Go via asdf; Bun via official installer)
-5. **Installs modern CLI tools** (eza, bat, ripgrep, fzf, etc.)
-6. **Applies dotfiles** using chezmoi
-7. **Configures Fish** as your default shell (optional)
+```bash
+chezmoi init --apply ryanlewis/dotfiles
+```
 
 ### Environment Variables
 
-For non-interactive installation, you can set:
-```bash
-# Skip interactive prompts for chezmoi
-export CHEZMOI_USER_NAME="Your Name"
-export CHEZMOI_USER_EMAIL="your.email@example.com"
-
-# Run installation
-./install.sh --no-confirm
-```
-
-### Manual chezmoi Setup (Advanced)
-
-If you prefer to use chezmoi directly:
+Control installation behavior with these environment variables:
 
 ```bash
-# Install chezmoi (if not already installed)
-sh -c "$(curl -fsLS get.chezmoi.io)" -- -b ~/.local/bin
+# Skip language runtimes (Node.js, Python, Go)
+QUICK_INSTALL=true curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 
-# Initialize from this repository
-chezmoi init --apply ~/dev/dotfiles
-
-# Or for non-interactive:
+# Provide git config to avoid prompts
 CHEZMOI_USER_NAME="Your Name" CHEZMOI_USER_EMAIL="you@example.com" \
-  chezmoi init --apply ~/dev/dotfiles
+  curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 ```
+
+## What Gets Installed
+
+The installation process automatically sets up:
+
+1. **Fish shell** - Modern, user-friendly shell
+2. **chezmoi** - Dotfiles manager
+3. **asdf** - Universal version manager
+4. **Modern CLI tools**:
+   - `eza` - Better `ls`
+   - `bat` - Better `cat` with syntax highlighting
+   - `ripgrep` - Better `grep`
+   - `fd` - Better `find`
+   - `fzf` - Fuzzy finder
+   - `zoxide` - Smarter `cd`
+   - `starship` - Cross-shell prompt
+   - `btop` - Better `top`
+   - `duf` - Better `df`
+   - `dust` - Better `du`
+   - And more...
+5. **Language runtimes** (optional):
+   - Node.js (via asdf)
+   - Python/Miniconda (via asdf)
+   - Go (via asdf)
+   - Bun (official installer)
 
 ## Usage
 
@@ -224,6 +211,49 @@ asdf install
 
 # Or install latest versions
 asdf-install-latest
+```
+
+## Development
+
+### Making Changes to Dotfiles
+
+After installation, your dotfiles are managed by chezmoi. To make changes:
+
+```bash
+# Go to chezmoi's source directory
+chezmoi cd
+
+# Edit files directly
+vim .config/fish/config.fish.tmpl
+
+# Preview changes
+chezmoi diff
+
+# Apply changes locally
+chezmoi apply
+
+# Commit and push
+git add -A
+git commit -m "Update fish config"
+git push
+```
+
+Or use the included `dotfiles` Fish function:
+
+```bash
+dotfiles edit     # Go to source directory
+dotfiles diff     # Preview changes
+dotfiles apply    # Apply locally
+dotfiles push     # Commit and push all changes
+dotfiles pull     # Pull latest from GitHub
+```
+
+### Updating from GitHub
+
+On any machine with your dotfiles installed:
+
+```bash
+chezmoi update    # Pull latest changes and apply them
 ```
 
 ## Customization

@@ -154,6 +154,9 @@ alias fd="fdfind"
 alias preview="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
 
 # Additional modern tool aliases
+{{- if lookPath "nvim" }}
+alias vim="nvim"
+{{- end }}
 {{- if lookPath "lazygit" }}
 alias lg="lazygit"
 {{- end }}
