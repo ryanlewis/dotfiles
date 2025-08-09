@@ -225,10 +225,10 @@ if ! command -v gum &> /dev/null; then
     
     if [[ -n "${GUM_ARCH:-}" ]]; then
         wget -qO /tmp/gum.tar.gz "https://github.com/charmbracelet/gum/releases/download/v${GUM_VERSION}/gum_${GUM_VERSION}_${GUM_ARCH}.tar.gz"
-        tar -xzf /tmp/gum.tar.gz -C /tmp gum
-        mv /tmp/gum "$HOME/.local/bin/"
+        tar -xzf /tmp/gum.tar.gz -C /tmp
+        mv /tmp/gum_${GUM_VERSION}_${GUM_ARCH}/gum "$HOME/.local/bin/"
         chmod +x "$HOME/.local/bin/gum"
-        rm -f /tmp/gum.tar.gz
+        rm -rf /tmp/gum.tar.gz /tmp/gum_${GUM_VERSION}_${GUM_ARCH}
     fi
     {{ end -}}
 fi

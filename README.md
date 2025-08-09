@@ -101,9 +101,30 @@ This configuration includes several useful Fish functions:
 - `update` - Update system packages (brew/apt/dnf/pacman)
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
+- `yank` - Copy text to clipboard via OSC 52 (works over SSH)
 - `asdf-setup` - Install and configure asdf plugins for Node.js, Python, and Go
 - `asdf-install-latest` - Install latest stable versions of all tools
 - `asdf-update` - Update asdf and all plugins
+
+#### Clipboard Function: yank
+
+The `yank` function enables clipboard access from anywhere, even over SSH:
+
+```bash
+# Copy command output
+git diff | yank
+cat ~/.ssh/id_rsa.pub | yank
+echo "some text" | yank
+
+# Works over SSH - copies to your local clipboard!
+ssh server "cat /var/log/nginx/error.log | yank"
+```
+
+**Why use yank?**
+- Works over SSH without X11 forwarding
+- Works in tmux/screen sessions  
+- Universal solution across different terminals (iTerm2, Terminal.app, Alacritty, Windows Terminal, etc.)
+- No need for platform-specific tools (pbcopy/xclip)
 
 #### FZF-Powered Functions
 
