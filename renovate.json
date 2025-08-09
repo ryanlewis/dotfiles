@@ -31,13 +31,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update asdf version in install.sh",
+      "description": "Update asdf version in chezmoi script",
       "managerFilePatterns": [
-        "/^install\\.sh$/"
+        "/.chezmoiscripts/run_once_01-install-asdf.sh.tmpl/"
       ],
       "matchStrings": [
-        "git checkout v(?<currentValue>\\d+\\.\\d+\\.\\d+)",
-        "git clone[^\\n]+--branch v(?<currentValue>\\d+\\.\\d+\\.\\d+)"
+        "ASDF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
       "depNameTemplate": "asdf-vm/asdf",
       "datasourceTemplate": "github-releases"
@@ -128,6 +127,23 @@
       "depNameTemplate": "bootandy/dust",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "description": "Update tool versions in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "FZF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "BTOP_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "DUF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "DUST_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "GUM_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
+        "JUST_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "{{{depName}}}",
+      "datasourceTemplate": "github-releases"
     }
   ],
   "asdf": {

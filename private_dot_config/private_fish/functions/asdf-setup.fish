@@ -63,12 +63,14 @@ function asdf-install-latest --description "Install latest stable versions of al
 end
 
 function asdf-update --description "Update all asdf plugins"
-    echo "🔄 Updating asdf..."
-    asdf update
+    echo "📝 Note: asdf v0.16+ no longer has an 'update' command"
+    echo "   To update asdf itself:"
+    echo "   - macOS: brew upgrade asdf"
+    echo "   - Linux: Download new binary from GitHub releases"
     
     echo ""
     echo "🔄 Updating all plugins..."
     asdf plugin update --all
     
-    echo "✅ asdf and all plugins updated!"
+    echo "✅ All plugins updated!"
 end

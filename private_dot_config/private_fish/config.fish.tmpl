@@ -18,24 +18,38 @@ set fish_cursor_visual block
 eval ({{ .brewPrefix }}/bin/brew shellenv)
 {{- end }}
 
-# asdf version manager
-if test -e ~/.asdf/asdf.fish
-    source ~/.asdf/asdf.fish
+# asdf version manager (v0.16+)
+# Set ASDF_DATA_DIR for backward compatibility with existing installations
+set -gx ASDF_DATA_DIR "$HOME/.asdf"
+
+# Add asdf shims to PATH (required for v0.16+)
+if test -d "$ASDF_DATA_DIR/shims"
+    set -gx PATH "$ASDF_DATA_DIR/shims" $PATH
 end
 
-# asdf completions for Fish
-if test -e ~/.asdf/completions/asdf.fish
-    source ~/.asdf/completions/asdf.fish
+# asdf completions for Fish (if they exist)
+if test -e "$ASDF_DATA_DIR/completions/asdf.fish"
+    source "$ASDF_DATA_DIR/completions/asdf.fish"
 end
 
-# asdf Go environment setup
-if test -z "$ASDF_DATA_DIR"
-    set -l asdf_dir "$HOME/.asdf"
-else
-    set -l asdf_dir "$ASDF_DATA_DIR"
+# asdf Go environment setup (if plugin installed)
+if test -e "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
+    source "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
 end
-if test -e "$asdf_dir/plugins/golang/set-env.fish"
-    source "$asdf_dir/plugins/golang/set-env.fish"
+
+# Set Go environment variables for all shells (not just interactive)
+if type -q go; and type -q asdf
+    set -l real_go_path (asdf which go ^/dev/null)
+    if test -n "$real_go_path"
+        # GOROOT is two directories up from the real go binary (go/bin/go)
+        set -gx GOROOT (dirname (dirname "$real_go_path"))
+        # Standard Go paths
+        set -gx GOPATH "$HOME/go"
+        # Add GOPATH/bin to PATH if not already there
+        if not contains "$GOPATH/bin" $PATH
+            set -gx PATH "$GOPATH/bin" $PATH
+        end
+    end
 end
 
 # zoxide - smarter cd command
@@ -65,6 +79,19 @@ end
 # broot launcher
 if test -f ~/.config/broot/launcher/fish/br
     source ~/.config/broot/launcher/fish/br
+else if type -q broot
+    # Define br function if broot is installed but launcher not set up
+    function br --wraps=broot
+        set -l cmd_file (mktemp)
+        if broot --outcmd $cmd_file $argv
+            source $cmd_file
+            rm -f $cmd_file
+        else
+            set -l code $status
+            rm -f $cmd_file
+            return $code
+        end
+    end
 end
 
 # OS-specific PATH additions
