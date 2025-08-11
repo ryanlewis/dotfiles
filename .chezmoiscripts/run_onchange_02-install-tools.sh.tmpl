@@ -266,4 +266,254 @@ if ! command -v just &> /dev/null; then
     {{ end -}}
 fi
 
+# Install delta
+if ! command -v delta &> /dev/null; then
+    echo "🔀 Installing delta..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install git-delta
+    {{ else if eq .chezmoi.os "linux" -}}
+    DELTA_VERSION="0.18.2"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        DELTA_ARCH="x86_64-unknown-linux-gnu"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        DELTA_ARCH="aarch64-unknown-linux-gnu"
+    fi
+    
+    if [[ -n "${DELTA_ARCH:-}" ]]; then
+        wget -qO /tmp/delta.tar.gz "https://github.com/dandavison/delta/releases/download/${DELTA_VERSION}/delta-${DELTA_VERSION}-${DELTA_ARCH}.tar.gz"
+        tar -xzf /tmp/delta.tar.gz -C /tmp --strip-components=1
+        mv /tmp/delta "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/delta"
+        rm -f /tmp/delta.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install lazygit
+if ! command -v lazygit &> /dev/null; then
+    echo "🎯 Installing lazygit..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install lazygit
+    {{ else if eq .chezmoi.os "linux" -}}
+    LAZYGIT_VERSION="0.44.1"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        LAZYGIT_ARCH="Linux_x86_64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        LAZYGIT_ARCH="Linux_arm64"
+    fi
+    
+    if [[ -n "${LAZYGIT_ARCH:-}" ]]; then
+        wget -qO /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_${LAZYGIT_ARCH}.tar.gz"
+        tar -xzf /tmp/lazygit.tar.gz -C /tmp lazygit
+        mv /tmp/lazygit "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/lazygit"
+        rm -f /tmp/lazygit.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install tldr
+if ! command -v tldr &> /dev/null; then
+    echo "📖 Installing tldr..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install tldr
+    {{ else if eq .chezmoi.os "linux" -}}
+    TLDR_VERSION="3.3.0"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        TLDR_ARCH="linux-x64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        TLDR_ARCH="linux-arm64"
+    fi
+    
+    if [[ -n "${TLDR_ARCH:-}" ]]; then
+        wget -qO /tmp/tldr.tar.gz "https://github.com/tldr-pages/tldr/releases/download/v${TLDR_VERSION}/tldr-${TLDR_ARCH}.tar.gz"
+        tar -xzf /tmp/tldr.tar.gz -C /tmp
+        mv /tmp/tldr "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/tldr"
+        rm -f /tmp/tldr.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install httpie
+if ! command -v http &> /dev/null; then
+    echo "🌐 Installing httpie..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install httpie
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq httpie
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y httpie
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm httpie
+    fi
+    {{ end -}}
+fi
+
+# Install broot
+if ! command -v broot &> /dev/null; then
+    echo "🌳 Installing broot..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install broot
+    {{ else if eq .chezmoi.os "linux" -}}
+    BROOT_VERSION="1.42.0"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        BROOT_ARCH="x86_64-linux"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        BROOT_ARCH="aarch64-linux"
+    fi
+    
+    if [[ -n "${BROOT_ARCH:-}" ]]; then
+        wget -qO /tmp/broot.zip "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot_${BROOT_VERSION}_${BROOT_ARCH}.zip"
+        unzip -q /tmp/broot.zip -d /tmp
+        mv /tmp/broot "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/broot"
+        rm -f /tmp/broot.zip
+    fi
+    {{ end -}}
+fi
+
+# Install atuin
+if ! command -v atuin &> /dev/null; then
+    echo "📜 Installing atuin..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install atuin
+    {{ else if eq .chezmoi.os "linux" -}}
+    ATUIN_VERSION="18.3.0"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        ATUIN_ARCH="x86_64-unknown-linux-gnu"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        ATUIN_ARCH="aarch64-unknown-linux-gnu"
+    fi
+    
+    if [[ -n "${ATUIN_ARCH:-}" ]]; then
+        wget -qO /tmp/atuin.tar.gz "https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-v${ATUIN_VERSION}-${ATUIN_ARCH}.tar.gz"
+        tar -xzf /tmp/atuin.tar.gz -C /tmp --strip-components=1
+        mv /tmp/atuin "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/atuin"
+        rm -f /tmp/atuin.tar.gz
+    fi
+    {{ end -}}
+fi
+
+# Install jq
+if ! command -v jq &> /dev/null; then
+    echo "🎭 Installing jq..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install jq
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq jq
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y jq
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm jq
+    else
+        # Binary installation fallback
+        JQ_VERSION="1.7.1"
+        if [[ "$ARCH" == "x86_64" ]]; then
+            JQ_ARCH="linux-amd64"
+        elif [[ "$ARCH" == "arm64" ]]; then
+            JQ_ARCH="linux-arm64"
+        fi
+        
+        if [[ -n "${JQ_ARCH:-}" ]]; then
+            wget -qO "$HOME/.local/bin/jq" "https://github.com/jqlang/jq/releases/download/jq-${JQ_VERSION}/jq-${JQ_ARCH}"
+            chmod +x "$HOME/.local/bin/jq"
+        fi
+    fi
+    {{ end -}}
+fi
+
+# Install GitHub CLI
+if ! command -v gh &> /dev/null; then
+    echo "🐙 Installing GitHub CLI..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install gh
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq software-properties-common
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq gh
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y 'dnf-command(config-manager)'
+        sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+        sudo dnf install -y gh
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm github-cli
+    else
+        # Binary installation fallback
+        GH_VERSION="2.61.0"
+        if [[ "$ARCH" == "x86_64" ]]; then
+            GH_ARCH="linux_amd64"
+        elif [[ "$ARCH" == "arm64" ]]; then
+            GH_ARCH="linux_arm64"
+        fi
+        
+        if [[ -n "${GH_ARCH:-}" ]]; then
+            wget -qO /tmp/gh.tar.gz "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_${GH_ARCH}.tar.gz"
+            tar -xzf /tmp/gh.tar.gz -C /tmp --strip-components=1
+            mv /tmp/bin/gh "$HOME/.local/bin/"
+            chmod +x "$HOME/.local/bin/gh"
+            rm -rf /tmp/gh.tar.gz
+        fi
+    fi
+    {{ end -}}
+fi
+
+# Install kubectl
+if ! command -v kubectl &> /dev/null; then
+    echo "☸️ Installing kubectl..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install kubernetes-cli
+    {{ else if eq .chezmoi.os "linux" -}}
+    KUBECTL_VERSION="1.31.2"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        KUBECTL_ARCH="amd64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        KUBECTL_ARCH="arm64"
+    fi
+    
+    if [[ -n "${KUBECTL_ARCH:-}" ]]; then
+        wget -qO "$HOME/.local/bin/kubectl" "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl"
+        chmod +x "$HOME/.local/bin/kubectl"
+    fi
+    {{ end -}}
+fi
+
+# Install kubectx and kubens
+if ! command -v kubectx &> /dev/null || ! command -v kubens &> /dev/null; then
+    echo "🔄 Installing kubectx and kubens..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install kubectx
+    {{ else if eq .chezmoi.os "linux" -}}
+    KUBECTX_VERSION="0.9.5"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        KUBECTX_ARCH="x86_64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        KUBECTX_ARCH="arm64"
+    fi
+    
+    if [[ -n "${KUBECTX_ARCH:-}" ]]; then
+        # Install kubectx
+        wget -qO /tmp/kubectx.tar.gz "https://github.com/ahmetb/kubectx/releases/download/v${KUBECTX_VERSION}/kubectx_v${KUBECTX_VERSION}_linux_${KUBECTX_ARCH}.tar.gz"
+        tar -xzf /tmp/kubectx.tar.gz -C /tmp kubectx
+        mv /tmp/kubectx "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/kubectx"
+        rm -f /tmp/kubectx.tar.gz
+        
+        # Install kubens
+        wget -qO /tmp/kubens.tar.gz "https://github.com/ahmetb/kubectx/releases/download/v${KUBECTX_VERSION}/kubens_v${KUBECTX_VERSION}_linux_${KUBECTX_ARCH}.tar.gz"
+        tar -xzf /tmp/kubens.tar.gz -C /tmp kubens
+        mv /tmp/kubens "$HOME/.local/bin/"
+        chmod +x "$HOME/.local/bin/kubens"
+        rm -f /tmp/kubens.tar.gz
+    fi
+    {{ end -}}
+fi
+
 echo "✓ All tools installed/updated successfully"

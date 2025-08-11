@@ -144,6 +144,114 @@
       ],
       "depNameTemplate": "{{{depName}}}",
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update delta version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "DELTA_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "dandavison/delta",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update lazygit version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "LAZYGIT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "jesseduffield/lazygit",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update tldr version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "TLDR_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "tldr-pages/tldr",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update broot version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "BROOT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "Canop/broot",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update atuin version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "ATUIN_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "atuinsh/atuin",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update jq version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "JQ_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "jqlang/jq",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update GitHub CLI version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "GH_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "cli/cli",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update kubectl version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "KUBECTL_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "kubernetes/kubernetes",
+      "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update kubectx version in chezmoi install script",
+      "managerFilePatterns": [
+        "/.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl/"
+      ],
+      "matchStrings": [
+        "KUBECTX_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "ahmetb/kubectx",
+      "datasourceTemplate": "github-releases"
     }
   ],
   "asdf": {
