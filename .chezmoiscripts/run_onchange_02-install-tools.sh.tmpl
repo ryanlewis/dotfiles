@@ -318,19 +318,15 @@ if ! command -v tldr &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install tldr
     {{ else if eq .chezmoi.os "linux" -}}
-    TLDR_VERSION="3.3.0"
-    if [[ "$ARCH" == "x86_64" ]]; then
-        TLDR_ARCH="linux-x64"
-    elif [[ "$ARCH" == "arm64" ]]; then
-        TLDR_ARCH="linux-arm64"
-    fi
-    
-    if [[ -n "${TLDR_ARCH:-}" ]]; then
-        wget -qO /tmp/tldr.tar.gz "https://github.com/tldr-pages/tldr/releases/download/v${TLDR_VERSION}/tldr-${TLDR_ARCH}.tar.gz"
-        tar -xzf /tmp/tldr.tar.gz -C /tmp
-        mv /tmp/tldr "$HOME/.local/bin/"
-        chmod +x "$HOME/.local/bin/tldr"
-        rm -f /tmp/tldr.tar.gz
+    # Use package manager for tldr - binary releases have issues
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq tldr || echo "⚠️  tldr not available in apt, skipping..."
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y tldr || echo "⚠️  tldr not available in dnf, skipping..."
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm tldr || echo "⚠️  tldr not available in pacman, skipping..."
+    else
+        echo "⚠️  No package manager available, skipping tldr installation"
     fi
     {{ end -}}
 fi
