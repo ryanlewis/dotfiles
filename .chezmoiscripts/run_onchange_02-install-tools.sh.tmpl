@@ -359,36 +359,11 @@ if ! command -v broot &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install broot
     {{ else if eq .chezmoi.os "linux" -}}
-    BROOT_VERSION="1.42.0"
-    if [[ "$ARCH" == "x86_64" ]]; then
-        BROOT_ARCH="x86_64-unknown-linux-gnu"
-    elif [[ "$ARCH" == "arm64" ]]; then
-        BROOT_ARCH="aarch64-unknown-linux-gnu"
-    fi
-    
-    if [[ -n "${BROOT_ARCH:-}" ]]; then
-        # Download broot binary directly
-        if wget -qO "$HOME/.local/bin/broot" "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot_${BROOT_ARCH}" 2>/dev/null; then
-            chmod +x "$HOME/.local/bin/broot"
-            echo "✓ broot installed successfully"
-        else
-            # Try alternative URL format
-            if wget -qO /tmp/broot.tar.gz "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot-v${BROOT_VERSION}-${BROOT_ARCH}.tar.gz" 2>/dev/null; then
-                tar -xzf /tmp/broot.tar.gz -C /tmp 2>/dev/null || true
-                if [[ -f /tmp/broot ]]; then
-                    mv /tmp/broot "$HOME/.local/bin/"
-                    chmod +x "$HOME/.local/bin/broot"
-                elif [[ -f /tmp/${BROOT_ARCH}/broot ]]; then
-                    mv /tmp/${BROOT_ARCH}/broot "$HOME/.local/bin/"
-                    chmod +x "$HOME/.local/bin/broot"
-                else
-                    echo "⚠️  Failed to extract broot, skipping..."
-                fi
-                rm -rf /tmp/broot.tar.gz /tmp/broot /tmp/${BROOT_ARCH} 2>/dev/null || true
-            else
-                echo "⚠️  Failed to download broot, skipping..."
-            fi
-        fi
+    # Broot requires cargo to build from source or use package manager
+    if command -v cargo &> /dev/null; then
+        cargo install --locked broot
+    else
+        echo "⚠️  broot requires cargo to install. Install Rust first or use a package manager."
     fi
     {{ end -}}
 fi
@@ -408,7 +383,7 @@ if ! command -v atuin &> /dev/null; then
     
     if [[ -n "${ATUIN_ARCH:-}" ]]; then
         # Atuin releases use musl builds for better compatibility
-        ATUIN_FILE="atuin-v${ATUIN_VERSION}-${ATUIN_ARCH}.tar.gz"
+        ATUIN_FILE="atuin-${ATUIN_ARCH}.tar.gz"
         if wget -qO /tmp/atuin.tar.gz "https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/${ATUIN_FILE}" 2>/dev/null; then
             if tar -xzf /tmp/atuin.tar.gz -C /tmp 2>/dev/null; then
                 # Look for atuin binary in various possible locations
