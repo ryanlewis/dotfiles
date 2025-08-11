@@ -353,42 +353,34 @@ if ! command -v broot &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install broot
     {{ else if eq .chezmoi.os "linux" -}}
-    BROOT_VERSION="1.42.0"
-    if [[ "$ARCH" == "x86_64" ]]; then
-        BROOT_ARCH="x86_64-linux"
-    elif [[ "$ARCH" == "arm64" ]]; then
-        BROOT_ARCH="aarch64-linux"
-    fi
-    
-    if [[ -n "${BROOT_ARCH:-}" ]]; then
-        wget -qO /tmp/broot.zip "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot_${BROOT_VERSION}_${BROOT_ARCH}.zip"
-        unzip -q /tmp/broot.zip -d /tmp
-        mv /tmp/broot "$HOME/.local/bin/"
-        chmod +x "$HOME/.local/bin/broot"
-        rm -f /tmp/broot.zip
+    # Use package manager for broot - binary releases have issues
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq broot || echo "⚠️  broot not available in apt, skipping..."
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y broot || echo "⚠️  broot not available in dnf, skipping..."  
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm broot || echo "⚠️  broot not available in pacman, skipping..."
+    else
+        echo "⚠️  No package manager available, skipping broot installation"
     fi
     {{ end -}}
 fi
 
-# Install atuin
+# Install atuin  
 if ! command -v atuin &> /dev/null; then
     echo "📜 Installing atuin..."
     {{ if eq .chezmoi.os "darwin" -}}
     brew install atuin
     {{ else if eq .chezmoi.os "linux" -}}
-    ATUIN_VERSION="18.3.0"
-    if [[ "$ARCH" == "x86_64" ]]; then
-        ATUIN_ARCH="x86_64-unknown-linux-gnu"
-    elif [[ "$ARCH" == "arm64" ]]; then
-        ATUIN_ARCH="aarch64-unknown-linux-gnu"
-    fi
-    
-    if [[ -n "${ATUIN_ARCH:-}" ]]; then
-        wget -qO /tmp/atuin.tar.gz "https://github.com/atuinsh/atuin/releases/download/v${ATUIN_VERSION}/atuin-v${ATUIN_VERSION}-${ATUIN_ARCH}.tar.gz"
-        tar -xzf /tmp/atuin.tar.gz -C /tmp --strip-components=1
-        mv /tmp/atuin "$HOME/.local/bin/"
-        chmod +x "$HOME/.local/bin/atuin"
-        rm -f /tmp/atuin.tar.gz
+    # Use package manager for atuin - binary releases have issues
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq atuin || echo "⚠️  atuin not available in apt, skipping..."
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y atuin || echo "⚠️  atuin not available in dnf, skipping..."
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm atuin || echo "⚠️  atuin not available in pacman, skipping..."
+    else
+        echo "⚠️  No package manager available, skipping atuin installation"
     fi
     {{ end -}}
 fi
