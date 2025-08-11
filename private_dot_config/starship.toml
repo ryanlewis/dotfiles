@@ -112,6 +112,6 @@ style_user = "bold yellow"
 style_root = "bold red"
 
 [hostname]
-ssh_only = true
-format = "[@$hostname]($style) "
+ssh_only = false
+format = "[$hostname]($style) "
 style = "bold green"
