@@ -178,7 +178,7 @@
       "matchStrings": [
         "TLDR_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
       ],
-      "depNameTemplate": "tldr-pages/tldr",
+      "depNameTemplate": "dbrgn/tealdeer",
       "datasourceTemplate": "github-releases"
     },
     {
