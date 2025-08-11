@@ -1,9 +1,23 @@
 # Custom greeting with system information
 function fish_greeting
     set_color cyan
-    echo "Welcome to "(hostname)" • "(lsb_release -ds 2>/dev/null || echo "Linux")" • "(hostname -I 2>/dev/null | awk '{print $1}' || echo "127.0.0.1")
+    # Get OS name
+    if test (uname) = "Darwin"
+        set os_name "macOS "(sw_vers -productVersion 2>/dev/null || echo "")
+    else
+        set os_name (lsb_release -ds 2>/dev/null || echo "Linux")
+    end
+    
+    echo "Welcome to "(hostname)" • "$os_name
+    
     set_color yellow
-    echo "Uptime: "(uptime -p 2>/dev/null || uptime)" • Load: "(uptime | awk -F'load average:' '{print $2}')
+    # Get uptime - macOS doesn't support -p flag
+    if test (uname) = "Darwin"
+        set uptime_str (uptime | sed 's/.*up //' | sed 's/,.*//')
+        echo "Uptime: "$uptime_str" • Load: "(uptime | awk -F'load averages:' '{print $2}')
+    else
+        echo "Uptime: "(uptime -p 2>/dev/null || uptime)" • Load: "(uptime | awk -F'load average:' '{print $2}')
+    end
 
     # Show tmux sessions only if server is running
     if command -v tmux >/dev/null 2>&1; and tmux list-sessions >/dev/null 2>&1
