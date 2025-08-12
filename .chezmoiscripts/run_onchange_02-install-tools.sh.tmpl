@@ -484,7 +484,7 @@ if ! command -v kubectl &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install kubernetes-cli
     {{ else if eq .chezmoi.os "linux" -}}
-    KUBECTL_VERSION="1.31.2"
+    KUBECTL_VERSION="1.33.3"
     if [[ "$ARCH" == "x86_64" ]]; then
         KUBECTL_ARCH="amd64"
     elif [[ "$ARCH" == "arm64" ]]; then
