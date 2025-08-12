@@ -133,9 +133,6 @@ set -gx LESSKEY "$HOME/.lesskey"
 # Fish greeting
 set -g fish_greeting ""
 
-# Key bindings
-bind \c_ 'commandline -f repaint; and stty raw -echo; and printf "\033[Z"; and stty -raw echo'
-
 # Aliases (cross-platform)
 {{- if lookPath "eza" }}
 # Use eza instead of ls

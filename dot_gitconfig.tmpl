@@ -19,25 +19,46 @@
     navigate = true                      # use n and N to move between diff sections
     line-numbers = true                  # show line numbers
     side-by-side = true                  # show diffs side-by-side
-    syntax-theme = Dracula               # or try: OneHalfDark, Monokai Extended
+    dark = true                          # optimize for dark terminals
+    syntax-theme = Nord                  # better for dark terminals (was Dracula)
     file-style = bold yellow ul
     file-decoration-style = none
     commit-decoration-style = bold yellow box ul
-    hunk-header-decoration-style = blue box
+    hunk-header-decoration-style = cyan box
     line-numbers-left-format = "{nm:>4}┊"
     line-numbers-right-format = "{np:>4}│"
-    line-numbers-zero-style = "#444444"
-    minus-style = syntax "#3f0001"
-    minus-emph-style = syntax "#780000"
-    plus-style = syntax "#003800"
-    plus-emph-style = syntax "#006000"
+    line-numbers-zero-style = "#666666"
+    minus-style = syntax "#450a15"
+    minus-emph-style = syntax "#600818"
+    plus-style = syntax "#0b4820"
+    plus-emph-style = syntax "#175c2e"
     whitespace-error-style = "#fb0120" reverse
+    # Merge conflict display
+    merge-conflict-begin-symbol = "▼"
+    merge-conflict-end-symbol = "▲"
+    merge-conflict-ours-diff-header-style = "#f1fa8c" bold
+    merge-conflict-theirs-diff-header-style = "#ff79c6" bold
+    merge-conflict-ours-diff-header-decoration-style = box
+    merge-conflict-theirs-diff-header-decoration-style = box
     
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3               # improved diff3 - shows base version but cleaner
+{{- if lookPath "nvim" }}
+    tool = nvimdiff
+{{- else if lookPath "vim" }}
+    tool = vimdiff
+{{- end }}
 
 [diff]
     colorMoved = default
+{{- if lookPath "nvim" }}
+    tool = nvimdiff
+{{- else if lookPath "vim" }}
+    tool = vimdiff
+{{- end }}
+
+[difftool]
+    prompt = false
 {{- end }}
 
 [pull]
