@@ -1,0 +1,80 @@
+# EditorConfig helps maintain consistent coding styles across different editors
+# https://editorconfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Shell scripts
+[*.{sh,bash,zsh}]
+indent_size = 4
+shell_variant = bash
+
+# Fish shell scripts
+[*.fish]
+indent_size = 4
+
+# Chezmoi templates and scripts
+[*.tmpl]
+indent_size = 4
+end_of_line = lf
+
+[.chezmoiscripts/*]
+end_of_line = lf
+indent_size = 4
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# TOML files
+[*.toml]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# Markdown files
+[*.md]
+indent_size = 2
+trim_trailing_whitespace = false  # Allow trailing spaces for line breaks
+
+# Makefile
+[Makefile]
+indent_style = tab
+
+# Git config files
+[.gitconfig]
+indent_style = tab
+
+[.gitattributes]
+indent_size = 2
+
+# Docker files
+[Dockerfile*]
+indent_size = 4
+
+# Go files
+[*.go]
+indent_style = tab
+
+# Python files
+[*.py]
+indent_size = 4
+
+# JavaScript/TypeScript
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+# Configuration files
+[*.{conf,cfg,ini}]
+indent_size = 4
