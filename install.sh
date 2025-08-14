@@ -6,6 +6,11 @@ set -e
 
 echo "🚀 Starting dotfiles installation..."
 
+# Set a writable temp directory for WSL compatibility
+# WSL sometimes has issues with /tmp permissions
+export TMPDIR="${HOME}/.tmp"
+mkdir -p "$TMPDIR"
+
 # Check for existing git config to avoid prompts
 if [[ -z "$CHEZMOI_USER_NAME" ]]; then
     CHEZMOI_USER_NAME=$(git config --global user.name 2>/dev/null || echo "${USER:-User}")
@@ -19,7 +24,7 @@ fi
 
 # Install chezmoi and initialize dotfiles in one command
 echo "📦 Installing chezmoi and initializing dotfiles..."
-bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply ryanlewis/dotfiles
+TMPDIR="$TMPDIR" bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply ryanlewis/dotfiles
 
 echo ""
 echo "✨ Dotfiles installation complete!"
