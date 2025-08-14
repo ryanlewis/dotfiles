@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Install Bun JavaScript runtime - runs once
 set -e
 
