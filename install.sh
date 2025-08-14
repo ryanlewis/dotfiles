@@ -6,13 +6,6 @@ set -e
 
 echo "🚀 Starting dotfiles installation..."
 
-# Install chezmoi if not present
-if ! command -v chezmoi &> /dev/null; then
-    echo "📦 Installing chezmoi..."
-    bash -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
-    export PATH="$HOME/.local/bin:$PATH"
-fi
-
 # Check for existing git config to avoid prompts
 if [[ -z "$CHEZMOI_USER_NAME" ]]; then
     CHEZMOI_USER_NAME=$(git config --global user.name 2>/dev/null || echo "${USER:-User}")
@@ -24,9 +17,9 @@ if [[ -z "$CHEZMOI_USER_EMAIL" ]]; then
     export CHEZMOI_USER_EMAIL
 fi
 
-# Initialize and apply dotfiles with chezmoi
-echo "🔧 Initializing dotfiles with chezmoi..."
-chezmoi init --apply ryanlewis/dotfiles
+# Install chezmoi and initialize dotfiles in one command
+echo "📦 Installing chezmoi and initializing dotfiles..."
+bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply ryanlewis/dotfiles
 
 echo ""
 echo "✨ Dotfiles installation complete!"
