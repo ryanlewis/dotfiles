@@ -327,7 +327,14 @@ if ! command -v tldr &> /dev/null; then
     
     if [[ -n "${TLDR_ARCH:-}" ]]; then
         # Download tldr binary directly (tealdeer implementation)
-        if wget -qO "$HOME/.local/bin/tldr" "https://github.com/dbrgn/tealdeer/releases/download/v${TLDR_VERSION}/tealdeer-linux-${TLDR_ARCH}" 2>/dev/null; then
+        # Fix: Correct filename format for tealdeer releases
+        if [[ "$ARCH" == "x86_64" ]]; then
+            TLDR_FILE="tealdeer-linux-x86_64-musl"
+        elif [[ "$ARCH" == "arm64" ]]; then
+            TLDR_FILE="tealdeer-linux-aarch64-musl"
+        fi
+        
+        if wget -qO "$HOME/.local/bin/tldr" "https://github.com/dbrgn/tealdeer/releases/download/v${TLDR_VERSION}/${TLDR_FILE}" 2>/dev/null; then
             chmod +x "$HOME/.local/bin/tldr"
             echo "✓ tldr installed successfully"
         else
@@ -359,11 +366,48 @@ if ! command -v broot &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install broot
     {{ else if eq .chezmoi.os "linux" -}}
-    # Broot requires cargo to build from source or use package manager
-    if command -v cargo &> /dev/null; then
-        cargo install --locked broot
-    else
-        echo "⚠️  broot requires cargo to install. Install Rust first or use a package manager."
+    BROOT_VERSION="1.44.2"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        BROOT_ARCH="x86_64-unknown-linux-musl"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        BROOT_ARCH="aarch64-unknown-linux-musl"
+    fi
+    
+    if [[ -n "${BROOT_ARCH:-}" ]]; then
+        wget -qO /tmp/broot.zip "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot_${BROOT_VERSION}.zip" 2>/dev/null || \
+        wget -qO /tmp/broot.zip "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot-v${BROOT_VERSION}-${BROOT_ARCH}.zip" 2>/dev/null
+        
+        if [[ -f /tmp/broot.zip ]]; then
+            unzip -qo /tmp/broot.zip -d /tmp 2>/dev/null || true
+            # Try to find the broot binary
+            if [[ -f "/tmp/${BROOT_ARCH}/broot" ]]; then
+                mv "/tmp/${BROOT_ARCH}/broot" "$HOME/.local/bin/"
+                chmod +x "$HOME/.local/bin/broot"
+                echo "✓ broot installed successfully"
+            elif [[ -f "/tmp/broot" ]]; then
+                mv "/tmp/broot" "$HOME/.local/bin/"
+                chmod +x "$HOME/.local/bin/broot"
+                echo "✓ broot installed successfully"
+            else
+                # Try downloading as tar.gz instead
+                wget -qO /tmp/broot.tar.gz "https://github.com/Canop/broot/releases/download/v${BROOT_VERSION}/broot-${BROOT_ARCH}.tar.gz" 2>/dev/null
+                if tar -xzf /tmp/broot.tar.gz -C /tmp 2>/dev/null; then
+                    if [[ -f "/tmp/broot" ]]; then
+                        mv "/tmp/broot" "$HOME/.local/bin/"
+                        chmod +x "$HOME/.local/bin/broot"
+                        echo "✓ broot installed successfully"
+                    else
+                        echo "⚠️  Failed to extract broot, skipping..."
+                    fi
+                    rm -f /tmp/broot.tar.gz
+                else
+                    echo "⚠️  Failed to download broot, skipping..."
+                fi
+            fi
+            rm -rf /tmp/broot.zip /tmp/${BROOT_ARCH} 2>/dev/null || true
+        else
+            echo "⚠️  Failed to download broot, skipping..."
+        fi
     fi
     {{ end -}}
 fi

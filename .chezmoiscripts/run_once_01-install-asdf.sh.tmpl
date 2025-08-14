@@ -5,13 +5,17 @@ set -e
 ASDF_VERSION="0.18.0"
 
 # Skip if asdf is already installed and working
-if command -v asdf &> /dev/null; then
-    CURRENT_VERSION=$(asdf --version 2>/dev/null | cut -d' ' -f2 | sed 's/^v//')
-    if [[ "$CURRENT_VERSION" == "$ASDF_VERSION" ]]; then
-        echo "✓ asdf v$ASDF_VERSION already installed"
-        exit 0
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+    . "$HOME/.asdf/asdf.sh"
+    if command -v asdf &> /dev/null; then
+        CURRENT_VERSION=$(asdf --version 2>/dev/null | cut -d' ' -f2 | sed 's/^v//')
+        if [[ "$CURRENT_VERSION" == "$ASDF_VERSION" ]]; then
+            echo "✓ asdf v$ASDF_VERSION already installed"
+            exit 0
+        fi
+        echo "🔄 Upgrading asdf from v$CURRENT_VERSION to v$ASDF_VERSION..."
+        rm -rf "$HOME/.asdf"
     fi
-    echo "🔄 Upgrading asdf from v$CURRENT_VERSION to v$ASDF_VERSION..."
 fi
 
 echo "🔧 Installing asdf v$ASDF_VERSION..."
@@ -27,37 +31,11 @@ else
     exit 1
 fi
 {{ else if eq .chezmoi.os "linux" -}}
-# Linux - download binary
-echo "📥 Downloading asdf binary..."
+# Linux - install via git clone (standard method)
+echo "📥 Installing asdf via git..."
 
-# Ensure ~/.local/bin exists
-mkdir -p "$HOME/.local/bin"
-
-# Helper function to get architecture
-get_arch() {
-    local arch=$(uname -m)
-    case "$arch" in
-        x86_64) echo "linux-amd64" ;;
-        aarch64|arm64) echo "linux-arm64" ;;
-        armv7l) echo "linux-arm" ;;
-        *) echo "unsupported" ;;
-    esac
-}
-
-ARCH=$(get_arch)
-if [[ "$ARCH" == "unsupported" ]]; then
-    echo "❌ Unsupported architecture: $(uname -m)"
-    exit 1
-fi
-
-# Download and extract binary
-DOWNLOAD_URL="https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-${ARCH}.tar.gz"
-echo "📥 Downloading from: $DOWNLOAD_URL"
-wget -qO /tmp/asdf.tar.gz "$DOWNLOAD_URL"
-tar -xzf /tmp/asdf.tar.gz -C /tmp asdf
-mv /tmp/asdf "$HOME/.local/bin/asdf"
-chmod +x "$HOME/.local/bin/asdf"
-rm -rf /tmp/asdf.tar.gz
+# Clone asdf repository
+git clone https://github.com/asdf-vm/asdf.git "$HOME/.asdf" --branch v${ASDF_VERSION}
 
 # Install build dependencies for languages
 if command -v apt &> /dev/null; then
@@ -76,15 +54,13 @@ elif command -v pacman &> /dev/null; then
 fi
 {{ end -}}
 
-# Ensure ASDF_DATA_DIR directory exists (for backward compatibility)
+# Source asdf to make it available immediately
 export ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
-mkdir -p "$ASDF_DATA_DIR"
-mkdir -p "$ASDF_DATA_DIR/shims"
+. "$HOME/.asdf/asdf.sh"
 
 # Reshim if this is an upgrade
 if [[ -d "$ASDF_DATA_DIR/installs" ]]; then
     echo "🔄 Regenerating shims..."
-    export PATH="$HOME/.local/bin:$PATH"
     asdf reshim || true
 fi
 
