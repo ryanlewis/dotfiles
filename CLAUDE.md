@@ -104,8 +104,23 @@ chezmoi add ~/.config/fish/newfile.fish
 
 ### Fish Functions
 - Custom functions in `private_dot_config/private_fish/functions/`
-- FZF integration functions prefixed with `f` (fcd, fgit, fgrep)
+- FZF integration functions prefixed with `f` (fcd, fgit, fgrep, fopen, fkill)
 - Functions automatically loaded by Fish on startup
+
+#### Key Fish Functions Reference
+- **dotfiles** - Manage dotfiles (edit, diff, apply, push, pull, status)
+- **tools** - Display all available tools with descriptions (--interactive, --table)
+- **yank** - Copy to clipboard via OSC 52 (works over SSH)
+- **ta** - Tmux session manager (attach or create)
+- **mkcd** - Make directory and cd into it
+- **backup** - Create timestamped backup
+- **extract** - Extract any archive format
+- **update** - Update system packages
+- **ports** - Show listening ports
+- **myip** - Display IP addresses
+- **asdf-setup** - Install asdf plugins
+- **asdf-install-latest** - Install latest versions
+- **asdf-update** - Update all plugins
 
 ### Configuration Files
 - Fish config: `private_dot_config/private_fish/config.fish.tmpl`
@@ -152,3 +167,52 @@ This repository replaces traditional Unix tools with modern alternatives:
 ### Known Issues
 - Python/Miniconda installation may fail with "Terms of Service" error - the script continues without Python
 - On Ubuntu, some tools have different names (bat→batcat, fd→fdfind) - handled via aliases
+
+## Complete Tools Reference
+
+### Installed Command-Line Tools
+All tools are automatically installed via `.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl`:
+
+#### Core Tools
+- **chezmoi** - Dotfiles manager
+- **fish** - Modern shell with autosuggestions
+- **asdf** - Version manager for Node.js, Python, Go
+
+#### Modern CLI Replacements
+- **eza** → ls (with icons, git info)
+- **bat** → cat (syntax highlighting)
+- **fd** → find (simpler, faster)
+- **ripgrep (rg)** → grep (blazing fast)
+- **zoxide (z)** → cd (learns your directories)
+- **btop** → top (beautiful UI)
+- **duf** → df (friendly disk usage)
+- **dust** → du (intuitive disk analyzer)
+
+#### Development Tools
+- **fzf** - Fuzzy finder (Ctrl+R, Ctrl+T, Alt+C)
+- **starship** - Cross-shell prompt with git info
+- **atuin** - Better shell history with search
+- **delta** - Beautiful git diffs
+- **lazygit (lg)** - Git TUI
+- **gh** - GitHub CLI
+- **httpie (https)** - Friendly HTTP client
+- **jq** - JSON processor
+- **just** - Modern make/task runner
+- **gum** - Pretty shell scripts
+- **direnv** - Auto-load .envrc files
+- **broot** - Interactive tree navigation
+- **tldr** - Simplified man pages
+
+#### Kubernetes Tools
+- **kubectl** - Kubernetes CLI
+- **kubectx** - Switch between contexts
+- **kubens** - Switch between namespaces
+
+#### Language Runtimes (via asdf)
+- **Node.js** 22.11.0 (LTS)
+- **Python** (Miniconda3-latest)
+- **Go** 1.24.6
+- **Bun** (via official installer, not asdf)
+
+### Testing & Validation
+Run `./test.sh` to verify all tools are installed correctly. Use `./test.sh --minimal` for faster testing without language runtime checks.

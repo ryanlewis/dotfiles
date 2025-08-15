@@ -74,6 +74,10 @@ The installation process automatically sets up:
    - `btop` - Better `top`
    - `duf` - Better `df`
    - `dust` - Better `du`
+   - `gum` - Pretty shell scripts
+   - `kubectl` - Kubernetes CLI
+   - `kubectx` - K8s context switcher
+   - `kubens` - K8s namespace switcher
    - And more...
 5. **Language runtimes** (optional):
    - Node.js (via asdf)
@@ -212,6 +216,14 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - Navigate directories efficiently
 - **[tldr](https://tldr.sh/)** - Simplified man pages
   - Quick command examples
+
+#### Container & Kubernetes Tools
+- **[kubectl](https://kubernetes.io/docs/reference/kubectl/)** - Kubernetes CLI
+  - Manage Kubernetes clusters
+- **[kubectx](https://github.com/ahmetb/kubectx)** - Context switcher
+  - Quickly switch between Kubernetes contexts
+- **[kubens](https://github.com/ahmetb/kubectx)** - Namespace switcher
+  - Quickly switch between Kubernetes namespaces
 
 ### Version Management with asdf
 
@@ -461,7 +473,7 @@ Last updated: January 2025
 
 ### CLI Tools
 - delta: 0.18.2
-- dust: 1.2.2
+- dust: 1.1.1
 - Other tools: Latest available from package managers
 
 ### Programming Languages

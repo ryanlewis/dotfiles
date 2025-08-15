@@ -58,7 +58,11 @@ function tools --description "Show TLDR of all available commands and tools"
         "Dev:🌳 broot:Interactive tree navigation" \
         "Dev:📖 tldr:Simplified man pages" \
         "Dev:✨ starship:Customizable prompt" \
-        "Dev:📜 atuin:Better shell history (Ctrl+R)"
+        "Dev:📜 atuin:Better shell history (Ctrl+R)" \
+        "Dev:☸️  kubectl:Kubernetes CLI" \
+        "Dev:🔄 kubectx:Switch K8s contexts" \
+        "Dev:📦 kubens:Switch K8s namespaces" \
+        "Tmux:🖥️  ta:Tmux session manager"
     
     # Interactive mode with gum filter
     if test "$interactive" = "true"
@@ -98,7 +102,7 @@ function tools --description "Show TLDR of all available commands and tools"
         echo ""
         
         # Display each category as a table
-        set -l categories "Core" "Replace" "Custom" "FZF" "Dev"
+        set -l categories "Core" "Replace" "Custom" "FZF" "Dev" "Tmux"
         
         for category in $categories
             # Category header with color
@@ -113,6 +117,8 @@ function tools --description "Show TLDR of all available commands and tools"
                     echo (set_color cyan)"━━━ 🔍 FZF-Powered Tools ━━━"(set_color normal)
                 case "Dev"
                     echo (set_color yellow)"━━━ 🚀 Development Tools ━━━"(set_color normal)
+                case "Tmux"
+                    echo (set_color white)"━━━ 🖥️  Tmux Helper ━━━"(set_color normal)
             end
             
             # Build CSV lines for this category
@@ -148,76 +154,90 @@ function tools --description "Show TLDR of all available commands and tools"
         return 0
     end
     
-    # Default colorful output
-    # Fancy header
-    echo ""
-    echo (set_color brred)"╔═══════════════════════════════════════════════╗"(set_color normal)
-    echo (set_color brred)"║      🛠️   Available Tools & Commands  🛠️      ║"(set_color normal)
-    echo (set_color brred)"╚═══════════════════════════════════════════════╝"(set_color normal)
-    
-    echo ""
-    
-    # Core Commands
-    echo (set_color blue)"━━━ 🏠 Core Commands ━━━"(set_color normal)
-    echo (set_color brblue)"• chezmoi"(set_color normal)" - Dotfiles manager"
-    echo (set_color brblue)"• fish"(set_color normal)"    - Modern shell with autosuggestions"
-    echo (set_color brblue)"• asdf"(set_color normal)"    - Version manager for Node/Python/Go"
-    echo ""
-    
-    # Modern CLI Replacements
-    echo (set_color green)"━━━ 🔄 Modern CLI Replacements ━━━"(set_color normal)
-    echo (set_color brgreen)"• eza"(set_color normal)"  → ls   "(set_color brblack)"(with icons, git info)"(set_color normal)
-    echo (set_color brgreen)"• bat"(set_color normal)"  → cat  "(set_color brblack)"(syntax highlighting)"(set_color normal)
-    echo (set_color brgreen)"• fd"(set_color normal)"   → find "(set_color brblack)"(simpler, faster)"(set_color normal)
-    echo (set_color brgreen)"• rg"(set_color normal)"   → grep "(set_color brblack)"(ripgrep, super fast)"(set_color normal)
-    echo (set_color brgreen)"• z"(set_color normal)"    → cd   "(set_color brblack)"(zoxide, learns your dirs)"(set_color normal)
-    echo (set_color brgreen)"• btop"(set_color normal)" → top  "(set_color brblack)"(beautiful UI)"(set_color normal)
-    echo (set_color brgreen)"• duf"(set_color normal)"  → df   "(set_color brblack)"(friendly disk usage)"(set_color normal)
-    echo (set_color brgreen)"• dust"(set_color normal)" → du   "(set_color brblack)"(intuitive disk analyzer)"(set_color normal)
-    echo ""
-    
-    # Custom Fish Functions
-    echo (set_color magenta)"━━━ ⚡ Custom Fish Functions ━━━"(set_color normal)
-    echo (set_color brmagenta)"• mkcd"(set_color normal)"    - Make dir and enter it"
-    echo (set_color brmagenta)"• backup"(set_color normal)"  - Timestamp backup files"
-    echo (set_color brmagenta)"• extract"(set_color normal)" - Extract any archive"
-    echo (set_color brmagenta)"• update"(set_color normal)"  - Update system packages"
-    echo (set_color brmagenta)"• ports"(set_color normal)"   - Show listening ports"
-    echo (set_color brmagenta)"• myip"(set_color normal)"    - Show IP addresses"
-    echo (set_color brmagenta)"• yank"(set_color normal)"    - Copy to clipboard "(set_color yellow)"(works over SSH!)"(set_color normal)
-    echo (set_color brmagenta)"• dotfiles"(set_color normal)" - Manage dotfiles easily"
-    echo (set_color brmagenta)"• tools"(set_color normal)"   - Show this help"
-    echo ""
-    
-    # FZF-Powered
-    echo (set_color cyan)"━━━ 🔍 FZF-Powered (fuzzy search) ━━━"(set_color normal)
-    echo (set_color brcyan)"• fcd"(set_color normal)"   - Fuzzy change directory"
-    echo (set_color brcyan)"• fopen"(set_color normal)" - Fuzzy open files"
-    echo (set_color brcyan)"• fkill"(set_color normal)" - Fuzzy kill processes"
-    echo (set_color brcyan)"• fgrep"(set_color normal)" - Fuzzy grep with preview"
-    echo (set_color brcyan)"• fgit"(set_color normal)"  - Interactive git operations"
-    echo ""
-    
-    # Dev Tools
-    echo (set_color yellow)"━━━ 🚀 Development Tools ━━━"(set_color normal)
-    echo (set_color bryellow)"• lg"(set_color normal)"       - Lazygit (git TUI)"
-    echo (set_color bryellow)"• delta"(set_color normal)"    - Better git diffs"
-    echo (set_color bryellow)"• gh"(set_color normal)"       - GitHub CLI"
-    echo (set_color bryellow)"• https"(set_color normal)"    - HTTPie (friendly curl)"
-    echo (set_color bryellow)"• jq"(set_color normal)"       - JSON processor"
-    echo (set_color bryellow)"• just"(set_color normal)"     - Modern make"
-    echo (set_color bryellow)"• gum"(set_color normal)"      - Pretty shell scripts"
-    echo (set_color bryellow)"• direnv"(set_color normal)"   - Auto-load .envrc"
-    echo (set_color bryellow)"• broot"(set_color normal)"    - Better tree"
-    echo (set_color bryellow)"• tldr"(set_color normal)"     - Simple man pages"
-    echo (set_color bryellow)"• starship"(set_color normal)" - Pretty prompt"
-    echo (set_color bryellow)"• atuin"(set_color normal)"    - Better shell history"
-    echo ""
-    
-    # Footer tips
-    echo (set_color brblack)"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"(set_color normal)
-    echo (set_color brblack)"💡 Tips:"(set_color normal)
-    echo (set_color brblack)"  • Use 'tools --interactive' for search mode"(set_color normal)
-    echo (set_color brblack)"  • Use 'tools --table' for table view"(set_color normal)
-    echo (set_color brblack)"  • Most commands have --help flags"(set_color normal)
+    # Default colorful output - pipe through bat for paging
+    begin
+        # Fancy header
+        echo ""
+        echo (set_color brred)"╔═══════════════════════════════════════════════╗"(set_color normal)
+        echo (set_color brred)"║      🛠️   Available Tools & Commands  🛠️      ║"(set_color normal)
+        echo (set_color brred)"╚═══════════════════════════════════════════════╝"(set_color normal)
+        
+        echo ""
+        
+        # Core Commands
+        echo (set_color blue)"━━━ 🏠 Core Commands ━━━"(set_color normal)
+        echo (set_color brblue)"• chezmoi"(set_color normal)" - Dotfiles manager"
+        echo (set_color brblue)"• fish"(set_color normal)"    - Modern shell with autosuggestions"
+        echo (set_color brblue)"• asdf"(set_color normal)"    - Version manager for Node/Python/Go"
+        echo ""
+        
+        # Modern CLI Replacements
+        echo (set_color green)"━━━ 🔄 Modern CLI Replacements ━━━"(set_color normal)
+        echo (set_color brgreen)"• eza"(set_color normal)"  → ls   "(set_color brblack)"(with icons, git info)"(set_color normal)
+        echo (set_color brgreen)"• bat"(set_color normal)"  → cat  "(set_color brblack)"(syntax highlighting)"(set_color normal)
+        echo (set_color brgreen)"• fd"(set_color normal)"   → find "(set_color brblack)"(simpler, faster)"(set_color normal)
+        echo (set_color brgreen)"• rg"(set_color normal)"   → grep "(set_color brblack)"(ripgrep, super fast)"(set_color normal)
+        echo (set_color brgreen)"• z"(set_color normal)"    → cd   "(set_color brblack)"(zoxide, learns your dirs)"(set_color normal)
+        echo (set_color brgreen)"• btop"(set_color normal)" → top  "(set_color brblack)"(beautiful UI)"(set_color normal)
+        echo (set_color brgreen)"• duf"(set_color normal)"  → df   "(set_color brblack)"(friendly disk usage)"(set_color normal)
+        echo (set_color brgreen)"• dust"(set_color normal)" → du   "(set_color brblack)"(intuitive disk analyzer)"(set_color normal)
+        echo ""
+        
+        # Custom Fish Functions
+        echo (set_color magenta)"━━━ ⚡ Custom Fish Functions ━━━"(set_color normal)
+        echo (set_color brmagenta)"• mkcd"(set_color normal)"    - Make dir and enter it"
+        echo (set_color brmagenta)"• backup"(set_color normal)"  - Timestamp backup files"
+        echo (set_color brmagenta)"• extract"(set_color normal)" - Extract any archive"
+        echo (set_color brmagenta)"• update"(set_color normal)"  - Update system packages"
+        echo (set_color brmagenta)"• ports"(set_color normal)"   - Show listening ports"
+        echo (set_color brmagenta)"• myip"(set_color normal)"    - Show IP addresses"
+        echo (set_color brmagenta)"• yank"(set_color normal)"    - Copy to clipboard "(set_color yellow)"(works over SSH!)"(set_color normal)
+        echo (set_color brmagenta)"• dotfiles"(set_color normal)" - Manage dotfiles easily"
+        echo (set_color brmagenta)"• tools"(set_color normal)"   - Show this help"
+        echo ""
+        
+        # FZF-Powered
+        echo (set_color cyan)"━━━ 🔍 FZF-Powered (fuzzy search) ━━━"(set_color normal)
+        echo (set_color brcyan)"• fcd"(set_color normal)"   - Fuzzy change directory"
+        echo (set_color brcyan)"• fopen"(set_color normal)" - Fuzzy open files"
+        echo (set_color brcyan)"• fkill"(set_color normal)" - Fuzzy kill processes"
+        echo (set_color brcyan)"• fgrep"(set_color normal)" - Fuzzy grep with preview"
+        echo (set_color brcyan)"• fgit"(set_color normal)"  - Interactive git operations"
+        echo ""
+        
+        # Dev Tools
+        echo (set_color yellow)"━━━ 🚀 Development Tools ━━━"(set_color normal)
+        echo (set_color bryellow)"• lg"(set_color normal)"       - Lazygit (git TUI)"
+        echo (set_color bryellow)"• delta"(set_color normal)"    - Better git diffs"
+        echo (set_color bryellow)"• gh"(set_color normal)"       - GitHub CLI"
+        echo (set_color bryellow)"• https"(set_color normal)"    - HTTPie (friendly curl)"
+        echo (set_color bryellow)"• jq"(set_color normal)"       - JSON processor"
+        echo (set_color bryellow)"• just"(set_color normal)"     - Modern make"
+        echo (set_color bryellow)"• gum"(set_color normal)"      - Pretty shell scripts"
+        echo (set_color bryellow)"• direnv"(set_color normal)"   - Auto-load .envrc"
+        echo (set_color bryellow)"• broot"(set_color normal)"    - Better tree"
+        echo (set_color bryellow)"• tldr"(set_color normal)"     - Simple man pages"
+        echo (set_color bryellow)"• starship"(set_color normal)" - Pretty prompt"
+        echo (set_color bryellow)"• atuin"(set_color normal)"    - Better shell history"
+        echo ""
+        
+        # Kubernetes Tools
+        echo (set_color red)"━━━ ☸️  Kubernetes Tools ━━━"(set_color normal)
+        echo (set_color brred)"• kubectl"(set_color normal)"  - Kubernetes CLI"
+        echo (set_color brred)"• kubectx"(set_color normal)" - Switch contexts easily"
+        echo (set_color brred)"• kubens"(set_color normal)"  - Switch namespaces"
+        echo ""
+        
+        # Tmux
+        echo (set_color white)"━━━ 🖥️  Tmux Helper ━━━"(set_color normal)
+        echo (set_color brwhite)"• ta"(set_color normal)" - Tmux session manager "(set_color brblack)"(attach/create)"(set_color normal)
+        echo ""
+        
+        # Footer tips
+        echo (set_color brblack)"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"(set_color normal)
+        echo (set_color brblack)"💡 Tips:"(set_color normal)
+        echo (set_color brblack)"  • Use 'tools --interactive' for search mode"(set_color normal)
+        echo (set_color brblack)"  • Use 'tools --table' for table view"(set_color normal)
+        echo (set_color brblack)"  • Most commands have --help flags"(set_color normal)
+    end | bat --style=plain --paging=always
 end

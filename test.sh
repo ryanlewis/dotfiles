@@ -4,6 +4,18 @@
 # Don't exit on first error - we want to see all test results
 # set -e
 
+# Ensure PATH includes common installation directories
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+
+# Source asdf if available
+if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
+    . "$HOME/.asdf/asdf.sh"
+elif [[ -f "/opt/homebrew/opt/asdf/libexec/asdf.sh" ]]; then
+    . "/opt/homebrew/opt/asdf/libexec/asdf.sh"
+elif [[ -f "/usr/local/opt/asdf/libexec/asdf.sh" ]]; then
+    . "/usr/local/opt/asdf/libexec/asdf.sh"
+fi
+
 # Parse arguments
 MINIMAL_MODE=false
 
@@ -113,6 +125,7 @@ check_command atuin
 check_command starship
 check_command direnv
 check_command just
+check_command gum
 
 echo ""
 echo "☸️  Checking Kubernetes tools..."
@@ -138,6 +151,8 @@ check_fish_function asdf-install-latest
 check_fish_function asdf-update
 check_fish_function ta
 check_fish_function fish_greeting
+check_fish_function dotfiles
+check_fish_function yank
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
     echo ""

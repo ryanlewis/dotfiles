@@ -5,6 +5,14 @@ set -e
 ASDF_VERSION="0.18.0"
 
 # Skip if asdf is already installed and working
+{{ if eq .chezmoi.os "darwin" -}}
+# Check for Homebrew installation
+if command -v asdf &> /dev/null; then
+    CURRENT_VERSION=$(asdf --version 2>/dev/null | cut -d' ' -f2 | sed 's/^v//')
+    echo "✓ asdf v$CURRENT_VERSION already installed via Homebrew"
+    exit 0
+fi
+{{ else -}}
 if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
     . "$HOME/.asdf/asdf.sh"
     if command -v asdf &> /dev/null; then
@@ -17,6 +25,7 @@ if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
         rm -rf "$HOME/.asdf"
     fi
 fi
+{{ end -}}
 
 echo "🔧 Installing asdf v$ASDF_VERSION..."
 
@@ -56,7 +65,18 @@ fi
 
 # Source asdf to make it available immediately
 export ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
+{{ if eq .chezmoi.os "darwin" -}}
+# On macOS with Homebrew, asdf is installed to /opt/homebrew
+if [[ -f "/opt/homebrew/opt/asdf/libexec/asdf.sh" ]]; then
+    . "/opt/homebrew/opt/asdf/libexec/asdf.sh"
+elif [[ -f "/usr/local/opt/asdf/libexec/asdf.sh" ]]; then
+    . "/usr/local/opt/asdf/libexec/asdf.sh"
+else
+    echo "⚠️  Warning: Could not find asdf.sh after Homebrew installation"
+fi
+{{ else -}}
 . "$HOME/.asdf/asdf.sh"
+{{ end -}}
 
 # Reshim if this is an upgrade
 if [[ -d "$ASDF_DATA_DIR/installs" ]]; then
