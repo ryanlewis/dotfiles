@@ -239,7 +239,18 @@ if ! command -v direnv &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install direnv
     {{ else if eq .chezmoi.os "linux" -}}
-    curl -sfL https://direnv.net/install.sh | bash -s -- -b "$HOME/.local/bin"
+    DIRENV_VERSION="2.35.0"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        DIRENV_ARCH="linux-amd64"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        DIRENV_ARCH="linux-arm64"
+    fi
+    
+    if [[ -n "${DIRENV_ARCH:-}" ]]; then
+        wget -qO "$HOME/.local/bin/direnv" "https://github.com/direnv/direnv/releases/download/v${DIRENV_VERSION}/direnv.${DIRENV_ARCH}" 2>/dev/null || \
+        curl -sfL "https://github.com/direnv/direnv/releases/download/v${DIRENV_VERSION}/direnv.${DIRENV_ARCH}" -o "$HOME/.local/bin/direnv"
+        chmod +x "$HOME/.local/bin/direnv"
+    fi
     {{ end -}}
 fi
 
