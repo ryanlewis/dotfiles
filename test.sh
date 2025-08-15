@@ -5,7 +5,7 @@
 # set -e
 
 # Ensure PATH includes common installation directories
-export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
 # Source asdf if available
 if [[ -f "$HOME/.asdf/asdf.sh" ]]; then

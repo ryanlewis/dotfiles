@@ -39,12 +39,14 @@ jobs:
         which chezmoi || echo "chezmoi not in PATH"
         ls -la ~/bin/ || echo "~/bin does not exist"
         ls -la ~/.local/bin/ || echo "~/.local/bin does not exist"
+        ls -la ./bin/ || echo "./bin does not exist"
+        find . -name chezmoi -type f 2>/dev/null || echo "chezmoi not found"
         echo "PATH is: $PATH"
         
     - name: Run test suite
       run: |
-        export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-        fish -c "export PATH=\"$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
+        export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
         
   test-macos:
     runs-on: macos-15
@@ -74,9 +76,11 @@ jobs:
         which chezmoi || echo "chezmoi not in PATH"
         ls -la ~/bin/ || echo "~/bin does not exist"
         ls -la ~/.local/bin/ || echo "~/.local/bin does not exist"
+        ls -la ./bin/ || echo "./bin does not exist"
+        find . -name chezmoi -type f 2>/dev/null || echo "chezmoi not found"
         echo "PATH is: $PATH"
         
     - name: Run test suite
       run: |
-        export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
-        fish -c "export PATH=\"$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
+        export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
