@@ -35,10 +35,16 @@ jobs:
     - name: Verify installation
       run: |
         fish -c "echo 'Fish shell is working!'"
+        echo "Checking for chezmoi:"
+        which chezmoi || echo "chezmoi not in PATH"
+        ls -la ~/bin/ || echo "~/bin does not exist"
+        ls -la ~/.local/bin/ || echo "~/.local/bin does not exist"
+        echo "PATH is: $PATH"
         
     - name: Run test suite
       run: |
-        fish -c "./test.sh"
+        export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
         
   test-macos:
     runs-on: macos-15
@@ -64,7 +70,13 @@ jobs:
     - name: Verify installation
       run: |
         fish -c "echo 'Fish shell is working!'"
+        echo "Checking for chezmoi:"
+        which chezmoi || echo "chezmoi not in PATH"
+        ls -la ~/bin/ || echo "~/bin does not exist"
+        ls -la ~/.local/bin/ || echo "~/.local/bin does not exist"
+        echo "PATH is: $PATH"
         
     - name: Run test suite
       run: |
-        fish -c "./test.sh"
+        export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
