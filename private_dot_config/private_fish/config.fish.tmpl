@@ -18,16 +18,17 @@ set fish_cursor_visual block
 eval ({{ .brewPrefix }}/bin/brew shellenv)
 {{- end }}
 
-# asdf version manager (v0.16+)
+# asdf version manager (binary version)
 # Set ASDF_DATA_DIR for backward compatibility with existing installations
 set -gx ASDF_DATA_DIR "$HOME/.asdf"
 
-# Add asdf shims to PATH (required for v0.16+)
+# Add asdf shims to PATH (required for all versions)
 if test -d "$ASDF_DATA_DIR/shims"
     set -gx PATH "$ASDF_DATA_DIR/shims" $PATH
 end
 
-# asdf completions for Fish (if they exist)
+# Note: asdf binary version doesn't provide Fish completions yet
+# Check if legacy completions exist from previous installation
 if test -e "$ASDF_DATA_DIR/completions/asdf.fish"
     source "$ASDF_DATA_DIR/completions/asdf.fish"
 end
