@@ -211,7 +211,7 @@ All tools are automatically installed via `.chezmoiscripts/run_onchange_02-insta
 #### Language Runtimes (via asdf)
 - **Node.js** 22.11.0 (LTS)
 - **Python** (Miniconda3-latest)
-- **Go** 1.24.6
+- **Go** 1.25.1
 - **Bun** (via official installer, not asdf)
 
 ### Testing & Validation

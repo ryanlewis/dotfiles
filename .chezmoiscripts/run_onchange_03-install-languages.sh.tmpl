@@ -15,15 +15,17 @@ if [[ "${CI:-}" == "true" ]]; then
     exit 0
 fi
 
+# Ensure ~/.local/bin is in PATH for asdf binary
+export PATH="$HOME/.local/bin:$PATH"
+
 # Ensure asdf is available
-if [[ ! -f "$HOME/.asdf/asdf.sh" ]]; then
+if ! command -v asdf &> /dev/null; then
     echo "⚠️  asdf not found, skipping language installation"
     exit 0
 fi
 
-# Source asdf
-export ASDF_DIR="$HOME/.asdf"
-. "$HOME/.asdf/asdf.sh"
+# Set ASDF_DATA_DIR for compatibility
+export ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
 
 echo "🚀 Setting up programming language runtimes..."
 
@@ -43,7 +45,7 @@ if [[ -f "$HOME/.tool-versions" ]]; then
     NODE_VERSION=$(grep "^nodejs " "$HOME/.tool-versions" | awk '{print $2}')
     if [[ -n "$NODE_VERSION" ]]; then
         asdf install nodejs "${NODE_VERSION}" || echo "⚠️  Node.js installation failed, continuing..."
-        asdf global nodejs "${NODE_VERSION}"
+        asdf set nodejs "${NODE_VERSION}"
     fi
 fi
 
@@ -55,7 +57,7 @@ if [[ -f "$HOME/.tool-versions" ]]; then
     if [[ -n "$PYTHON_VERSION" ]]; then
         # Note: Python installation may fail due to Conda ToS - that's OK
         asdf install python "${PYTHON_VERSION}" 2>/dev/null || echo "⚠️  Python installation failed (likely Conda ToS issue), continuing..."
-        asdf global python "${PYTHON_VERSION}" 2>/dev/null || true
+        asdf set python "${PYTHON_VERSION}" 2>/dev/null || true
     fi
 fi
 
@@ -66,7 +68,7 @@ if [[ -f "$HOME/.tool-versions" ]]; then
     GO_VERSION=$(grep "^golang " "$HOME/.tool-versions" | awk '{print $2}')
     if [[ -n "$GO_VERSION" ]]; then
         asdf install golang "${GO_VERSION}" || echo "⚠️  Go installation failed, continuing..."
-        asdf global golang "${GO_VERSION}"
+        asdf set golang "${GO_VERSION}"
     fi
 fi
 
