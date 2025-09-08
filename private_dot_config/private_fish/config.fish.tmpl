@@ -1,7 +1,22 @@
 # Fish Shell Configuration
 # Cross-platform configuration with OS-specific settings
 
-# Universal PATH additions
+# Set a clean default PATH first to avoid duplicates
+set -gx PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
+echo $PATH
+
+# Add snap and games paths on Linux
+{{- if eq .chezmoi.os "linux" }}
+if test -d /snap/bin
+    set -gx PATH $PATH /snap/bin
+end
+if test -d /usr/games
+    set -gx PATH $PATH /usr/games /usr/local/games
+end
+{{- end }}
+
+# Universal PATH additions (prepend for priority)
 set -gx PATH $HOME/.local/bin $HOME/.claude/local $HOME/.bun/bin $PATH
 
 # Enable vi mode
@@ -18,39 +33,23 @@ set fish_cursor_visual block
 eval ({{ .brewPrefix }}/bin/brew shellenv)
 {{- end }}
 
-# asdf version manager (binary version)
-# Set ASDF_DATA_DIR for backward compatibility with existing installations
-set -gx ASDF_DATA_DIR "$HOME/.asdf"
-
-# Add asdf shims to PATH (required for all versions)
-if test -d "$ASDF_DATA_DIR/shims"
-    set -gx PATH "$ASDF_DATA_DIR/shims" $PATH
+# ASDF configuration code
+if test -z $ASDF_DATA_DIR
+    set _asdf_shims "$HOME/.asdf/shims"
+else
+    set _asdf_shims "$ASDF_DATA_DIR/shims"
 end
 
-# Note: asdf binary version doesn't provide Fish completions yet
-# Check if legacy completions exist from previous installation
-if test -e "$ASDF_DATA_DIR/completions/asdf.fish"
-    source "$ASDF_DATA_DIR/completions/asdf.fish"
+# Do not use fish_add_path (added in Fish 3.2) because it
+# potentially changes the order of items in PATH
+if not contains $_asdf_shims $PATH
+    set -gx --prepend PATH $_asdf_shims
 end
+set --erase _asdf_shims
 
 # asdf Go environment setup (if plugin installed)
 if test -e "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
     source "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
-end
-
-# Set Go environment variables for all shells (not just interactive)
-if type -q go; and type -q asdf
-    set -l real_go_path (asdf which go ^/dev/null)
-    if test -n "$real_go_path"
-        # GOROOT is two directories up from the real go binary (go/bin/go)
-        set -gx GOROOT (dirname (dirname "$real_go_path"))
-        # Standard Go paths
-        set -gx GOPATH "$HOME/go"
-        # Add GOPATH/bin to PATH if not already there
-        if not contains "$GOPATH/bin" $PATH
-            set -gx PATH "$GOPATH/bin" $PATH
-        end
-    end
 end
 
 # zoxide - smarter cd command
@@ -101,7 +100,6 @@ end
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 {{- else if eq .chezmoi.os "linux" }}
 # Linux specific paths
-# System Go removed - using asdf-managed Go instead
 {{- end }}
 
 # Editor configuration
