@@ -101,7 +101,7 @@ end
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 {{- else if eq .chezmoi.os "linux" }}
 # Linux specific paths
-set -gx PATH /usr/local/go/bin $PATH
+# System Go removed - using asdf-managed Go instead
 {{- end }}
 
 # Editor configuration
