@@ -515,7 +515,7 @@ if ! command -v gh &> /dev/null; then
         sudo pacman -S --noconfirm github-cli
     else
         # Binary installation fallback
-        GH_VERSION="2.78.0"
+        GH_VERSION="2.79.0"
         if [[ "$ARCH" == "x86_64" ]]; then
             GH_ARCH="linux_amd64"
         elif [[ "$ARCH" == "arm64" ]]; then
