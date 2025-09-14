@@ -377,7 +377,7 @@ if ! command -v broot &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install broot
     {{ else if eq .chezmoi.os "linux" -}}
-    BROOT_VERSION="1.48.0"
+    BROOT_VERSION="1.49.0"
     if [[ "$ARCH" == "x86_64" ]]; then
         BROOT_ARCH="x86_64-unknown-linux-musl"
     elif [[ "$ARCH" == "arm64" ]]; then
