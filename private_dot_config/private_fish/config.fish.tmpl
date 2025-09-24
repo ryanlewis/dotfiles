@@ -38,6 +38,15 @@ if type -q mise
     mise activate fish | source
 end
 
+# Set Java environment variables for all shells (if Java is installed via asdf)
+if type -q java; and type -q asdf
+    set -l real_java_path (asdf which java ^/dev/null)
+    if test -n "$real_java_path"
+        # JAVA_HOME is two directories up from the real java binary (bin/java)
+        set -gx JAVA_HOME (dirname (dirname "$real_java_path"))
+    end
+end
+
 # zoxide - smarter cd command
 if type -q zoxide
     zoxide init fish | source

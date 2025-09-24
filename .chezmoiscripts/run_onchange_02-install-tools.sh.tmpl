@@ -163,4 +163,22 @@ if ! command -v broot &> /dev/null; then
     {{ end -}}
 fi
 
+# Install biome (via npm)
+if ! command -v biome &> /dev/null; then
+    echo "🧹 Installing biome..."
+    if command -v npm &> /dev/null; then
+        npm install --global @biomejs/biome
+    else
+        echo "⚠️  npm not found, skipping biome installation. Install Node.js first."
+    fi
+fi
+
+# Install ktlint (macOS only)
+{{ if eq .chezmoi.os "darwin" -}}
+if ! command -v ktlint &> /dev/null; then
+    echo "🅺 Installing ktlint..."
+    brew install ktlint
+fi
+{{ end -}}
+
 echo "✓ All non-aqua tools installed/updated successfully"
