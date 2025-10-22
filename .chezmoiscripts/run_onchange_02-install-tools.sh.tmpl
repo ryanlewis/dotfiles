@@ -429,7 +429,7 @@ if ! command -v atuin &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install atuin
     {{ else if eq .chezmoi.os "linux" -}}
-    ATUIN_VERSION="18.8.0"
+    ATUIN_VERSION="18.10.0"
     if [[ "$ARCH" == "x86_64" ]]; then
         ATUIN_ARCH="x86_64-unknown-linux-gnu"
     elif [[ "$ARCH" == "arm64" ]]; then
