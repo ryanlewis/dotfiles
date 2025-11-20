@@ -306,7 +306,7 @@ if ! command -v lazygit &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install lazygit
     {{ else if eq .chezmoi.os "linux" -}}
-    LAZYGIT_VERSION="0.55.1"
+    LAZYGIT_VERSION="0.56.0"
     if [[ "$ARCH" == "x86_64" ]]; then
         LAZYGIT_ARCH="Linux_x86_64"
     elif [[ "$ARCH" == "arm64" ]]; then
