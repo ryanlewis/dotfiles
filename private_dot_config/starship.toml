@@ -1,6 +1,10 @@
 # Starship prompt configuration
 # https://starship.rs/config/
 
+# Timeout for commands executed by starship (in milliseconds)
+# Default is 500ms which can timeout on large repos
+command_timeout = 1000
+
 # Format of the prompt
 format = """
 $username\
@@ -41,8 +45,8 @@ $status\
 $shell\
 $character"""
 
-# Wait 10 milliseconds for starship to check files
-scan_timeout = 10
+# Wait 30 milliseconds for starship to check files
+scan_timeout = 30
 
 # Disable the blank line at the start of the prompt
 add_newline = false

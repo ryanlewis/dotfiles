@@ -8,7 +8,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Skip if mise is already installed and working
 if command -v mise &> /dev/null; then
-    CURRENT_VERSION=$(mise --version 2>/dev/null | grep -oP 'mise \K[0-9.]+' || echo "")
+    CURRENT_VERSION=$(mise --version 2>/dev/null | awk '{print $2}' || echo "")
     if [[ -n "$CURRENT_VERSION" ]]; then
         echo "✓ mise v$CURRENT_VERSION already installed"
         exit 0
@@ -22,7 +22,7 @@ curl https://mise.run | sh
 
 # Verify installation
 if command -v mise &> /dev/null; then
-    INSTALLED_VERSION=$(mise --version | grep -oP 'mise \K[0-9.]+')
+    INSTALLED_VERSION=$(mise --version | awk '{print $2}')
     echo "✓ mise v$INSTALLED_VERSION installed successfully"
 else
     echo "❌ Failed to install mise"

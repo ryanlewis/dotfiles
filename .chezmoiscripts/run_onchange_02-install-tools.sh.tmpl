@@ -173,6 +173,14 @@ if ! command -v biome &> /dev/null; then
     fi
 fi
 
+# Install eza (macOS only - Linux uses mise aqua)
+{{ if eq .chezmoi.os "darwin" -}}
+if ! command -v eza &> /dev/null; then
+    echo "🦎 Installing eza..."
+    brew install eza
+fi
+{{ end -}}
+
 # Install ktlint (macOS only)
 {{ if eq .chezmoi.os "darwin" -}}
 if ! command -v ktlint &> /dev/null; then
