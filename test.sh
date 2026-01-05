@@ -7,15 +7,6 @@
 # Ensure PATH includes common installation directories
 export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
-# Source asdf if available
-if [[ -f "$HOME/.asdf/asdf.sh" ]]; then
-    . "$HOME/.asdf/asdf.sh"
-elif [[ -f "/opt/homebrew/opt/asdf/libexec/asdf.sh" ]]; then
-    . "/opt/homebrew/opt/asdf/libexec/asdf.sh"
-elif [[ -f "/usr/local/opt/asdf/libexec/asdf.sh" ]]; then
-    . "/usr/local/opt/asdf/libexec/asdf.sh"
-fi
-
 # Parse arguments
 MINIMAL_MODE=false
 
@@ -78,7 +69,8 @@ echo ""
 echo "📦 Checking core tools..."
 check_command fish
 check_command chezmoi
-check_command asdf
+
+check_command mise
 
 echo ""
 echo "🔍 Checking modern CLI tools..."
@@ -146,9 +138,9 @@ check_fish_function fopen
 check_fish_function fkill
 check_fish_function fgrep
 check_fish_function fgit
-check_fish_function asdf-setup
-check_fish_function asdf-install-latest
-check_fish_function asdf-update
+check_fish_function mise-setup
+check_fish_function mise-install-latest
+check_fish_function mise-update
 check_fish_function ta
 check_fish_function fish_greeting
 check_fish_function dotfiles
@@ -156,11 +148,11 @@ check_fish_function yank
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
     echo ""
-    echo "🔧 Checking asdf plugins..."
-    if command -v asdf &> /dev/null; then
-        asdf plugin list
+    echo "🔧 Checking mise tools..."
+    if command -v mise &> /dev/null; then
+        mise ls
     else
-        echo -e "${RED}✗${NC} asdf not available"
+        echo -e "${RED}✗${NC} mise not available"
     fi
 fi
 

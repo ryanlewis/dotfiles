@@ -1,5 +1,6 @@
-# Global tool versions managed by asdf
+# Global tool versions - compatible with both asdf and mise
 # https://asdf-vm.com/
+# https://mise.jdx.dev/
 # Updated: January 2025
 
 # renovate: datasource=github-tags depName=nodejs/node
@@ -10,9 +11,36 @@ golang 1.25.1           # Latest stable
 # renovate: datasource=github-releases depName=oven-sh/bun
 bun 1.2.1               # Latest stable
 
-# To install these versions:
-# asdf plugin add nodejs
-# asdf plugin add python
-# asdf plugin add golang
-# asdf plugin add bun https://github.com/canhta/asdf-bun.git
-# asdf install
+# CLI tools via mise aqua backend
+# https://mise.jdx.dev/dev-tools/backends/aqua.html
+# Aqua provides pre-built binaries for cross-platform CLI tools
+aqua:junegunn/fzf latest                      # Fuzzy finder
+aqua:sharkdp/bat latest                       # cat with syntax highlighting
+aqua:sharkdp/fd latest                        # Modern find replacement
+aqua:eza-community/eza latest                 # Modern ls replacement
+aqua:BurntSushi/ripgrep latest                # Fast grep replacement
+aqua:ajeetdsouza/zoxide latest                # Smarter cd command
+aqua:muesli/duf latest                        # Disk usage utility
+aqua:bootandy/dust latest                     # du replacement
+aqua:starship/starship latest                 # Cross-shell prompt
+aqua:atuinsh/atuin latest                     # Shell history sync
+aqua:dandavison/delta latest                  # Git diff viewer
+aqua:jesseduffield/lazygit latest             # Git TUI
+aqua:cli/cli latest                           # GitHub CLI (gh)
+aqua:casey/just latest                        # Command runner
+aqua:charmbracelet/gum latest                 # Shell script utilities
+aqua:direnv/direnv latest                     # Environment switcher
+aqua:jqlang/jq latest                         # JSON processor
+aqua:kubernetes/kubernetes/kubectl latest     # Kubernetes CLI
+aqua:ahmetb/kubectx latest                    # Kubernetes context switcher
+aqua:ahmetb/kubectx/kubens latest             # Kubernetes namespace switcher
+
+# To install these versions with mise:
+#   mise install
+#
+# To install with asdf:
+#   asdf plugin add nodejs
+#   asdf plugin add python
+#   asdf plugin add golang
+#   asdf plugin add bun https://github.com/canhta/asdf-bun.git
+#   asdf install

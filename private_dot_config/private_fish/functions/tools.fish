@@ -24,7 +24,7 @@ function tools --description "Show TLDR of all available commands and tools"
     set -l tools_data \
         "Core:🏠 chezmoi:Dotfiles manager" \
         "Core:🐠 fish:Modern shell with autosuggestions" \
-        "Core:📦 asdf:Version manager for Node/Python/Go" \
+        "Core:📦 mise:Version manager for Node/Python/Go" \
         "Replace:📂 eza → ls:Lists with icons and git info" \
         "Replace:🦇 bat → cat:Syntax highlighting and line numbers" \
         "Replace:🔍 fd → find:Simple, fast file finder" \
@@ -168,7 +168,7 @@ function tools --description "Show TLDR of all available commands and tools"
         echo (set_color blue)"━━━ 🏠 Core Commands ━━━"(set_color normal)
         echo (set_color brblue)"• chezmoi"(set_color normal)" - Dotfiles manager"
         echo (set_color brblue)"• fish"(set_color normal)"    - Modern shell with autosuggestions"
-        echo (set_color brblue)"• asdf"(set_color normal)"    - Version manager for Node/Python/Go"
+        echo (set_color brblue)"• mise"(set_color normal)"    - Version manager for Node/Python/Go"
         echo ""
         
         # Modern CLI Replacements

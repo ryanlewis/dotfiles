@@ -1,0 +1,188 @@
+#!/bin/bash
+# Cleanup old tool installations that are now managed by mise aqua backend
+#
+# This script removes duplicate installations to:
+#   - Prevent PATH conflicts
+#   - Save disk space (~200-500MB)
+#   - Ensure mise aqua tools take precedence
+#
+# Runs AFTER mise install (run_onchange_03) and only when aqua tools list changes
+# Aqua tools hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+
+set -e
+
+echo "🧹 Cleaning up old tool installations..."
+
+# Safety check: Verify mise and aqua tools are working
+if ! command -v mise &> /dev/null; then
+    echo "⚠️  mise not found, skipping cleanup for safety"
+    exit 0
+fi
+
+# Verify a few key tools are available via mise before proceeding
+VERIFY_TOOLS=("bat" "fd" "gh" "kubectl")
+for tool in "${VERIFY_TOOLS[@]}"; do
+    if ! command -v "$tool" &> /dev/null; then
+        echo "⚠️  Tool '$tool' not available, skipping cleanup (mise aqua not ready)"
+        exit 0
+    fi
+    if ! mise where "$tool" &> /dev/null; then
+        echo "⚠️  Tool '$tool' not managed by mise, skipping cleanup"
+        exit 0
+    fi
+done
+
+echo "✓ Verified mise aqua tools are working, proceeding with cleanup..."
+
+# List of tools now managed by mise aqua
+AQUA_TOOLS=(
+    "fzf" "bat" "fd" "eza" "ripgrep" "zoxide" "btop" "duf" "dust"
+    "starship" "atuin" "delta" "lazygit" "gh" "just" "gum" "direnv"
+    "jq" "kubectl" "kubectx" "kubens"
+)
+
+{{ if eq .chezmoi.os "darwin" -}}
+###################
+# macOS (Homebrew)
+###################
+echo "🍺 Removing Homebrew-installed tools..."
+
+# Check if brew is available
+if ! command -v brew &> /dev/null; then
+    echo "  ⏭️  Homebrew not found, skipping"
+else
+    # Homebrew package names (some differ from binary names)
+    BREW_PACKAGES=(
+        "fzf" "bat" "fd" "eza" "ripgrep" "zoxide" "btop" "duf" "dust"
+        "starship" "atuin" "git-delta" "lazygit" "gh" "just" "gum"
+        "direnv" "jq" "kubernetes-cli" "kubectx"
+    )
+
+    for pkg in "${BREW_PACKAGES[@]}"; do
+        if brew list "$pkg" &> /dev/null; then
+            echo "  🗑️  Uninstalling $pkg..."
+            brew uninstall "$pkg" 2>/dev/null || echo "    ⚠️  Failed to uninstall $pkg"
+        fi
+    done
+
+    echo "  ✓ Homebrew cleanup complete"
+fi
+
+{{ else if eq .chezmoi.os "linux" -}}
+###################
+# Linux
+###################
+
+# Get package manager
+if command -v apt &> /dev/null; then
+    PKG_MGR="apt"
+elif command -v dnf &> /dev/null; then
+    PKG_MGR="dnf"
+elif command -v pacman &> /dev/null; then
+    PKG_MGR="pacman"
+else
+    PKG_MGR="none"
+fi
+
+if [[ "$PKG_MGR" != "none" ]]; then
+    echo "📦 Removing package manager-installed tools ($PKG_MGR)..."
+
+    case "$PKG_MGR" in
+        apt)
+            # Ubuntu/Debian package names
+            APT_PACKAGES=("bat" "fd-find" "ripgrep" "btop" "jq")
+
+            for pkg in "${APT_PACKAGES[@]}"; do
+                if dpkg -l | grep -q "^ii  $pkg "; then
+                    echo "  🗑️  Removing $pkg..."
+                    sudo apt-get remove -y -qq "$pkg" 2>/dev/null || echo "    ⚠️  Failed to remove $pkg"
+                fi
+            done
+
+            # Remove eza custom GPG repo if it exists
+            if [[ -f /etc/apt/sources.list.d/gierens.list ]]; then
+                echo "  🗑️  Removing eza GPG repository..."
+                sudo rm -f /etc/apt/sources.list.d/gierens.list
+                sudo rm -f /etc/apt/keyrings/gierens.gpg
+                sudo apt-get update -qq 2>/dev/null || true
+            fi
+            ;;
+
+        dnf)
+            # Fedora/RHEL package names
+            DNF_PACKAGES=("bat" "ripgrep" "btop" "jq")
+
+            for pkg in "${DNF_PACKAGES[@]}"; do
+                if dnf list installed "$pkg" &> /dev/null; then
+                    echo "  🗑️  Removing $pkg..."
+                    sudo dnf remove -y "$pkg" 2>/dev/null || echo "    ⚠️  Failed to remove $pkg"
+                fi
+            done
+            ;;
+
+        pacman)
+            # Arch package names
+            PACMAN_PACKAGES=("bat" "fd" "eza" "ripgrep" "btop" "jq")
+
+            for pkg in "${PACMAN_PACKAGES[@]}"; do
+                if pacman -Q "$pkg" &> /dev/null; then
+                    echo "  🗑️  Removing $pkg..."
+                    sudo pacman -R --noconfirm "$pkg" 2>/dev/null || echo "    ⚠️  Failed to remove $pkg"
+                fi
+            done
+            ;;
+    esac
+
+    echo "  ✓ Package manager cleanup complete"
+else
+    echo "  ⏭️  No supported package manager found, skipping"
+fi
+{{ end -}}
+
+###################
+# Binary Downloads
+###################
+echo "🗑️  Removing manually downloaded binaries from ~/.local/bin..."
+
+# Remove binaries that were manually downloaded (cross-platform)
+BINARY_TOOLS=(
+    "fzf" "btop" "duf" "dust" "gum" "direnv" "just" "delta"
+    "lazygit" "jq" "kubectl" "kubectx" "kubens" "atuin"
+)
+
+REMOVED_COUNT=0
+for tool in "${BINARY_TOOLS[@]}"; do
+    if [[ -f "$HOME/.local/bin/$tool" ]] && [[ ! -L "$HOME/.local/bin/$tool" ]]; then
+        # Only remove if it's a regular file (not a symlink from mise)
+        # Check if it's NOT a mise shim
+        if ! grep -q "mise" "$HOME/.local/bin/$tool" 2>/dev/null; then
+            echo "  🗑️  Removing $HOME/.local/bin/$tool"
+            rm -f "$HOME/.local/bin/$tool"
+            ((REMOVED_COUNT++))
+        fi
+    fi
+done
+
+if [[ $REMOVED_COUNT -gt 0 ]]; then
+    echo "  ✓ Removed $REMOVED_COUNT binaries"
+else
+    echo "  ✓ No old binaries found"
+fi
+
+###################
+# Verify mise tools are still working
+###################
+echo ""
+echo "✅ Verifying mise aqua tools after cleanup:"
+SAMPLE_TOOLS=("bat" "fd" "gh" "kubectl" "fzf")
+for tool in "${SAMPLE_TOOLS[@]}"; do
+    if command -v "$tool" &> /dev/null && mise where "$tool" &> /dev/null; then
+        echo "  ✓ $tool → $(which $tool)"
+    else
+        echo "  ⚠️  $tool not available"
+    fi
+done
+
+echo ""
+echo "✓ Cleanup complete! Old installations removed, mise aqua tools active."
+echo "  💾 Estimated disk space saved: ~200-500MB"

@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 # Cross-Platform Dotfiles with Chezmoi
 
 This repository contains my personal dotfiles managed by [chezmoi](https://chezmoi.io/), optimized for Fish shell and supporting both Linux and macOS.
@@ -10,10 +9,12 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🐧 Linux compatibility
 - 🛠️ Useful Fish functions and utilities
 - 📦 Template-based configuration for different environments
-- 🔧 asdf version manager for Node.js, Python, and Go
-- 🔍 Modern CLI tools: Complete suite of modern replacements for traditional Unix tools
+- 🔧 mise for language runtimes (Node.js, Python, Go, Bun)
+- 🌊 mise aqua backend for 21 modern CLI tools (bat, fd, eza, kubectl, gh, etc.)
+- 🔍 Modern CLI tools: Complete suite of replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
 - 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
+- 🧹 Automatic cleanup of old tool installations
 
 ## Prerequisites
 
@@ -63,7 +64,7 @@ The installation process automatically sets up:
 
 1. **Fish shell** - Modern, user-friendly shell
 2. **chezmoi** - Dotfiles manager
-3. **asdf** - Universal version manager
+3. **mise** - Universal version manager
 4. **Modern CLI tools**:
    - `eza` - Better `ls`
    - `bat` - Better `cat` with syntax highlighting
@@ -81,10 +82,10 @@ The installation process automatically sets up:
    - `kubens` - K8s namespace switcher
    - And more...
 5. **Language runtimes** (optional):
-   - Node.js (via asdf)
-   - Python/Miniconda (via asdf)
-   - Go (via asdf)
-   - Bun (official installer)
+   - Node.js (via mise)
+   - Python/Miniconda (via mise)
+   - Go (via mise)
+   - Bun (via mise)
 
 ## Usage
 
@@ -107,9 +108,9 @@ This configuration includes several useful Fish functions:
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
 - `yank` - Copy text to clipboard via OSC 52 (works over SSH)
-- `asdf-setup` - Install and configure asdf plugins for Node.js, Python, and Go
-- `asdf-install-latest` - Install latest stable versions of all tools
-- `asdf-update` - Update asdf and all plugins
+- `mise-setup` - Install and configure mise tools from .tool-versions
+- `mise-install-latest` - Install latest stable versions of all tools
+- `mise-update` - Update mise and all plugins
 
 #### Clipboard Function: yank
 
@@ -226,26 +227,32 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[kubens](https://github.com/ahmetb/kubectx)** - Namespace switcher
   - Quickly switch between Kubernetes namespaces
 
-### Version Management with asdf
+### Version Management with mise
 
-This configuration includes [asdf](https://asdf-vm.com/) for managing programming language versions. The following tools are pre-configured:
+This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
-- Node.js
-- Python  
-- Go
+**Language Runtimes** (4 tools):
+- Node.js 22.11.0 (LTS)
+- Python (via Miniconda)
+- Go 1.25.1
+- Bun 1.2.1
 
-Note: Bun is installed separately using its official installer for always getting the latest version.
+**CLI Tools via aqua backend** (21 tools):
+- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
+- Kubernetes tools: kubectl, kubectx, kubens
 
-To set up asdf after installation:
+All tools are automatically installed via `.tool-versions` when you run:
 
 ```bash
-# Install asdf plugins and tools
-asdf-setup
-asdf install
+# Install all configured tools (languages + CLI tools)
+mise install
 
-# Or install latest versions
-asdf-install-latest
+# Or install latest stable versions
+mise-install-latest
 ```
+
+**Note:** Old installations (Homebrew, apt packages, binaries) are automatically cleaned up after mise aqua setup.
 
 ## Development
 
@@ -353,7 +360,7 @@ The `test.sh` script verifies all tools are installed correctly:
 - Checks all CLI tools are available
 - Verifies Fish functions exist
 - Confirms configurations are in place
-- Tests asdf plugins
+- Tests mise tools
 
 ## CI/CD
 
@@ -387,8 +394,8 @@ Environment variables for CI:
 This is a known issue with Miniconda requiring ToS acceptance. The script will continue without Python. To fix:
 ```bash
 # Accept Conda ToS manually
-~/.asdf/installs/python/miniconda3-latest/bin/conda init
-~/.asdf/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda init
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
 ```
 
 #### Script fails with "command not found" 
@@ -409,8 +416,8 @@ fish -c "fisher install PatrickF1/fzf.fish"
 
 #### Tools not found after installation
 ```bash
-# Source asdf in current shell
-source ~/.asdf/asdf.sh
+# Activate mise in current shell
+eval "$(mise activate bash)"
 
 # Or start a new Fish shell
 fish
@@ -422,7 +429,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### What Renovate Updates
 
-#### 1. **asdf Tool Versions** (`dot_tool-versions.tmpl`)
+#### 1. **mise Tool Versions** (`dot_tool-versions.tmpl`)
 - Node.js versions
 - Go versions  
 - Bun versions
@@ -433,7 +440,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - GitHub-hosted runner versions
 
 #### 3. **Binary Tools in install.sh**
-- asdf version manager
+- mise version manager
 - fzf (fuzzy finder)
 - delta (git diff viewer)
 - atuin (shell history)
@@ -469,7 +476,7 @@ Feel free to fork and customize for your own use!
 Last updated: January 2025
 
 ### Core Tools
-- asdf: v0.14.1
+- mise: v2025.12.13
 - chezmoi: Latest from official installer
 
 ### CLI Tools
@@ -478,9 +485,10 @@ Last updated: January 2025
 - Other tools: Latest available from package managers
 
 ### Programming Languages
-- Node.js: 22.11.0 (LTS) - via asdf
-- Python: miniconda3-latest - via asdf
-- Go: 1.25.1 - via asdf
+- Node.js: 22.11.0 (LTS) - via mise
+- Python: miniconda3-latest - via mise
+- Go: 1.25.5 - via mise
+- Bun: 1.2.1 - via mise
 - Bun: latest - via official installer
 
 ## License
@@ -497,7 +505,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🐧 Linux compatibility
 - 🛠️ Useful Fish functions and utilities
 - 📦 Template-based configuration for different environments
-- 🔧 asdf version manager for Node.js, Python, and Go
+- 🔧 mise version manager for Node.js, Python, Go, and Bun
 - 🔍 Modern CLI tools: Complete suite of modern replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
 - 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
@@ -550,7 +558,7 @@ The installation process automatically sets up:
 
 1. **Fish shell** - Modern, user-friendly shell
 2. **chezmoi** - Dotfiles manager
-3. **asdf** - Universal version manager
+3. **mise** - Universal version manager
 4. **Modern CLI tools**:
    - `eza` - Better `ls`
    - `bat` - Better `cat` with syntax highlighting
@@ -564,10 +572,10 @@ The installation process automatically sets up:
    - `dust` - Better `du`
    - And more...
 5. **Language runtimes** (optional):
-   - Node.js (via asdf)
-   - Python/Miniconda (via asdf)
-   - Go (via asdf)
-   - Bun (official installer)
+   - Node.js (via mise)
+   - Python/Miniconda (via mise)
+   - Go (via mise)
+   - Bun (via mise)
 
 ## Usage
 
@@ -590,9 +598,9 @@ This configuration includes several useful Fish functions:
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
 - `yank` - Copy text to clipboard via OSC 52 (works over SSH)
-- `asdf-setup` - Install and configure asdf plugins for Node.js, Python, and Go
-- `asdf-install-latest` - Install latest stable versions of all tools
-- `asdf-update` - Update asdf and all plugins
+- `mise-setup` - Install and configure mise tools from .tool-versions
+- `mise-install-latest` - Install latest stable versions of all tools
+- `mise-update` - Update mise and all plugins
 
 #### Clipboard Function: yank
 
@@ -701,26 +709,32 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[tldr](https://tldr.sh/)** - Simplified man pages
   - Quick command examples
 
-### Version Management with asdf
+### Version Management with mise
 
-This configuration includes [asdf](https://asdf-vm.com/) for managing programming language versions. The following tools are pre-configured:
+This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
-- Node.js
-- Python  
-- Go
+**Language Runtimes** (4 tools):
+- Node.js 22.11.0 (LTS)
+- Python (via Miniconda)
+- Go 1.25.1
+- Bun 1.2.1
 
-Note: Bun is installed separately using its official installer for always getting the latest version.
+**CLI Tools via aqua backend** (21 tools):
+- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
+- Kubernetes tools: kubectl, kubectx, kubens
 
-To set up asdf after installation:
+All tools are automatically installed via `.tool-versions` when you run:
 
 ```bash
-# Install asdf plugins and tools
-asdf-setup
-asdf install
+# Install all configured tools (languages + CLI tools)
+mise install
 
-# Or install latest versions
-asdf-install-latest
+# Or install latest stable versions
+mise-install-latest
 ```
+
+**Note:** Old installations (Homebrew, apt packages, binaries) are automatically cleaned up after mise aqua setup.
 
 ## Development
 
@@ -828,7 +842,7 @@ The `test.sh` script verifies all tools are installed correctly:
 - Checks all CLI tools are available
 - Verifies Fish functions exist
 - Confirms configurations are in place
-- Tests asdf plugins
+- Tests mise tools
 
 ## CI/CD
 
@@ -862,8 +876,8 @@ Environment variables for CI:
 This is a known issue with Miniconda requiring ToS acceptance. The script will continue without Python. To fix:
 ```bash
 # Accept Conda ToS manually
-~/.asdf/installs/python/miniconda3-latest/bin/conda init
-~/.asdf/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda init
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
 ```
 
 #### Script fails with "command not found" 
@@ -884,8 +898,8 @@ fish -c "fisher install PatrickF1/fzf.fish"
 
 #### Tools not found after installation
 ```bash
-# Source asdf in current shell
-source ~/.asdf/asdf.sh
+# Activate mise in current shell
+eval "$(mise activate bash)"
 
 # Or start a new Fish shell
 fish
@@ -897,7 +911,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### What Renovate Updates
 
-#### 1. **asdf Tool Versions** (`dot_tool-versions.tmpl`)
+#### 1. **mise Tool Versions** (`dot_tool-versions.tmpl`)
 - Node.js versions
 - Go versions  
 - Bun versions
@@ -908,7 +922,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - GitHub-hosted runner versions
 
 #### 3. **Binary Tools in install.sh**
-- asdf version manager
+- mise version manager
 - fzf (fuzzy finder)
 - delta (git diff viewer)
 - atuin (shell history)
@@ -944,7 +958,7 @@ Feel free to fork and customize for your own use!
 Last updated: January 2025
 
 ### Core Tools
-- asdf: v0.14.1
+- mise: v2025.12.13
 - chezmoi: Latest from official installer
 
 ### CLI Tools
@@ -953,9 +967,10 @@ Last updated: January 2025
 - Other tools: Latest available from package managers
 
 ### Programming Languages
-- Node.js: 22.11.0 (LTS) - via asdf
-- Python: miniconda3-latest - via asdf
-- Go: 1.25.1 - via asdf
+- Node.js: 22.11.0 (LTS) - via mise
+- Python: miniconda3-latest - via mise
+- Go: 1.25.5 - via mise
+- Bun: 1.2.1 - via mise
 - Bun: latest - via official installer
 
 ## License
@@ -972,7 +987,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🐧 Linux compatibility
 - 🛠️ Useful Fish functions and utilities
 - 📦 Template-based configuration for different environments
-- 🔧 asdf version manager for Node.js, Python, and Go
+- 🔧 mise version manager for Node.js, Python, Go, and Bun
 - 🔍 Modern CLI tools: Complete suite of modern replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
 - 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
@@ -1025,7 +1040,7 @@ The installation process automatically sets up:
 
 1. **Fish shell** - Modern, user-friendly shell
 2. **chezmoi** - Dotfiles manager
-3. **asdf** - Universal version manager
+3. **mise** - Universal version manager
 4. **Modern CLI tools**:
    - `eza` - Better `ls`
    - `bat` - Better `cat` with syntax highlighting
@@ -1039,10 +1054,10 @@ The installation process automatically sets up:
    - `dust` - Better `du`
    - And more...
 5. **Language runtimes** (optional):
-   - Node.js (via asdf)
-   - Python/Miniconda (via asdf)
-   - Go (via asdf)
-   - Bun (official installer)
+   - Node.js (via mise)
+   - Python/Miniconda (via mise)
+   - Go (via mise)
+   - Bun (via mise)
 
 ## Usage
 
@@ -1065,9 +1080,9 @@ This configuration includes several useful Fish functions:
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
 - `yank` - Copy text to clipboard via OSC 52 (works over SSH)
-- `asdf-setup` - Install and configure asdf plugins for Node.js, Python, and Go
-- `asdf-install-latest` - Install latest stable versions of all tools
-- `asdf-update` - Update asdf and all plugins
+- `mise-setup` - Install and configure mise tools from .tool-versions
+- `mise-install-latest` - Install latest stable versions of all tools
+- `mise-update` - Update mise and all plugins
 
 #### Clipboard Function: yank
 
@@ -1176,26 +1191,32 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[tldr](https://tldr.sh/)** - Simplified man pages
   - Quick command examples
 
-### Version Management with asdf
+### Version Management with mise
 
-This configuration includes [asdf](https://asdf-vm.com/) for managing programming language versions. The following tools are pre-configured:
+This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
-- Node.js
-- Python  
-- Go
+**Language Runtimes** (4 tools):
+- Node.js 22.11.0 (LTS)
+- Python (via Miniconda)
+- Go 1.25.1
+- Bun 1.2.1
 
-Note: Bun is installed separately using its official installer for always getting the latest version.
+**CLI Tools via aqua backend** (21 tools):
+- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
+- Kubernetes tools: kubectl, kubectx, kubens
 
-To set up asdf after installation:
+All tools are automatically installed via `.tool-versions` when you run:
 
 ```bash
-# Install asdf plugins and tools
-asdf-setup
-asdf install
+# Install all configured tools (languages + CLI tools)
+mise install
 
-# Or install latest versions
-asdf-install-latest
+# Or install latest stable versions
+mise-install-latest
 ```
+
+**Note:** Old installations (Homebrew, apt packages, binaries) are automatically cleaned up after mise aqua setup.
 
 ## Development
 
@@ -1303,7 +1324,7 @@ The `test.sh` script verifies all tools are installed correctly:
 - Checks all CLI tools are available
 - Verifies Fish functions exist
 - Confirms configurations are in place
-- Tests asdf plugins
+- Tests mise tools
 
 ## CI/CD
 
@@ -1337,8 +1358,8 @@ Environment variables for CI:
 This is a known issue with Miniconda requiring ToS acceptance. The script will continue without Python. To fix:
 ```bash
 # Accept Conda ToS manually
-~/.asdf/installs/python/miniconda3-latest/bin/conda init
-~/.asdf/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda init
+~/.local/share/mise/installs/python/miniconda3-latest/bin/conda config --set auto_activate_base false
 ```
 
 #### Script fails with "command not found" 
@@ -1359,8 +1380,8 @@ fish -c "fisher install PatrickF1/fzf.fish"
 
 #### Tools not found after installation
 ```bash
-# Source asdf in current shell
-source ~/.asdf/asdf.sh
+# Activate mise in current shell
+eval "$(mise activate bash)"
 
 # Or start a new Fish shell
 fish
@@ -1372,7 +1393,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### What Renovate Updates
 
-#### 1. **asdf Tool Versions** (`dot_tool-versions.tmpl`)
+#### 1. **mise Tool Versions** (`dot_tool-versions.tmpl`)
 - Node.js versions
 - Go versions  
 - Bun versions
@@ -1383,7 +1404,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - GitHub-hosted runner versions
 
 #### 3. **Binary Tools in install.sh**
-- asdf version manager
+- mise version manager
 - fzf (fuzzy finder)
 - delta (git diff viewer)
 - atuin (shell history)
@@ -1419,7 +1440,7 @@ Feel free to fork and customize for your own use!
 Last updated: January 2025
 
 ### Core Tools
-- asdf: v0.14.1
+- mise: v2025.12.13
 - chezmoi: Latest from official installer
 
 ### CLI Tools
@@ -1428,9 +1449,10 @@ Last updated: January 2025
 - Other tools: Latest available from package managers
 
 ### Programming Languages
-- Node.js: 22.11.0 (LTS) - via asdf
-- Python: miniconda3-latest - via asdf
-- Go: 1.25.1 - via asdf
+- Node.js: 22.11.0 (LTS) - via mise
+- Python: miniconda3-latest - via mise
+- Go: 1.25.5 - via mise
+- Bun: 1.2.1 - via mise
 - Bun: latest - via official installer
 
 ## License

@@ -33,23 +33,9 @@ set fish_cursor_visual block
 eval ({{ .brewPrefix }}/bin/brew shellenv)
 {{- end }}
 
-# ASDF configuration code
-if test -z $ASDF_DATA_DIR
-    set _asdf_shims "$HOME/.asdf/shims"
-else
-    set _asdf_shims "$ASDF_DATA_DIR/shims"
-end
-
-# Do not use fish_add_path (added in Fish 3.2) because it
-# potentially changes the order of items in PATH
-if not contains $_asdf_shims $PATH
-    set -gx --prepend PATH $_asdf_shims
-end
-set --erase _asdf_shims
-
-# asdf Go environment setup (if plugin installed)
-if test -e "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
-    source "$ASDF_DATA_DIR/plugins/golang/set-env.fish"
+# mise configuration
+if type -q mise
+    mise activate fish | source
 end
 
 # zoxide - smarter cd command
@@ -156,6 +142,8 @@ alias gl="git log --oneline --graph"
 alias gd="git diff"
 
 # Modern CLI tool aliases
+# Note: mise aqua provides standard names (bat, fd) across all platforms
+# Ubuntu/Debian package names (batcat, fdfind) are aliased for compatibility
 {{- if or (lookPath "bat") (lookPath "batcat") }}
 # Use bat instead of cat
 {{ if lookPath "batcat" -}}

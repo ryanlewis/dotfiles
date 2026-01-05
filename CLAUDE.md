@@ -74,8 +74,8 @@ chezmoi add ~/.config/fish/newfile.fish
 ### Core Components
 - **Package Manager**: chezmoi with Go templating for OS-specific configurations
 - **Shell**: Fish shell with vi-mode enabled
-- **Version Manager**: asdf for Node.js, Python (Miniconda), and Go
-- **Runtime Installer**: Bun uses official installer (not asdf)
+- **Version Manager**: mise for Node.js, Python (Miniconda), Go, and Bun
+- **CLI Tool Manager**: mise aqua backend for 21 modern CLI tools (bat, fd, eza, kubectl, etc.)
 - **Terminal Multiplexer**: tmux with vi-mode and mobile device optimizations
 
 ### Template System
@@ -93,11 +93,15 @@ chezmoi add ~/.config/fish/newfile.fish
 ### Installation Architecture
 - **Minimal bootstrap**: `install.sh` only installs chezmoi and runs `chezmoi init`
 - **Chezmoi scripts**: All tool installation happens via `.chezmoiscripts/`
-  - `run_once_*` scripts run once for initial setup
+  - `run_once_*` scripts run once for initial setup (mise installation)
   - `run_onchange_*` scripts re-run when tool versions change
   - Templates handle OS-specific logic
-- **Tool installation**: Binary downloads to `~/.local/bin` when possible
+- **Tool installation**:
+  - **21 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, etc.) - installed automatically from `.tool-versions`
+  - **Language runtimes via mise** (Node.js, Python, Go, Bun)
+  - **3 non-aqua tools** (httpie, broot, tldr) - binary downloads or package managers
 - **Architecture detection**: Automatic for x86_64, arm64
+- **Cleanup**: Old installations automatically removed after mise aqua setup
 - **Error handling**: Scripts continue on failure (e.g., Python/Conda ToS issue)
 
 ## Development Patterns
@@ -118,9 +122,9 @@ chezmoi add ~/.config/fish/newfile.fish
 - **update** - Update system packages
 - **ports** - Show listening ports
 - **myip** - Display IP addresses
-- **asdf-setup** - Install asdf plugins
-- **asdf-install-latest** - Install latest versions
-- **asdf-update** - Update all plugins
+- **mise-setup** - Install mise tools from .tool-versions
+- **mise-install-latest** - Install latest versions
+- **mise-update** - Update mise and all plugins
 
 ### Configuration Files
 - Fish config: `private_dot_config/private_fish/config.fish.tmpl`
@@ -166,19 +170,32 @@ This repository replaces traditional Unix tools with modern alternatives:
 
 ### Known Issues
 - Python/Miniconda installation may fail with "Terms of Service" error - the script continues without Python
-- On Ubuntu, some tools have different names (bat→batcat, fd→fdfind) - handled via aliases
+- Old installations (Homebrew, apt packages, binary downloads) are automatically cleaned up after mise aqua setup
+- mise aqua provides consistent binary names across platforms (bat, fd, etc.) - no more Ubuntu-specific renaming
 
 ## Complete Tools Reference
 
+### Tool Installation Methods
+
+**mise aqua backend** (21 tools) - Managed via `.tool-versions`:
+- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
+- Kubernetes tools: kubectl, kubectx, kubens
+
+**mise** (4 language runtimes) - Managed via `.tool-versions`:
+- Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.2.1
+
+**Non-aqua tools** (3 tools) - Installed via package managers or binary downloads:
+- httpie, broot, tldr
+
 ### Installed Command-Line Tools
-All tools are automatically installed via `.chezmoiscripts/run_onchange_02-install-tools.sh.tmpl`:
 
 #### Core Tools
-- **chezmoi** - Dotfiles manager
-- **fish** - Modern shell with autosuggestions
-- **asdf** - Version manager for Node.js, Python, Go
+- **chezmoi** - Dotfiles manager (bootstrap)
+- **fish** - Modern shell with autosuggestions (system package)
+- **mise** - Version manager for languages and CLI tools
 
-#### Modern CLI Replacements
+#### Modern CLI Replacements (via mise aqua)
 - **eza** → ls (with icons, git info)
 - **bat** → cat (syntax highlighting)
 - **fd** → find (simpler, faster)
@@ -189,30 +206,33 @@ All tools are automatically installed via `.chezmoiscripts/run_onchange_02-insta
 - **dust** → du (intuitive disk analyzer)
 
 #### Development Tools
+**Via mise aqua:**
 - **fzf** - Fuzzy finder (Ctrl+R, Ctrl+T, Alt+C)
 - **starship** - Cross-shell prompt with git info
 - **atuin** - Better shell history with search
 - **delta** - Beautiful git diffs
 - **lazygit (lg)** - Git TUI
 - **gh** - GitHub CLI
-- **httpie (https)** - Friendly HTTP client
 - **jq** - JSON processor
 - **just** - Modern make/task runner
 - **gum** - Pretty shell scripts
 - **direnv** - Auto-load .envrc files
+
+**Via package managers:**
+- **httpie (https)** - Friendly HTTP client
 - **broot** - Interactive tree navigation
 - **tldr** - Simplified man pages
 
-#### Kubernetes Tools
+#### Kubernetes Tools (via mise aqua)
 - **kubectl** - Kubernetes CLI
 - **kubectx** - Switch between contexts
 - **kubens** - Switch between namespaces
 
-#### Language Runtimes (via asdf)
+#### Language Runtimes (via mise)
 - **Node.js** 22.11.0 (LTS)
 - **Python** (Miniconda3-latest)
 - **Go** 1.25.1
-- **Bun** (via official installer, not asdf)
+- **Bun** 1.2.1
 
 ### Testing & Validation
 Run `./test.sh` to verify all tools are installed correctly. Use `./test.sh --minimal` for faster testing without language runtime checks.

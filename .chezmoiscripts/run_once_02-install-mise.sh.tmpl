@@ -1,0 +1,52 @@
+#!/bin/bash
+# Install mise version manager - runs once
+set -e
+
+# Ensure ~/.local/bin exists and is in PATH
+mkdir -p "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Skip if mise is already installed and working
+if command -v mise &> /dev/null; then
+    CURRENT_VERSION=$(mise --version 2>/dev/null | grep -oP 'mise \K[0-9.]+' || echo "")
+    if [[ -n "$CURRENT_VERSION" ]]; then
+        echo "✓ mise v$CURRENT_VERSION already installed"
+        exit 0
+    fi
+fi
+
+echo "🔧 Installing mise..."
+
+# Use official mise installer
+curl https://mise.run | sh
+
+# Verify installation
+if command -v mise &> /dev/null; then
+    INSTALLED_VERSION=$(mise --version | grep -oP 'mise \K[0-9.]+')
+    echo "✓ mise v$INSTALLED_VERSION installed successfully"
+else
+    echo "❌ Failed to install mise"
+    exit 1
+fi
+
+{{ if eq .chezmoi.os "linux" -}}
+# Install build dependencies for language compilation (same as asdf needs)
+if command -v apt &> /dev/null; then
+    echo "📦 Installing build dependencies..."
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq \
+        curl git build-essential libssl-dev zlib1g-dev \
+        libbz2-dev libreadline-dev libsqlite3-dev wget unzip llvm libncurses5-dev \
+        libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl
+elif command -v dnf &> /dev/null; then
+    sudo dnf groupinstall -y "Development Tools"
+    sudo dnf install -y curl git openssl-devel zlib-devel bzip2-devel \
+        readline-devel sqlite-devel wget unzip llvm ncurses-devel
+elif command -v pacman &> /dev/null; then
+    sudo pacman -S --noconfirm base-devel curl git
+fi
+{{ end -}}
+
+echo ""
+echo "📝 mise installed to ~/.local/bin/mise"
+echo "   Next: Run 'mise activate fish | source' or restart shell"
