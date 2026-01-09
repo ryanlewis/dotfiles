@@ -1,0 +1,5 @@
+# Default npm packages installed with each new Node.js version
+# Used by mise when installing Node.js
+# See: https://mise.jdx.dev/lang/node.html
+
+@cometix/ccline
