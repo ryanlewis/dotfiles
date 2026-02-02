@@ -75,7 +75,7 @@ chezmoi add ~/.config/fish/newfile.fish
 - **Package Manager**: chezmoi with Go templating for OS-specific configurations
 - **Shell**: Fish shell with vi-mode enabled
 - **Version Manager**: mise for Node.js, Python (Miniconda), Go, and Bun
-- **CLI Tool Manager**: mise aqua backend for 21 modern CLI tools (bat, fd, eza, kubectl, etc.)
+- **CLI Tool Manager**: mise aqua backend for 22 modern CLI tools (bat, fd, eza, kubectl, granted, etc.)
 - **Terminal Multiplexer**: tmux with vi-mode and mobile device optimizations
 
 ### Template System
@@ -97,7 +97,7 @@ chezmoi add ~/.config/fish/newfile.fish
   - `run_onchange_*` scripts re-run when tool versions change
   - Templates handle OS-specific logic
 - **Tool installation**:
-  - **21 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, etc.) - installed automatically from `.tool-versions`
+  - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `.tool-versions`
   - **Language runtimes via mise** (Node.js, Python, Go, Bun)
   - **3 non-aqua tools** (httpie, broot, tldr) - binary downloads or package managers
 - **Architecture detection**: Automatic for x86_64, arm64
@@ -177,10 +177,11 @@ This repository replaces traditional Unix tools with modern alternatives:
 
 ### Tool Installation Methods
 
-**mise aqua backend** (21 tools) - Managed via `.tool-versions`:
+**mise aqua backend** (22 tools) - Managed via `.tool-versions`:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
 - Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
 - Kubernetes tools: kubectl, kubectx, kubens
+- AWS tools: granted
 
 **mise** (4 language runtimes) - Managed via `.tool-versions`:
 - Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.2.1
@@ -227,6 +228,9 @@ This repository replaces traditional Unix tools with modern alternatives:
 - **kubectl** - Kubernetes CLI
 - **kubectx** - Switch between contexts
 - **kubens** - Switch between namespaces
+
+#### AWS Tools (via mise aqua)
+- **granted** - AWS credential management (assume, assumego)
 
 #### Language Runtimes (via mise)
 - **Node.js** 22.11.0 (LTS)
