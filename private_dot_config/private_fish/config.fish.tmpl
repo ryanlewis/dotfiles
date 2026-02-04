@@ -4,8 +4,6 @@
 # Set a clean default PATH first to avoid duplicates
 set -gx PATH /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
-echo $PATH
-
 # Add snap and games paths on Linux
 {{- if eq .chezmoi.os "linux" }}
 if test -d /snap/bin
@@ -18,6 +16,9 @@ end
 
 # Universal PATH additions (prepend for priority)
 set -gx PATH $HOME/bin $HOME/.local/bin $HOME/.claude/local $HOME/.bun/bin $PATH
+
+# Exit early for non-interactive shells (fixes scp/rsync)
+not status is-interactive; and return
 
 # Enable vi mode
 fish_vi_key_bindings
