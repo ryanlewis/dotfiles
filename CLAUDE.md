@@ -184,7 +184,7 @@ This repository replaces traditional Unix tools with modern alternatives:
 - AWS tools: granted
 
 **mise** (4 language runtimes) - Managed via `.tool-versions`:
-- Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.2.1
+- Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.3.8
 
 **Non-aqua tools** (3 tools) - Installed via package managers or binary downloads:
 - httpie, broot, tldr
