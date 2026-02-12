@@ -1,21 +1,2 @@
-# Force LF line endings for shell scripts and config files
-*.sh text eol=lf
-*.sh.tmpl text eol=lf
-*.fish text eol=lf
-*.fish.tmpl text eol=lf
-*.bash text eol=lf
-*.zsh text eol=lf
-*.conf text eol=lf
-*.toml text eol=lf
-*.tmpl text eol=lf
-*.yml text eol=lf
-*.yaml text eol=lf
-
-# Chezmoi scripts must have LF endings
-.chezmoiscripts/* text eol=lf
-
-# Dotfiles without extensions (inputrc, etc.)
-dot_inputrc text eol=lf
-
-# Install script must have LF endings
-install.sh text eol=lf
+# Default to LF line endings for all text files
+* text=auto eol=lf
