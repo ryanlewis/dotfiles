@@ -118,6 +118,7 @@
       "Bash(yarn:*)",
       "Bash(pnpm:*)",
       "Bash(bun:*)",
+      "Bash(bunx:*)",
       "Bash(tsc:*)",
       "Bash(tsx:*)",
       "Bash(ts-node:*)",
