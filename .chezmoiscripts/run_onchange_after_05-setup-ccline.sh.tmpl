@@ -1,7 +1,8 @@
 #!/bin/bash
-# Install ccline (Claude Code status line) - safety net fallback
-# @cometix/ccline is in dot_default-npm-packages so mise auto-installs it with Node.js
-# This script handles edge cases where that didn't happen
+# Install ccline (Claude Code status line) via npm
+# Re-runs when .tool-versions changes (e.g. Node.js version bump)
+#
+# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
 set -e
 
 # Skip in CI or quick install mode
@@ -9,6 +10,9 @@ if [[ "${CI:-}" == "true" ]] || [[ "${QUICK_INSTALL:-}" == "true" ]]; then
     echo "Skipping ccline setup (CI/quick install mode)"
     exit 0
 fi
+
+# Ensure mise shims are on PATH (Node.js is installed via mise)
+export PATH="$HOME/.local/share/mise/shims:$HOME/.local/bin:$PATH"
 
 # Check if ccline is already available
 if command -v ccline &> /dev/null; then
