@@ -14,5 +14,8 @@
 # Chezmoi scripts must have LF endings
 .chezmoiscripts/* text eol=lf
 
+# Dotfiles without extensions (inputrc, etc.)
+dot_inputrc text eol=lf
+
 # Install script must have LF endings
 install.sh text eol=lf
