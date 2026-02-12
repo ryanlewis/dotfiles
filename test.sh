@@ -4,8 +4,8 @@
 # Don't exit on first error - we want to see all test results
 # set -e
 
-# Ensure PATH includes common installation directories
-export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+# Ensure PATH includes common installation directories and mise shims
+export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
 # Parse arguments
 MINIMAL_MODE=false

@@ -45,8 +45,8 @@ jobs:
         
     - name: Run test suite
       run: |
-        export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
-        fish -c "export PATH=\"$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
+        export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
         
   test-macos:
     runs-on: macos-15
@@ -82,5 +82,5 @@ jobs:
         
     - name: Run test suite
       run: |
-        export PATH="$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
-        fish -c "export PATH=\"$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
+        export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
+        fish -c "export PATH=\"$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"

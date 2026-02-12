@@ -15,12 +15,6 @@ if [[ "${QUICK_INSTALL:-}" == "true" ]]; then
     exit 0
 fi
 
-# Skip in CI mode to save time
-if [[ "${CI:-}" == "true" ]]; then
-    echo "⏭️  Skipping language runtime installation (CI mode)"
-    exit 0
-fi
-
 # Ensure ~/.local/bin is in PATH for mise/asdf binary
 export PATH="$HOME/.local/bin:$PATH"
 
