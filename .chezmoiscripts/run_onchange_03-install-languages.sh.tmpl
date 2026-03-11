@@ -21,6 +21,8 @@ export PATH="$HOME/.local/bin:$PATH"
 if command -v mise &> /dev/null; then
     echo "🚀 Installing language runtimes and CLI tools via mise..."
     cd "$HOME"
+    # Trust the tool-versions file so mise will install from it
+    mise trust ~/.tool-versions 2>/dev/null || true
     mise install || echo "⚠️  Some installations failed, continuing..."
 
     # Verify installations

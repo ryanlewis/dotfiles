@@ -10,20 +10,26 @@ on:
 # Note: Docker testing is available locally via ./docker-test.sh
 # It's not included in CI to reduce complexity and runtime
 
+env:
+  # Avoid GitHub API rate limiting for mise aqua downloads
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Auto-approve mise trust prompts
+  MISE_YES: "1"
+
 jobs:
   test-ubuntu:
     name: Ubuntu 24.04 LTS
     runs-on: ubuntu-24.04
-    
+
     steps:
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y git curl wget
-        
+
     - name: Checkout repository
       uses: actions/checkout@v5
-      
+
     - name: Run installation script
       run: |
         ./install.sh --ci
@@ -31,7 +37,7 @@ jobs:
         CI: true
         CHEZMOI_USER_NAME: "GitHub Actions"
         CHEZMOI_USER_EMAIL: "actions@github.com"
-        
+
     - name: Verify installation
       run: |
         fish -c "echo 'Fish shell is working!'"
@@ -42,25 +48,25 @@ jobs:
         ls -la ./bin/ || echo "./bin does not exist"
         find . -name chezmoi -type f 2>/dev/null || echo "chezmoi not found"
         echo "PATH is: $PATH"
-        
+
     - name: Run test suite
       run: |
         export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
         fish -c "export PATH=\"$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:\$PATH\"; ./test.sh"
-        
+
   test-macos:
     runs-on: macos-15
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
-      
+
     - name: Install Homebrew (if needed)
       run: |
         if ! command -v brew &> /dev/null; then
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
-        
+
     - name: Run installation script
       run: |
         ./install.sh --ci
@@ -68,7 +74,7 @@ jobs:
         CI: true
         CHEZMOI_USER_NAME: "GitHub Actions"
         CHEZMOI_USER_EMAIL: "actions@github.com"
-        
+
     - name: Verify installation
       run: |
         fish -c "echo 'Fish shell is working!'"
@@ -79,7 +85,7 @@ jobs:
         ls -la ./bin/ || echo "./bin does not exist"
         find . -name chezmoi -type f 2>/dev/null || echo "chezmoi not found"
         echo "PATH is: $PATH"
-        
+
     - name: Run test suite
       run: |
         export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
