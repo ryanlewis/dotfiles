@@ -5,6 +5,10 @@
 # set -e
 
 # Ensure PATH includes common installation directories and mise shims
+# Include Homebrew paths for macOS
+if [[ -d /opt/homebrew/bin ]]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+fi
 export PATH="$HOME/.local/share/mise/shims:$PWD/bin:$HOME/bin:$HOME/.local/bin:$PATH"
 
 # Parse arguments
@@ -139,8 +143,6 @@ check_fish_function fkill
 check_fish_function fgrep
 check_fish_function fgit
 check_fish_function mise-setup
-check_fish_function mise-install-latest
-check_fish_function mise-update
 check_fish_function ta
 check_fish_function fish_greeting
 check_fish_function dotfiles
