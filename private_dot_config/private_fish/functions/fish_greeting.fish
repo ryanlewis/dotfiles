@@ -23,11 +23,27 @@ function fish_greeting
     if command -v tmux >/dev/null 2>&1; and tmux list-sessions >/dev/null 2>&1
         set_color magenta
         echo ""
-        echo "Tmux sessions: (attach with 'ta <name>')"
-        for session in (tmux list-sessions 2>/dev/null)
-            set name (echo $session | cut -d: -f1)
-            set info (echo $session | sed 's/^[^:]*: //')
-            echo "  • $name: $info"
+        if set -q TMUX
+            set current_session (tmux display-message -p '#S')
+            echo "Tmux sessions: (Ctrl+A S to switch)"
+            for session in (tmux list-sessions 2>/dev/null)
+                set name (echo $session | cut -d: -f1)
+                set info (echo $session | sed 's/^[^:]*: //')
+                if test "$name" = "$current_session"
+                    set_color green
+                    echo "  ▸ $name: $info ← current"
+                    set_color magenta
+                else
+                    echo "  • $name: $info"
+                end
+            end
+        else
+            echo "Tmux sessions: (attach with 'ta <name>')"
+            for session in (tmux list-sessions 2>/dev/null)
+                set name (echo $session | cut -d: -f1)
+                set info (echo $session | sed 's/^[^:]*: //')
+                echo "  • $name: $info"
+            end
         end
     end
 

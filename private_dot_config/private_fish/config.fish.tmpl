@@ -15,7 +15,7 @@ end
 {{- end }}
 
 # Universal PATH additions (prepend for priority)
-set -gx PATH $HOME/bin $HOME/.local/bin $HOME/.claude/local $HOME/.bun/bin $PATH
+set -gx PATH $HOME/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/.claude/local $HOME/.bun/bin $PATH
 
 # Exit early for non-interactive shells (fixes scp/rsync)
 not status is-interactive; and return
@@ -94,6 +94,10 @@ end
 {{- if eq .chezmoi.os "darwin" }}
 # macOS specific paths
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+# Obsidian CLI
+if test -x /Applications/Obsidian.app/Contents/MacOS/Obsidian
+    alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
+end
 {{- else if eq .chezmoi.os "linux" }}
 # Linux specific paths
 {{- end }}
@@ -106,7 +110,7 @@ set -gx VISUAL $EDITOR
 if type -q fzf
     # Enable vi-style movement in fzf
     set -gx FZF_DEFAULT_OPTS '--height 40% --layout=reverse --border --bind=ctrl-j:down,ctrl-k:up,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:page-down,ctrl-b:page-up'
-    
+
     # Use fd/fdfind for better performance
     if type -q fd
         set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'

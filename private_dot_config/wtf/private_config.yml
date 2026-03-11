@@ -1,0 +1,95 @@
+wtf:
+  colors:
+    border:
+      focusable: darkslateblue
+      focused: orange
+      normal: gray
+  grid:
+    columns: [35, 62, 63]
+    rows: [4, 12, 18, 8]
+  refreshInterval: 1
+  mods:
+    resourceusage:
+      cpuCombined: true
+      enabled: true
+      showCPU: true
+      showMem: true
+      showSwp: true
+      position:
+        top: 0
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 1s
+    clocks:
+      colors:
+        rows:
+          even: "lightblue"
+          odd: "white"
+      enabled: true
+      locations:
+        GMT: "Europe/London"
+        Tallinn: "Europe/Tallinn"
+      position:
+        top: 0
+        left: 1
+        height: 1
+        width: 1
+      refreshInterval: 15
+      sort: "alphabetical"
+      title: "Clocks"
+      type: "clocks"
+    uptime:
+      args: []
+      cmd: "uptime"
+      enabled: true
+      position:
+        top: 0
+        left: 2
+        height: 1
+        width: 1
+      refreshInterval: 30
+      type: cmdrunner
+    digitalclock:
+      color: "orange"
+      enabled: true
+      font: "bigfont"
+      hourFormat: "24"
+      position:
+        top: 1
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 1
+      type: "digitalclock"
+    feedreader:
+      enabled: true
+      feeds:
+      - https://feeds.bbci.co.uk/news/rss.xml
+      - https://www.theguardian.com/uk/rss
+      feedLimit: 20
+      position:
+        top: 1
+        left: 1
+        width: 2
+        height: 3
+      refreshInterval: 14400
+    prettyweather:
+      enabled: true
+      city: "Leeds"
+      position:
+        top: 2
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 300
+      unit: "m"
+    power:
+      enabled: true
+      position:
+        top: 3
+        left: 0
+        height: 1
+        width: 1
+      refreshInterval: 15
+      title: "⚡️"

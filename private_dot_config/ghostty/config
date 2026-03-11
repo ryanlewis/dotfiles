@@ -3,7 +3,8 @@
 # ── Theme ────────────────────────────────────────────────────
 # Auto light/dark switching based on macOS appearance
 # Run `ghostty +list-themes` to browse alternatives
-theme = light:Catppuccin Latte,dark:Catppuccin Mocha
+#theme = light:Catppuccin Latte,dark:Ayu
+theme = vesper
 
 # ── Font ─────────────────────────────────────────────────────
 font-family = JetBrainsMono Nerd Font
@@ -13,14 +14,22 @@ font-feature = +liga
 font-feature = +calt
 
 # ── Window & Appearance ──────────────────────────────────────
-macos-titlebar-style = tabs
-window-padding-x = 12
-window-padding-y = 8
+#macos-titlebar-style = hidden
+macos-titlebar-style = transparent
+macos-window-buttons = hidden
+window-padding-x = 0
+window-padding-y = 0
 window-padding-balance = true
 background-opacity = 0.95
 background-blur-radius = 10
 window-save-state = always
 macos-window-shadow = true
+# Dim unfocused splits with a pure black fill so the active pane pops
+unfocused-split-opacity = 0.75
+unfocused-split-fill = #000000
+# Lighter split borders (visible against dark backgrounds)
+split-divider-color = #555555
+
 
 # ── Shell ────────────────────────────────────────────────────
 # Explicit fish path; remove if fish is your login shell
@@ -34,7 +43,7 @@ cursor-style-blink = false
 adjust-cursor-thickness = 2
 
 # ── Quick Terminal (hotkey window) ───────────────────────────
-keybind = global:cmd+grave_accent=toggle_quick_terminal
+keybind = global:§=toggle_quick_terminal
 quick-terminal-position = top
 quick-terminal-screen = main
 quick-terminal-animation-duration = 0.15
@@ -57,7 +66,7 @@ keybind = cmd+ctrl+up=resize_split:up,20
 keybind = cmd+ctrl+down=resize_split:down,20
 
 # Zoom/unzoom current split (like tmux prefix+z)
-keybind = cmd+shift+return=toggle_split_zoom
+keybind = cmd+shift+enter=toggle_split_zoom
 
 # Equalise splits
 keybind = cmd+shift+e=equalize_splits
@@ -79,7 +88,22 @@ clipboard-paste-protection = true
 # ── Scrollback ───────────────────────────────────────────────
 scrollback-limit = 100000
 
+# ── tmux shortcuts (Alt+Shift) ─────────────────────────────────
+# Pane navigation (hjkl)
+keybind = alt+shift+h=text:\x1bH
+keybind = alt+shift+j=text:\x1bJ
+keybind = alt+shift+k=text:\x1bK
+keybind = alt+shift+l=text:\x1bL
+# Window navigation ([ / ])
+keybind = alt+shift+left_bracket=text:\x1b{
+keybind = alt+shift+right_bracket=text:\x1b}
+
+# ── Claude Code (Shift+Enter for newline in tmux) ────────────
+keybind = shift+enter=text:\x1b\r
+
 # ── Misc ─────────────────────────────────────────────────────
-confirm-close-surface = false
+keybind = cmd+q=unbind
+confirm-close-surface = true
 mouse-hide-while-typing = true
 auto-update = check
+focus-follows-mouse = true

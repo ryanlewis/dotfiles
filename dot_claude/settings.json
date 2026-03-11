@@ -1,4 +1,8 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "TURBO_TELEMETRY_DISABLED": "1"
+  },
   "attribution": {
     "commit": "",
     "pr": ""
@@ -370,38 +374,56 @@
       "Read(**/.gnupg/**)"
     ]
   },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/format-code.sh"
-          }
-        ]
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
     "command": "ccline",
     "padding": 0
   },
   "enabledPlugins": {
-    "agent-sdk-dev@claude-plugins-official": true,
+    "agent-sdk-dev@claude-plugins-official": false,
     "atlassian@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "kotlin-lsp@claude-plugins-official": false,
     "plugin-dev@claude-plugins-official": true,
     "ralph-loop@claude-plugins-official": false,
-    "superpowers@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false,
     "swift-lsp@claude-plugins-official": false,
     "typescript-lsp@claude-plugins-official": true,
-    "youtube-tools@ryanlewis-plugins": true,
+    "youtube-tools@ryanlewis-plugins": false,
     "claude-md-management@claude-plugins-official": true,
-    "claude-code-setup@claude-plugins-official": true
+    "claude-code-setup@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": false,
+    "rust-analyzer-lsp@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "allowWrite": [
+        "//tmp",
+        "~/.gradle",
+        "~/.m2",
+        "~/.npm",
+        "~/.cache",
+        "~/.local/share",
+        "~/.kube"
+      ],
+      "denyRead": [
+        "~/.ssh",
+        "~/.aws",
+        "~/.gnupg",
+        "~/.docker/config.json",
+        "~/.git-credentials",
+        "~/.netrc",
+        "~/.kube/config"
+      ]
+    },
+    "excludedCommands": [
+      "docker"
+    ],
+    "autoAllow": true
   },
   "alwaysThinkingEnabled": true
 }

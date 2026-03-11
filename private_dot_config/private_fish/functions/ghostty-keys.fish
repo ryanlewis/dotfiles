@@ -10,44 +10,76 @@ function ghostty-keys --description "Show Ghostty keybindings reference"
     # Format a raw key token into a human-readable label
     function __gk_fmt_key
         switch $argv[1]
-            case cmd;           echo Cmd
-            case alt;           echo Opt
-            case ctrl;          echo Ctrl
-            case shift;         echo Shift
-            case left;          echo "←"
-            case right;         echo "→"
-            case up;            echo "↑"
-            case down;          echo "↓"
-            case return;        echo Return
-            case grave_accent;  echo "\`"
-            case page_up;       echo PgUp
-            case page_down;     echo PgDn
-            case '*';           echo (string upper $argv[1])
+            case cmd
+                echo Cmd
+            case alt
+                echo Opt
+            case ctrl
+                echo Ctrl
+            case shift
+                echo Shift
+            case left
+                echo "←"
+            case right
+                echo "→"
+            case up
+                echo "↑"
+            case down
+                echo "↓"
+            case return
+                echo Return
+            case grave_accent
+                echo "\`"
+            case page_up
+                echo PgUp
+            case page_down
+                echo PgDn
+            case '*'
+                echo (string upper $argv[1])
         end
     end
 
     # Format a raw action into a readable description
     function __gk_fmt_action
         switch $argv[1]
-            case toggle_quick_terminal;  echo "Toggle quick terminal"
-            case "new_split:right";      echo "Split right"
-            case "new_split:down";       echo "Split down"
-            case "goto_split:left";      echo "Focus split left"
-            case "goto_split:right";     echo "Focus split right"
-            case "goto_split:top";       echo "Focus split up"
-            case "goto_split:bottom";    echo "Focus split down"
-            case "resize_split:left*";   echo "Resize split ←"
-            case "resize_split:right*";  echo "Resize split →"
-            case "resize_split:up*";     echo "Resize split ↑"
-            case "resize_split:down*";   echo "Resize split ↓"
-            case toggle_split_zoom;      echo "Zoom / unzoom split"
-            case equalize_splits;        echo "Equalise splits"
-            case "jump_to_prompt:-1";    echo "Previous prompt"
-            case "jump_to_prompt:1";     echo "Next prompt"
-            case new_tab;                echo "New tab"
-            case close_surface;          echo "Close tab / split"
-            case previous_tab;           echo "Previous tab"
-            case next_tab;               echo "Next tab"
+            case toggle_quick_terminal
+                echo "Toggle quick terminal"
+            case "new_split:right"
+                echo "Split right"
+            case "new_split:down"
+                echo "Split down"
+            case "goto_split:left"
+                echo "Focus split left"
+            case "goto_split:right"
+                echo "Focus split right"
+            case "goto_split:top"
+                echo "Focus split up"
+            case "goto_split:bottom"
+                echo "Focus split down"
+            case "resize_split:left*"
+                echo "Resize split ←"
+            case "resize_split:right*"
+                echo "Resize split →"
+            case "resize_split:up*"
+                echo "Resize split ↑"
+            case "resize_split:down*"
+                echo "Resize split ↓"
+            case toggle_split_zoom
+                echo "Zoom / unzoom split"
+            case equalize_splits
+                echo "Equalise splits"
+            case "jump_to_prompt:-1"
+                echo "Previous prompt"
+            case "jump_to_prompt:1"
+                echo "Next prompt"
+            case new_tab
+                echo "New tab"
+            case close_surface
+                echo "Close tab / split"
+            case previous_tab
+                echo "Previous tab"
+            case next_tab
+                echo "Next tab"
             case '*'
                 # Fallback: humanise underscores/colons
                 set -l s (string replace -a "_" " " $argv[1])
@@ -59,11 +91,16 @@ function ghostty-keys --description "Show Ghostty keybindings reference"
     # Section comment → colour mapping
     function __gk_section_color
         switch $argv[1]
-            case "Quick Terminal*";      echo cyan
-            case "Split Panes*";         echo green
-            case "Prompt Navigation*";   echo magenta
-            case "Tabs*";               echo yellow
-            case '*';                    echo blue
+            case "Quick Terminal*"
+                echo cyan
+            case "Split Panes*"
+                echo green
+            case "Prompt Navigation*"
+                echo magenta
+            case "Tabs*"
+                echo yellow
+            case '*'
+                echo blue
         end
     end
 
@@ -71,7 +108,7 @@ function ghostty-keys --description "Show Ghostty keybindings reference"
     begin
         echo ""
         echo (set_color brred)"╔══════════════════════════════════════════════════╗"(set_color normal)
-        echo (set_color brred)"║          Ghostty Keybindings Reference          ║"(set_color normal)
+        echo (set_color brred)"║          Ghostty Keybindings Reference           ║"(set_color normal)
         echo (set_color brred)"╚══════════════════════════════════════════════════╝"(set_color normal)
 
         set -l current_section ""

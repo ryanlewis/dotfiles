@@ -18,6 +18,15 @@ function tmux-keys --description "Show tmux keybindings reference"
         echo (set_color brred)"║            tmux Keybindings Reference             ║"(set_color normal)
         echo (set_color brred)"╚══════════════════════════════════════════════════╝"(set_color normal)
 
+        __tk_section cyan "Prefixless — Alt+Shift"
+
+        for item in \
+            "Alt + Shift + H / J / K / L::Focus pane ← ↓ ↑ →" \
+            "Alt + Shift + [::Previous window" \
+            "Alt + Shift + ]::Next window"
+            __tk_row $item
+        end
+
         __tk_section cyan "Prefixless — Ctrl+Alt"
 
         for item in \
