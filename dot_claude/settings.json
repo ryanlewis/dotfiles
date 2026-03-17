@@ -376,7 +376,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "ccline",
+    "command": "bash /Users/ryanlewis/.claude/statusline-command.sh",
     "padding": 0
   },
   "enabledPlugins": {
@@ -393,10 +393,19 @@
     "youtube-tools@ryanlewis-plugins": false,
     "claude-md-management@claude-plugins-official": true,
     "claude-code-setup@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": false,
+    "feature-dev@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": false,
     "skill-creator@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true
+    "pr-review-toolkit@claude-plugins-official": true,
+    "spec-dev@ryanlewis-plugins": true
+  },
+  "extraKnownMarketplaces": {
+    "ryanlewis-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/ryanlewis/dev/rlew/claude-plugins"
+      }
+    }
   },
   "sandbox": {
     "enabled": true,
@@ -425,5 +434,7 @@
     ],
     "autoAllow": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
+  "voiceEnabled": true
 }

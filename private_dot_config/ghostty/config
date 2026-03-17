@@ -88,7 +88,17 @@ clipboard-paste-protection = true
 # ── Scrollback ───────────────────────────────────────────────
 scrollback-limit = 100000
 
-# ── tmux shortcuts (Alt+Shift) ─────────────────────────────────
+# ── tmux shortcuts (Alt+Shift → panes/windows) ──────────────────
+# Window access (1-9)
+keybind = alt+shift+1=text:\x1b!
+keybind = alt+shift+2=text:\x1b@
+keybind = alt+shift+3=text:\x1b#
+keybind = alt+shift+4=text:\x1b$
+keybind = alt+shift+5=text:\x1b%
+keybind = alt+shift+6=text:\x1b^
+keybind = alt+shift+7=text:\x1b&
+keybind = alt+shift+8=text:\x1b*
+keybind = alt+shift+9=text:\x1b(
 # Pane navigation (hjkl)
 keybind = alt+shift+h=text:\x1bH
 keybind = alt+shift+j=text:\x1bJ
@@ -102,7 +112,7 @@ keybind = alt+shift+right_bracket=text:\x1b}
 keybind = shift+enter=text:\x1b\r
 
 # ── Misc ─────────────────────────────────────────────────────
-keybind = cmd+q=unbind
+#keybind = cmd+q=unbind
 confirm-close-surface = true
 mouse-hide-while-typing = true
 auto-update = check
