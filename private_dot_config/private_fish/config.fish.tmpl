@@ -94,6 +94,8 @@ end
 {{- if eq .chezmoi.os "darwin" }}
 # macOS specific paths
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
+# JetBrains Toolbox shell scripts
+set -gx PATH "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" $PATH
 # Obsidian CLI
 if test -x /Applications/Obsidian.app/Contents/MacOS/Obsidian
     alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
