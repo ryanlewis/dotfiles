@@ -20,19 +20,23 @@ model_name="${model_name/ context)/)}"
 # Path truncation using bash builtins
 truncate_path() {
     local p="$1"
-    # Replace $HOME with ~
-    p="${p/#$HOME/\~}"
-    # Count slashes to determine depth
-    local stripped="${p//[!\/]/}"
-    local depth=${#stripped}
-    if (( depth >= 3 )); then
-        # Keep last 3 components
-        local tail="${p##*/}"; p="${p%/*}"
-        local mid="${p##*/}"; p="${p%/*}"
-        local head="${p##*/}"
-        p="…/${head}/${mid}/${tail}"
+    local dev_prefix="$HOME/dev/"
+    if [[ "$p" == "$dev_prefix"* ]]; then
+        # Under ~/dev → strip the prefix
+        printf '%s' "${p#$dev_prefix}"
+    else
+        # Not under ~/dev — replace $HOME with ~ and truncate
+        p="${p/#$HOME/~}"
+        local stripped="${p//[!\/]/}"
+        local depth=${#stripped}
+        if (( depth >= 3 )); then
+            local tail="${p##*/}"; p="${p%/*}"
+            local mid="${p##*/}"; p="${p%/*}"
+            local head="${p##*/}"
+            p="…/${head}/${mid}/${tail}"
+        fi
+        printf '%s' "$p"
     fi
-    printf '%s' "$p"
 }
 
 truncated_dir=$(truncate_path "$current_dir")
