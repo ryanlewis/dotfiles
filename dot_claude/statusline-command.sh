@@ -15,7 +15,7 @@ IFS=$'\t' read -r model_name current_dir used_pct worktree_name worktree_branch 
 )
 
 # Shorten model name: "Opus 4.6 (1M context)" → "Opus 4.6 (1M)"
-model_name="${model_name/ context)/\)}"
+model_name="${model_name/ context)/)}"
 
 # Path truncation using bash builtins
 truncate_path() {
