@@ -22,14 +22,7 @@ function cn --description "Open Claude in notes vault"
     # Window name: slug or "notes"
     set -l win_name "notes"
     if test -n "$prompt"
-        # Truncate and sanitise for slug generation
-        set -l slug_input (string sub -l 200 "$prompt" | string replace -ra '[^a-zA-Z0-9 ]' ' ' | string trim)
-        set -l slug
-        if command -q aichat
-            set slug (aichat "Output ONLY a 2-3 word kebab-case slug for: $slug_input" 2>/dev/null | string trim)
-        else if command -q claude
-            set slug (claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt='' "Output ONLY a 2-3 word kebab-case slug for: $slug_input" 2>/dev/null | string trim)
-        end
+        set -l slug (echo "$prompt" | slugify 2>/dev/null)
         if test -n "$slug"
             set win_name "$slug"
         end
