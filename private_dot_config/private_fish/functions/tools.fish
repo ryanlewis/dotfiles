@@ -59,10 +59,12 @@ function tools --description "Show TLDR of all available commands and tools"
         "Dev:📖 tldr:Simplified man pages" \
         "Dev:✨ starship:Customizable prompt" \
         "Dev:📜 atuin:Better shell history (Ctrl+R)" \
+        "Dev:🌳 wt:Worktrunk - git worktree manager" \
         "Dev:☸️  kubectl:Kubernetes CLI" \
         "Dev:🔄 kubectx:Switch K8s contexts" \
         "Dev:📦 kubens:Switch K8s namespaces" \
-        "Tmux:🖥️  ta:Tmux session manager"
+        "Tmux:🖥️  ta:Tmux session manager" \
+        "Tmux:🤖 ca:Spawn Claude agents in worktrees"
     
     # Interactive mode with gum filter
     if test "$interactive" = "true"
@@ -219,6 +221,7 @@ function tools --description "Show TLDR of all available commands and tools"
         echo (set_color bryellow)"• tldr"(set_color normal)"     - Simple man pages"
         echo (set_color bryellow)"• starship"(set_color normal)" - Pretty prompt"
         echo (set_color bryellow)"• atuin"(set_color normal)"    - Better shell history"
+        echo (set_color bryellow)"• wt"(set_color normal)"       - Git worktree manager"
         echo ""
         
         # Kubernetes Tools
@@ -231,6 +234,7 @@ function tools --description "Show TLDR of all available commands and tools"
         # Tmux
         echo (set_color white)"━━━ 🖥️  Tmux Helper ━━━"(set_color normal)
         echo (set_color brwhite)"• ta"(set_color normal)" - Tmux session manager "(set_color brblack)"(attach/create)"(set_color normal)
+        echo (set_color brwhite)"• ca"(set_color normal)" - Spawn Claude agents in worktrees"
         echo ""
         
         # Footer tips

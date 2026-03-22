@@ -163,6 +163,20 @@ if ! command -v broot &> /dev/null; then
     {{ end -}}
 fi
 
+# Install worktrunk (git worktree manager)
+if ! command -v wt &> /dev/null; then
+    echo "🌳 Installing worktrunk..."
+    if command -v cargo &> /dev/null; then
+        cargo install worktrunk
+        # Set up Fish shell integration (wrapper function + completions)
+        if command -v wt &> /dev/null; then
+            wt config shell install -y
+        fi
+    else
+        echo "⚠️  cargo not found, skipping worktrunk installation"
+    fi
+fi
+
 # Install biome (via npm)
 if ! command -v biome &> /dev/null; then
     echo "🧹 Installing biome..."

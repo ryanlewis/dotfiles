@@ -99,7 +99,7 @@ chezmoi add ~/.config/fish/newfile.fish
 - **Tool installation**:
   - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `.tool-versions`
   - **Language runtimes via mise** (Node.js, Python, Go, Bun)
-  - **3 non-aqua tools** (httpie, broot, tldr) - binary downloads or package managers
+  - **4 non-aqua tools** (httpie, broot, tldr, worktrunk) - binary downloads, package managers, or cargo
 - **Architecture detection**: Automatic for x86_64, arm64
 - **Cleanup**: Old installations automatically removed after mise aqua setup
 - **Error handling**: Scripts continue on failure (e.g., Python/Conda ToS issue)
@@ -186,8 +186,8 @@ This repository replaces traditional Unix tools with modern alternatives:
 **mise** (4 language runtimes) - Managed via `.tool-versions`:
 - Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.3.8
 
-**Non-aqua tools** (3 tools) - Installed via package managers or binary downloads:
-- httpie, broot, tldr
+**Non-aqua tools** (4 tools) - Installed via package managers, binary downloads, or cargo:
+- httpie, broot, tldr, worktrunk
 
 ### Installed Command-Line Tools
 
@@ -219,10 +219,11 @@ This repository replaces traditional Unix tools with modern alternatives:
 - **gum** - Pretty shell scripts
 - **direnv** - Auto-load .envrc files
 
-**Via package managers:**
+**Via package managers / cargo:**
 - **httpie (https)** - Friendly HTTP client
 - **broot** - Interactive tree navigation
 - **tldr** - Simplified man pages
+- **worktrunk (wt)** - Git worktree manager for parallel AI agent workflows
 
 #### Kubernetes Tools (via mise aqua)
 - **kubectl** - Kubernetes CLI

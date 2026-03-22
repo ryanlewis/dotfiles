@@ -122,6 +122,7 @@ check_command starship
 check_command direnv
 check_command just
 check_command gum
+check_command wt
 
 echo ""
 echo "☸️  Checking Kubernetes tools..."
@@ -147,6 +148,7 @@ check_fish_function ta
 check_fish_function fish_greeting
 check_fish_function dotfiles
 check_fish_function yank
+check_fish_function ca
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
     echo ""

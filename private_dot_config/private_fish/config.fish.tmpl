@@ -157,6 +157,11 @@ alias gp="git push"
 alias gl="git log --oneline --graph"
 alias gd="git diff"
 
+# Worktrunk abbreviations
+{{- if lookPath "wt" }}
+abbr -a wsc wt switch --create -x claude
+{{- end }}
+
 # Modern CLI tool aliases
 # Note: mise aqua provides standard names (bat, fd) across all platforms
 # Ubuntu/Debian package names (batcat, fdfind) are aliased for compatibility
