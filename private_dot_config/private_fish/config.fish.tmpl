@@ -17,6 +17,11 @@ end
 # Universal PATH additions (prepend for priority)
 set -gx PATH $HOME/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/.claude/local $HOME/.bun/bin $PATH
 
+# mise shims for non-interactive shells (e.g. television, scripts)
+if test -d $HOME/.local/share/mise/shims
+    set -gx PATH $HOME/.local/share/mise/shims $PATH
+end
+
 # Exit early for non-interactive shells (fixes scp/rsync)
 not status is-interactive; and return
 
