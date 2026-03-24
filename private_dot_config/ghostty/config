@@ -4,7 +4,7 @@
 # Auto light/dark switching based on macOS appearance
 # Run `ghostty +list-themes` to browse alternatives
 #theme = light:Catppuccin Latte,dark:Ayu
-theme = vesper
+theme = Ayu
 
 # ── Font ─────────────────────────────────────────────────────
 font-family = JetBrainsMono Nerd Font
@@ -43,7 +43,7 @@ cursor-style-blink = false
 adjust-cursor-thickness = 2
 
 # ── Quick Terminal (hotkey window) ───────────────────────────
-keybind = global:§=toggle_quick_terminal
+# keybind = global:§=toggle_quick_terminal
 quick-terminal-position = top
 quick-terminal-screen = main
 quick-terminal-animation-duration = 0.15
