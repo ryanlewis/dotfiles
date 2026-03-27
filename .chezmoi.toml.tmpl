@@ -25,7 +25,10 @@
     {{- else if eq $os "linux" }}
     homebrew = false
     {{- end }}
-    
+
+    # Features
+    motd = false
+
     # Package manager
     {{- if eq $os "darwin" }}
     packageManager = "brew"

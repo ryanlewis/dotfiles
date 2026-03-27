@@ -1,0 +1,70 @@
+{{- if .motd }}
+# MOTD - shows quick reads and random tips on shell startup
+if status is-interactive
+    set -l dim (set_color brblack)
+    set -l accent (set_color brblue)
+    set -l cmd (set_color brcyan)
+    set -l reset (set_color normal)
+    set -l today (date "+%A, %d %B %Y")
+    set -l col 28
+
+    # Tips pool: "command;description"
+    set -l tips \
+        "fcd;Fuzzy find and cd into a directory" \
+        "fgit add;Interactively stage files with preview" \
+        "fgit checkout;Fuzzy browse and switch branches" \
+        "fgit log;Browse commit history with preview" \
+        "fgit diff;Fuzzy select files to diff" \
+        "fopen;Fuzzy find a file and open in editor" \
+        "fkill;Fuzzy search and kill a process" \
+        "fgrep \"term\";Search file contents and jump to line" \
+        "lg;Lazygit — full git TUI" \
+        "ta <name>;Attach or create a tmux session" \
+        "y;Yazi file manager with dir persistence" \
+        "tools;Show all installed tools" \
+        "tools -i;Interactive tool browser with fzf" \
+        "yank;Copy to clipboard over SSH (OSC 52)" \
+        "dotfiles push;Commit and push dotfile changes" \
+        "dotfiles diff;Preview dotfile changes" \
+        "mkcd dir;Create a directory and cd into it" \
+        "backup file;Create a timestamped backup" \
+        "extract file;Auto-extract any archive format" \
+        "ports;Show all listening network ports" \
+        "myip;Show local and public IP addresses" \
+        "ghostty-keys;Ghostty keybinding reference" \
+        "preview;Fuzzy find files with bat preview" \
+        "z dir;Zoxide — jump to frecent directories" \
+        "Ctrl+R;Search shell history (fzf)" \
+        "Ctrl+T;Search files (fzf)" \
+        "Alt+C;Search and cd into directory (fzf)" \
+        "btop;Beautiful system monitor" \
+        "duf;Friendly disk usage overview" \
+        "dust;Intuitive disk space analyser" \
+        "wtfutil;Personal terminal dashboard" \
+        "hx;Helix — modal editor with LSP built in" \
+        "claude -r;Resume a previous Claude Code session" \
+        "claude -c;Continue most recent Claude session"
+
+    # Pick 3 random tips (without repeats)
+    set -l indices (seq 1 (count $tips) | sort -R | head -3)
+
+    # Build tip lines
+    set -l tip_lines
+    for i in (seq 1 3)
+        set -l idx $indices[$i]
+        set -l parts (string split ";" $tips[$idx])
+        set -l branch "├─"
+        test $i -eq 3; and set branch "└─"
+        set -a tip_lines "$dim$branch$reset $cmd$parts[1]$reset $dim·$reset $parts[2]"
+    end
+
+    echo ""
+    echo "  $dim$today$reset"
+    echo ""
+    echo "  $accent""Quick reads$reset"(string repeat -n (math "$col - 11") " ")"$accent""Tips$reset"
+    echo "  $dim├─$reset $cmd""clx$reset $dim·$reset Hacker News"(string repeat -n (math "$col - 20") " ")"$tip_lines[1]"
+    echo "  $dim└─$reset $cmd""newsboat$reset $dim·$reset RSS feeds"(string repeat -n (math "$col - 23") " ")"$tip_lines[2]"
+    echo "  "(string repeat -n $col " ")"$tip_lines[3]"
+    echo ""
+end
+{{- end }}
