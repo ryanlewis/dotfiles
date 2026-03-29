@@ -184,7 +184,7 @@ This repository replaces traditional Unix tools with modern alternatives:
 - AWS tools: granted
 
 **mise** (4 language runtimes) - Managed via `.tool-versions`:
-- Node.js 22.11.0, Python (Miniconda3-latest), Go 1.25.1, Bun 1.3.8
+- Node.js 24.14.1, Python (Miniconda3-latest), Go 1.26.1, Bun 1.3.11
 
 **Non-aqua tools** (4 tools) - Installed via package managers, binary downloads, or cargo:
 - httpie, broot, tldr, worktrunk
@@ -234,10 +234,10 @@ This repository replaces traditional Unix tools with modern alternatives:
 - **granted** - AWS credential management (assume, assumego)
 
 #### Language Runtimes (via mise)
-- **Node.js** 22.11.0 (LTS)
+- **Node.js** 24.14.1 (LTS)
 - **Python** (Miniconda3-latest)
-- **Go** 1.25.1
-- **Bun** 1.2.1
+- **Go** 1.26.1
+- **Bun** 1.3.11
 
 ### Testing & Validation
 Run `./test.sh` to verify all tools are installed correctly. Use `./test.sh --minimal` for faster testing without language runtime checks.
