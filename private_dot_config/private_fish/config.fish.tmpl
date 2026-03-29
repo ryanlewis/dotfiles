@@ -110,7 +110,7 @@ end
 {{- end }}
 
 # Editor configuration
-set -gx EDITOR {{ if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+set -gx EDITOR {{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 set -gx VISUAL $EDITOR
 
 # fzf configuration with vi keybindings
