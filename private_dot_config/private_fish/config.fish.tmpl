@@ -53,11 +53,9 @@ if type -q java; and type -q asdf
     end
 end
 
-# zoxide - smarter cd command
+# zoxide - smarter cd command (--cmd=cd replaces cd with zoxide directly)
 if type -q zoxide
-    zoxide init fish | source
-    # Optional: replace cd with z
-    alias cd="z"
+    zoxide init --cmd=cd fish | source
 end
 
 # starship prompt
