@@ -16,3 +16,13 @@ LICENSE
 *~
 .git
 .gitignore
+
+# Repo-meta files (not meant to be deployed to home dir)
+install.sh
+Dockerfile
+docker-test.sh
+test.sh
+setup-aliases.sh
+SCRIPTS.md
+renovate.json
+test-chezmoi-data.yaml
