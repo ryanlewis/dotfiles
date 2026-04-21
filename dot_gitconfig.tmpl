@@ -1,9 +1,24 @@
 [user]
     name = {{ .name | default (env "CHEZMOI_USER_NAME") | default "Your Name" }}
     email = {{ .email | default (env "CHEZMOI_USER_EMAIL") | default "your.email@example.com" }}
+{{- if stat (joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub") }}
+    signingkey = {{ joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub" }}
+{{- end }}
+
+{{- if stat (joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub") }}
+
+[gpg]
+    format = ssh
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+{{- end }}
 
 [core]
-    editor = {{ if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+    editor = {{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 {{- if lookPath "delta" }}
     pager = delta
 {{- end }}
