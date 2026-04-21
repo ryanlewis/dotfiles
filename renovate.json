@@ -254,8 +254,11 @@
       "datasourceTemplate": "github-releases"
     }
   ],
-  "asdf": {
-    "enabled": true
+  "mise": {
+    "enabled": true,
+    "managerFilePatterns": [
+      "/private_dot_config/mise/config\\.toml\\.tmpl$/"
+    ]
   },
   "github-actions": {
     "enabled": true,

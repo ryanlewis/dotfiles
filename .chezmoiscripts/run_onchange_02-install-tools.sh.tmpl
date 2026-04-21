@@ -1,13 +1,13 @@
 #!/bin/bash
 # Install command-line tools NOT managed by mise aqua backend
-# Most tools are now managed via mise aqua (see dot_tool-versions.tmpl)
+# Most tools are now managed via mise aqua (see private_dot_config/mise/config.toml.tmpl)
 # This script only installs tools not available in the aqua registry:
 #   - btop (asset naming issue in aqua registry)
 #   - httpie (not in aqua, httpie-go is different)
 #   - broot (not in aqua registry)
 #   - tldr/tealdeer (tlrc available but different implementation)
 #
-# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+# Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 set -e
 
 # Ensure ~/.local/bin and mise shims are in PATH

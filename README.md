@@ -108,7 +108,7 @@ This configuration includes several useful Fish functions:
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
 - `yank` - Copy text to clipboard via OSC 52 (works over SSH)
-- `mise-setup` - Install and configure mise tools from .tool-versions
+- `mise-setup` - Show configured mise tools and install hints
 - `mise-install-latest` - Install latest stable versions of all tools
 - `mise-update` - Update mise and all plugins
 
@@ -242,7 +242,7 @@ This configuration includes [mise](https://mise.jdx.dev/) for managing:
 - Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
 - Kubernetes tools: kubectl, kubectx, kubens
 
-All tools are automatically installed via `.tool-versions` when you run:
+All tools are automatically installed via `~/.config/mise/config.toml` when you run:
 
 ```bash
 # Install all configured tools (languages + CLI tools)
@@ -429,7 +429,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### What Renovate Updates
 
-#### 1. **mise Tool Versions** (`dot_tool-versions.tmpl`)
+#### 1. **mise Tool Versions** (`private_dot_config/mise/config.toml.tmpl`)
 - Node.js versions
 - Go versions  
 - Bun versions

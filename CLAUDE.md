@@ -97,7 +97,7 @@ chezmoi add ~/.config/fish/newfile.fish
   - `run_onchange_*` scripts re-run when tool versions change
   - Templates handle OS-specific logic
 - **Tool installation**:
-  - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `.tool-versions`
+  - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `~/.config/mise/config.toml`
   - **Language runtimes via mise** (Node.js, Python, Go, Bun)
   - **4 non-aqua tools** (httpie, broot, tldr, worktrunk) - binary downloads, package managers, or cargo
 - **Architecture detection**: Automatic for x86_64, arm64
@@ -122,7 +122,7 @@ chezmoi add ~/.config/fish/newfile.fish
 - **update** - Update system packages
 - **ports** - Show listening ports
 - **myip** - Display IP addresses
-- **mise-setup** - Install mise tools from .tool-versions
+- **mise-setup** - Show configured mise tools and install hints
 - **mise-install-latest** - Install latest versions
 - **mise-update** - Update mise and all plugins
 
@@ -131,7 +131,7 @@ chezmoi add ~/.config/fish/newfile.fish
 - Tmux config: `dot_tmux.conf`
 - Git config: `dot_gitconfig.tmpl`
 - Starship prompt: `private_dot_config/starship.toml`
-- Tool versions: `dot_tool-versions.tmpl`
+- Tool versions: `private_dot_config/mise/config.toml.tmpl`
 
 ### Testing Approach
 - `test.sh` verifies all tools are installed and accessible
@@ -177,13 +177,13 @@ This repository replaces traditional Unix tools with modern alternatives:
 
 ### Tool Installation Methods
 
-**mise aqua backend** (22 tools) - Managed via `.tool-versions`:
+**mise aqua backend** (22 tools) - Managed via `~/.config/mise/config.toml`:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
 - Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
 - Kubernetes tools: kubectl, kubectx, kubens
 - AWS tools: granted
 
-**mise** (4 language runtimes) - Managed via `.tool-versions`:
+**mise** (4 language runtimes) - Managed via `~/.config/mise/config.toml`:
 - Node.js 24.14.1, Python (Miniconda3-latest), Go 1.26.1, Bun 1.3.11
 
 **Non-aqua tools** (4 tools) - Installed via package managers, binary downloads, or cargo:

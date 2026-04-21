@@ -1,8 +1,8 @@
 #!/bin/bash
 # Install ccline (Claude Code status line) via npm
-# Re-runs when .tool-versions changes (e.g. Node.js version bump)
+# Re-runs when mise config changes (e.g. Node.js version bump)
 #
-# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+# Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 set -e
 
 # Skip in CI or quick install mode

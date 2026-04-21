@@ -7,7 +7,7 @@
 #   - Ensure mise aqua tools take precedence
 #
 # Runs AFTER mise install (run_onchange_03) and only when aqua tools list changes
-# Aqua tools hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+# Aqua tools hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 
 set -e
 

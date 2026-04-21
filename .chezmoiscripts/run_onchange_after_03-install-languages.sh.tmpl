@@ -1,12 +1,11 @@
 #!/bin/bash
-# Install programming language runtimes AND CLI tools via mise aqua backend
-# Falls back to asdf if mise unavailable (language runtimes only)
+# Install language runtimes and CLI tools via mise
 #
-# This script installs:
-#   - Language runtimes: Node.js, Python, Go, Bun (via mise or asdf)
-#   - CLI tools: 21 tools via mise aqua backend (bat, fd, eza, gh, kubectl, etc.)
+# This script installs everything defined in ~/.config/mise/config.toml:
+#   - Language runtimes: Node.js, Python, Go, Bun, Java
+#   - CLI tools via aqua backend (bat, fd, gh, kubectl, etc.)
 #
-# Version hash: {{ include "dot_tool-versions.tmpl" | sha256sum }}
+# Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 set -e
 
 # Skip if quick install mode
@@ -15,93 +14,27 @@ if [[ "${QUICK_INSTALL:-}" == "true" ]]; then
     exit 0
 fi
 
-# Ensure ~/.local/bin is in PATH for mise/asdf binary
+# Ensure ~/.local/bin is in PATH for mise binary
 export PATH="$HOME/.local/bin:$PATH"
 
-if command -v mise &> /dev/null; then
-    echo "🚀 Installing language runtimes and CLI tools via mise..."
-    cd "$HOME"
-    # Trust the tool-versions file so mise will install from it
-    mise trust ~/.tool-versions 2>/dev/null || true
-    mise install || echo "⚠️  Some installations failed, continuing..."
-
-    # Verify installations
-    echo ""
-    echo "✅ Verifying language runtimes:"
-    command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
-    command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
-    command -v go >/dev/null 2>&1 && echo "  ✓ Go: $(go version)" || echo "  ⚠️  Go not available"
-    command -v bun >/dev/null 2>&1 && echo "  ✓ Bun: $(bun --version)" || echo "  ⚠️  Bun not available"
-
-    echo ""
-    echo "✓ Language runtime setup complete via mise"
-
-elif command -v asdf &> /dev/null; then
-    # Fallback to asdf if mise not available
-    echo "📦 Using asdf (mise not available)..."
-
-    # Set ASDF_DATA_DIR for compatibility
-    export ASDF_DATA_DIR="${ASDF_DATA_DIR:-$HOME/.asdf}"
-
-    echo "🚀 Setting up programming language runtimes..."
-
-    # Add asdf plugins if not already added
-    add_plugin() {
-        local plugin=$1
-        if ! asdf plugin list | grep -q "^${plugin}$"; then
-            echo "📦 Adding ${plugin} plugin..."
-            asdf plugin add "${plugin}"
-        fi
-    }
-
-    # Install Node.js
-    add_plugin nodejs
-    echo "📦 Installing Node.js..."
-    if [[ -f "$HOME/.tool-versions" ]]; then
-        NODE_VERSION=$(grep "^nodejs " "$HOME/.tool-versions" | awk '{print $2}')
-        if [[ -n "$NODE_VERSION" ]]; then
-            asdf install nodejs "${NODE_VERSION}" || echo "⚠️  Node.js installation failed, continuing..."
-            asdf set nodejs "${NODE_VERSION}"
-        fi
-    fi
-
-    # Install Python (via Miniconda)
-    add_plugin python
-    echo "📦 Installing Python..."
-    if [[ -f "$HOME/.tool-versions" ]]; then
-        PYTHON_VERSION=$(grep "^python " "$HOME/.tool-versions" | awk '{print $2}')
-        if [[ -n "$PYTHON_VERSION" ]]; then
-            # Note: Python installation may fail due to Conda ToS - that's OK
-            asdf install python "${PYTHON_VERSION}" 2>/dev/null || echo "⚠️  Python installation failed (likely Conda ToS issue), continuing..."
-            asdf set python "${PYTHON_VERSION}" 2>/dev/null || true
-        fi
-    fi
-
-    # Install Go
-    add_plugin golang
-    echo "📦 Installing Go..."
-    if [[ -f "$HOME/.tool-versions" ]]; then
-        GO_VERSION=$(grep "^golang " "$HOME/.tool-versions" | awk '{print $2}')
-        if [[ -n "$GO_VERSION" ]]; then
-            asdf install golang "${GO_VERSION}" || echo "⚠️  Go installation failed, continuing..."
-            asdf set golang "${GO_VERSION}"
-        fi
-    fi
-
-    # Reshim to ensure all binaries are available
-    asdf reshim
-
-    # Verify installations
-    echo ""
-    echo "✅ Verifying language runtimes:"
-    command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
-    command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
-    command -v go >/dev/null 2>&1 && echo "  ✓ Go: $(go version)" || echo "  ⚠️  Go not available"
-
-    echo ""
-    echo "✓ Language runtime setup complete via asdf"
-
-else
-    echo "⚠️  Neither mise nor asdf found, skipping language installation"
+if ! command -v mise &> /dev/null; then
+    echo "⚠️  mise not found, skipping language installation"
     exit 0
 fi
+
+echo "🚀 Installing language runtimes and CLI tools via mise..."
+cd "$HOME"
+
+# Trust the global config so mise will install from it
+mise trust "$HOME/.config/mise/config.toml" 2>/dev/null || true
+mise install || echo "⚠️  Some installations failed, continuing..."
+
+echo ""
+echo "✅ Verifying language runtimes:"
+command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
+command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
+command -v go >/dev/null 2>&1 && echo "  ✓ Go: $(go version)" || echo "  ⚠️  Go not available"
+command -v bun >/dev/null 2>&1 && echo "  ✓ Bun: $(bun --version)" || echo "  ⚠️  Bun not available"
+
+echo ""
+echo "✓ mise setup complete"

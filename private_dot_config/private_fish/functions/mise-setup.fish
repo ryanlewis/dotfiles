@@ -1,4 +1,4 @@
-function mise-setup --description "Install mise tools from .tool-versions"
+function mise-setup --description "Show mise tools and install hints"
     if not command -v mise &> /dev/null
         echo "❌ mise not installed"
         return 1
@@ -12,14 +12,13 @@ function mise-setup --description "Install mise tools from .tool-versions"
     echo "💡 To update tools: mise upgrade"
 end
 
-function mise-install-latest --description "Install latest versions"
+function mise-install-latest --description "Install latest versions of all configured tools"
     if not command -v mise &> /dev/null
         echo "❌ mise not installed"
         return 1
     end
 
-    # Extract tools from .tool-versions and install latest
-    for tool in (cat "$HOME/.tool-versions" | grep -v '^#' | grep -v '^$' | awk '{print $1}')
+    for tool in (mise ls --current --json | jq -r 'keys[]')
         echo "🔄 Installing latest $tool..."
         mise use --global "$tool@latest"
     end
