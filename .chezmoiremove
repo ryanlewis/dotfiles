@@ -1,0 +1,6 @@
+# Files chezmoi should remove from the home directory on apply.
+# Migrated from .tool-versions to ~/.config/mise/config.toml (April 2026)
+.tool-versions
+
+# Removed agent no longer in use (April 2026)
+.claude/agents/cursor-code-orchestrator.md
