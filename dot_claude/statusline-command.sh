@@ -99,7 +99,13 @@ parts="\033[1;36m${truncated_dir}\033[0m"
 
 if [[ -n "$git_branch" ]]; then
     parts+=" \033[1;35m ${git_branch}\033[0m"
-    [[ -n "$git_worktree_label" ]] && parts+=" \033[1;33m[wt:${git_worktree_label}]\033[0m"
+    if [[ -n "$git_worktree_label" ]]; then
+        if [[ "$git_worktree_label" == "$git_branch" || "$git_worktree_label" == "${git_branch//\//-}" ]]; then
+            parts+=" \033[1;33m[wt]\033[0m"
+        else
+            parts+=" \033[1;33m[wt:${git_worktree_label}]\033[0m"
+        fi
+    fi
     [[ -n "$git_status_str" ]] && parts+=" \033[1;31m${git_status_str}\033[0m"
 fi
 
