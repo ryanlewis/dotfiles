@@ -39,3 +39,6 @@ java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS
 "aqua:astral-sh/uv" = "latest"
 "aqua:common-fate/granted" = "0.38.0" # pinned: v0.39.0 missing from releases.commonfate.io
 television = "latest" # TUI fuzzy finder (tv)
+{{ if eq .chezmoi.hostname "LHVUKM-0018" -}}
+"npm:@openai/codex" = "latest"
+{{ end -}}
