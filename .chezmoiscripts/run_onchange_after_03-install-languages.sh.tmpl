@@ -29,6 +29,10 @@ cd "$HOME"
 mise trust "$HOME/.config/mise/config.toml" 2>/dev/null || true
 mise install || echo "⚠️  Some installations failed, continuing..."
 
+# Ensure shims are generated for tools that did install, even if others failed
+# (mise skips reshim on partial failure, leaving aqua CLI tools unreachable via $PATH).
+mise reshim 2>/dev/null || true
+
 echo ""
 echo "✅ Verifying language runtimes:"
 command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
