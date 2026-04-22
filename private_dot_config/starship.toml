@@ -88,8 +88,18 @@ format = "[$symbol($version )]($style)"
 symbol = "🐹 "
 
 [nodejs]
+disabled = true
 format = "[$symbol($version )]($style)"
 symbol = " "
+
+[java]
+disabled = true
+
+[kotlin]
+disabled = true
+
+[aws]
+disabled = true
 
 [package]
 format = "[$symbol$version]($style) "
