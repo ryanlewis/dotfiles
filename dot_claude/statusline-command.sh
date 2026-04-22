@@ -111,6 +111,17 @@ fi
 
 parts+=" \033[2;37m|\033[0m"
 parts+=" \033[0;37m${model_name}\033[0m"
-[[ -n "$context_str" ]] && parts+=" \033[1;33mctx:${context_str}\033[0m"
+if [[ -n "$context_str" ]]; then
+    if (( used_int < 10 )); then
+        ctx_colour="1;32"        # green
+    elif (( used_int < 25 )); then
+        ctx_colour="1;33"        # yellow
+    elif (( used_int < 50 )); then
+        ctx_colour="1;38;5;208"  # orange
+    else
+        ctx_colour="1;31"        # red
+    fi
+    parts+=" \033[${ctx_colour}mctx:${context_str}\033[0m"
+fi
 
 printf '%b' "$parts"
