@@ -7,9 +7,11 @@
 theme = Ayu
 
 # ── Font ─────────────────────────────────────────────────────
-font-family = JetBrainsMono Nerd Font
+#font-family = IosevkaNerdFont
+#font-family = "IoskeleyMono Nerd Font"
+font-family = Maple Mono NF
 font-size = 14
-font-thicken = true
+#font-thicken = true
 font-feature = +liga
 font-feature = +calt
 
@@ -121,4 +123,4 @@ macos-option-as-alt = right
 confirm-close-surface = true
 mouse-hide-while-typing = true
 auto-update = check
-focus-follows-mouse = true
+focus-follows-mouse = false
