@@ -58,8 +58,8 @@ if type -q zoxide
     zoxide init --cmd=cd fish | source
 end
 
-# starship prompt
-if type -q starship
+# starship prompt (set DISABLE_STARSHIP=1 to skip, e.g. `set -Ux DISABLE_STARSHIP 1`)
+if type -q starship; and not set -q DISABLE_STARSHIP
     starship init fish | source
 end
 
