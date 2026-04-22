@@ -111,6 +111,11 @@ keybind = alt+shift+right_bracket=text:\x1b}
 # ── Claude Code (Shift+Enter for newline in tmux) ────────────
 keybind = shift+enter=text:\x1b\r
 
+# ── Modifier Keys ────────────────────────────────────────────
+# Right Option sends Alt/ESC sequences (tmux, readline, alt+shift+* binds)
+# Left Option stays as macOS compose key (ø, å, accents)
+macos-option-as-alt = right
+
 # ── Misc ─────────────────────────────────────────────────────
 #keybind = cmd+q=unbind
 confirm-close-surface = true
