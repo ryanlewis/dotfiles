@@ -8,7 +8,7 @@
 {{ end }}
 
 # Per-host ignores: managed gitconfig drifts here (gh credential helper writes)
-{{ if eq .chezmoi.hostname "LHVUKM-0018" }}
+{{ if and .isWork (eq .chezmoi.hostname .workHostname) }}
 .gitconfig
 {{ end }}
 

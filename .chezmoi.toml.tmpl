@@ -12,11 +12,25 @@
 {{- end -}}
 {{- $hostname := .chezmoi.hostname -}}
 {{- $os := .chezmoi.os -}}
+{{- $isWork := false -}}
+{{- $workHostname := "" -}}
+{{- if env "CI" -}}
+    {{- /* CI is never a work machine */ -}}
+{{- else if env "CHEZMOI_USER_NAME" -}}
+    {{- /* Non-interactive env; skip prompt, treat as personal */ -}}
+{{- else -}}
+    {{- $isWork = promptBoolOnce . "isWork" "Is this a work machine" false -}}
+    {{- if $isWork -}}
+        {{- $workHostname = promptStringOnce . "workHostname" "Work machine hostname (e.g. output of `hostname`)" $hostname -}}
+    {{- end -}}
+{{- end -}}
 
 [data]
     name = {{ $name | quote }}
     email = {{ $email | quote }}
     hostname = {{ $hostname | quote }}
+    isWork = {{ $isWork }}
+    workHostname = {{ $workHostname | quote }}
     
     # OS-specific settings
     {{- if eq $os "darwin" }}

@@ -129,4 +129,8 @@ style_root = "bold red"
 ssh_only = false
 format = "[$hostname]($style) "
 style = "bold green"
-aliases = { "LHVUKM-0018" = "work-mac" }
+{{ if and .isWork .workHostname -}}
+aliases = { {{ .workHostname | quote }} = "work-mac" }
+{{- else -}}
+aliases = {}
+{{- end }}
