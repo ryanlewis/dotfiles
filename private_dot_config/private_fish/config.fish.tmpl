@@ -134,6 +134,10 @@ set -gx LESS "-R"
 # Enable vi keys in less
 set -gx LESSKEY "$HOME/.lesskey"
 
+# GPG: tell gpg-agent which terminal to draw pinentry on.
+# Needed for piped input (e.g. `pbpaste | gpg --decrypt`) where stdin isn't a TTY.
+set -gx GPG_TTY (tty)
+
 # Fish greeting
 set -g fish_greeting ""
 
