@@ -6,6 +6,7 @@
 #   - httpie (not in aqua, httpie-go is different)
 #   - broot (not in aqua registry)
 #   - tldr/tealdeer (tlrc available but different implementation)
+#   - pinentry (passphrase prompt for gpg-agent)
 #
 # Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 set -e
@@ -162,6 +163,25 @@ if ! command -v broot &> /dev/null; then
     fi
     {{ end -}}
 fi
+
+# Install pinentry (passphrase prompt for gpg-agent)
+{{ if eq .chezmoi.os "darwin" -}}
+if ! command -v pinentry-mac &> /dev/null; then
+    echo "🔐 Installing pinentry-mac..."
+    brew install pinentry-mac
+fi
+{{ else if eq .chezmoi.os "linux" -}}
+if ! command -v pinentry &> /dev/null; then
+    echo "🔐 Installing pinentry..."
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq pinentry-curses
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y pinentry
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm pinentry
+    fi
+fi
+{{ end -}}
 
 # Install worktrunk (git worktree manager)
 if ! command -v wt &> /dev/null; then
