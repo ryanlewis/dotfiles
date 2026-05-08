@@ -1,0 +1,7 @@
+default-cache-ttl 600
+max-cache-ttl 7200
+{{ if eq .chezmoi.os "darwin" -}}
+pinentry-program {{ output "brew" "--prefix" | trim }}/bin/pinentry-mac
+{{ else if eq .chezmoi.os "linux" -}}
+pinentry-program {{ or (lookPath "pinentry-curses") "/usr/bin/pinentry" }}
+{{ end -}}
