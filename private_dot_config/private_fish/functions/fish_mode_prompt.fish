@@ -1,4 +1,13 @@
 function fish_mode_prompt
+    if not set -q __fish_os_glyph
+        switch (uname)
+            case Darwin
+                set -g __fish_os_glyph \xef\x85\xb9
+            case '*'
+                set -g __fish_os_glyph \xf3\xb0\x8c\xbd
+        end
+    end
+    echo -en "\e[1;37m$__fish_os_glyph\e[0m  "
     switch $fish_bind_mode
         case default
             echo -en "\e[1;31m\xef\x80\xa3\e[0m  "
