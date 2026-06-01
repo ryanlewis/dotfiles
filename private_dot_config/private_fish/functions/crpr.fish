@@ -38,8 +38,15 @@ function crpr --description "Open a GitHub PR in a worktree and run /code-review
         end
     end
 
-    # mise config in a freshly created worktree is trusted by the pre-start hook
-    # in ~/.config/worktrunk/config.toml, which blocks until done before the -x
-    # command launches Claude.
-    wt switch "pr:$pr" -x "claude /code-review"
+    # wt's shell integration cd's us into the (newly created) worktree. The
+    # pre-start mise-trust hook in ~/.config/worktrunk/config.toml runs
+    # (blocking) during the switch, so Claude starts against a trusted config.
+    if not wt switch "pr:$pr"
+        return 1
+    end
+
+    # Passed as a single argument (fish does not word-split a string variable),
+    # so no nested quoting. /code-review is a skill triggered from the prompt.
+    set -l prompt 'Compare this PR against origin/main and complete a /code-review. Once the results are back, draft some comment replies. Be approachable and friendly (but not overly friendly), and do not sugar-coat. Keep concise, pitched principal -> mid-level. Let me review before doing anything.'
+    claude $prompt
 end
