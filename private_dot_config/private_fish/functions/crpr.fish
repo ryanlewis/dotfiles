@@ -47,7 +47,7 @@ function crpr --description "Open a GitHub PR in a worktree and run /code-review
 
     # Passed as a single argument (fish does not word-split a string variable),
     # so no nested quoting. /code-review is a skill triggered from the prompt.
-    set -l prompt 'Compare this PR against origin/main and complete a /code-review. Once the results are back, draft some comment replies. Be approachable and friendly (but not overly friendly), and do not sugar-coat. Keep concise, pitched principal -> mid-level. Let me review before doing anything.'
+    set -l prompt 'Compare this PR against origin/main and complete a /code-review. Once the results are back, draft some comment replies. Be approachable and friendly (but not overly friendly), and do not sugar-coat. Keep concise, pitched principal -> mid-level. Let me review before doing anything. After presenting the drafts, confirm the next steps with me (change anything, or publish the comments).'
     claude $prompt
 
     # On a clean exit from Claude, offer to prune the worktree. `wt remove`
