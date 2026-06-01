@@ -1,0 +1,21 @@
+# Worktrunk user config.
+# NOTE: kept as a plain (non-.tmpl) file — the {{ ... }} below are Worktrunk
+# template variables, not chezmoi ones, and must reach Worktrunk untouched.
+
+# Create worktrees inside the repo under .worktrees/
+worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
+
+# LLM-generated commit messages during `wt merge`
+[commit.generation]
+command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence --model=haiku --tools='' --disable-slash-commands --setting-sources='' --system-prompt=''"
+
+# Always show CI status and diffstats
+[list]
+full = true
+
+# Trust any mise config in a freshly created worktree. pre-start blocks until
+# done, so it completes before any --execute command (e.g. crpr's `claude`).
+# `mise trust -a` is a no-op (exit 0) when there's no config, so it's safe to
+# run on every worktree, not just PR reviews.
+[pre-start]
+mise-trust = "mise trust -a"
