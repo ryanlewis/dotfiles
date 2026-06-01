@@ -184,18 +184,33 @@ fi
 {{ end -}}
 
 # Install worktrunk (git worktree manager)
+# macOS: Homebrew. Linux: cargo (no upstream Homebrew bottle we want to rely on).
+{{ if eq .chezmoi.os "darwin" -}}
+# Migrate any old cargo-installed copy over to Homebrew.
+if command -v cargo &> /dev/null && cargo install --list 2>/dev/null | grep -q '^worktrunk '; then
+    echo "🌳 Removing cargo-installed worktrunk (migrating to Homebrew)..."
+    cargo uninstall worktrunk || true
+fi
+if ! brew list worktrunk &> /dev/null; then
+    echo "🌳 Installing worktrunk via Homebrew..."
+    brew install worktrunk
+    # Set up Fish shell integration (wrapper function + completions)
+    command -v wt &> /dev/null && wt config shell install -y
+fi
+{{ else if eq .chezmoi.os "linux" -}}
 if ! command -v wt &> /dev/null; then
     echo "🌳 Installing worktrunk..."
     if command -v cargo &> /dev/null; then
+        # worktrunk's MSRV moves with the toolchain; keep stable current first.
+        command -v rustup &> /dev/null && rustup update stable
         cargo install worktrunk
         # Set up Fish shell integration (wrapper function + completions)
-        if command -v wt &> /dev/null; then
-            wt config shell install -y
-        fi
+        command -v wt &> /dev/null && wt config shell install -y
     else
         echo "⚠️  cargo not found, skipping worktrunk installation"
     fi
 fi
+{{ end -}}
 
 # Install biome (via npm)
 if ! command -v biome &> /dev/null; then

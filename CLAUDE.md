@@ -99,7 +99,7 @@ chezmoi add ~/.config/fish/newfile.fish
 - **Tool installation**:
   - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `~/.config/mise/config.toml`
   - **Language runtimes via mise** (Node.js, Python, Go, Bun)
-  - **4 non-aqua tools** (httpie, broot, tldr, worktrunk) - binary downloads, package managers, or cargo
+  - **4 non-aqua tools** (httpie, broot, tldr, worktrunk) - binary downloads, package managers, or cargo (worktrunk: Homebrew on macOS, cargo on Linux)
 - **Architecture detection**: Automatic for x86_64, arm64
 - **Cleanup**: Old installations automatically removed after mise aqua setup
 - **Error handling**: Scripts continue on failure (e.g., Python/Conda ToS issue)
@@ -187,7 +187,8 @@ This repository replaces traditional Unix tools with modern alternatives:
 - Node.js 24.14.1, Python (Miniconda3-latest), Go 1.26.1, Bun 1.3.11
 
 **Non-aqua tools** (4 tools) - Installed via package managers, binary downloads, or cargo:
-- httpie, broot, tldr, worktrunk
+- httpie, broot, tldr
+- worktrunk - Homebrew on macOS (`brew install worktrunk`), cargo on Linux (`cargo install worktrunk`); installer migrates any old cargo build to Homebrew on macOS
 
 ### Installed Command-Line Tools
 
@@ -223,7 +224,7 @@ This repository replaces traditional Unix tools with modern alternatives:
 - **httpie (https)** - Friendly HTTP client
 - **broot** - Interactive tree navigation
 - **tldr** - Simplified man pages
-- **worktrunk (wt)** - Git worktree manager for parallel AI agent workflows
+- **worktrunk (wt)** - Git worktree manager for parallel AI agent workflows (Homebrew on macOS, cargo on Linux)
 
 #### Kubernetes Tools (via mise aqua)
 - **kubectl** - Kubernetes CLI
