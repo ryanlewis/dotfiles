@@ -49,4 +49,18 @@ function crpr --description "Open a GitHub PR in a worktree and run /code-review
     # so no nested quoting. /code-review is a skill triggered from the prompt.
     set -l prompt 'Compare this PR against origin/main and complete a /code-review. Once the results are back, draft some comment replies. Be approachable and friendly (but not overly friendly), and do not sugar-coat. Keep concise, pitched principal -> mid-level. Let me review before doing anything.'
     claude $prompt
+
+    # On a clean exit from Claude, offer to prune the worktree. `wt remove`
+    # drops the current worktree, cd's back to the primary repo, and keeps the
+    # (unmerged) PR branch. Defaults to No so an accidental Enter is harmless.
+    set -l prune
+    if command -q gum
+        gum confirm --default=false "Prune the pr:$pr worktree?"; and set prune yes
+    else
+        read -l -P "Prune the pr:$pr worktree? [y/N] " reply
+        string match -qi 'y*' -- $reply; and set prune yes
+    end
+    if test -n "$prune"
+        wt remove
+    end
 end
