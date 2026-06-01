@@ -3,15 +3,26 @@
 # Claude Code statusLine command
 # Mirrors the user's Starship prompt configuration
 
-# Read JSON input from stdin — single jq call extracts all fields
-IFS=$'\t' read -r model_name current_dir used_pct worktree_name worktree_branch < <(
-    jq -r '[
+# Read JSON input from stdin — single jq call emits one field per line.
+# Line-based (not tab-joined) so empty optional fields aren't collapsed by read.
+{
+    IFS= read -r model_name
+    IFS= read -r current_dir
+    IFS= read -r used_pct
+    IFS= read -r worktree_name
+    IFS= read -r worktree_branch
+    IFS= read -r effort_level
+    IFS= read -r fast_mode
+} < <(
+    jq -r '
         .model.display_name,
         .workspace.current_dir,
         (.context_window.used_percentage // ""),
         (.worktree.name // ""),
-        (.worktree.branch // "")
-    ] | join("\t")' </dev/stdin
+        (.worktree.branch // ""),
+        (.effort.level // ""),
+        (.fast_mode // false)
+    ' </dev/stdin
 )
 
 # Shorten model name: "Opus 4.6 (1M context)" → "Opus 4.6 (1M)"
@@ -111,6 +122,25 @@ fi
 
 parts+=" \033[2;37m|\033[0m"
 parts+=" \033[0;37m${model_name}\033[0m"
+
+# Fast mode (/fast toggle) — bolt indicator next to the model
+[[ "$fast_mode" == "true" ]] && parts+=" \033[1;33m⚡\033[0m"
+
+# Model effort (reasoning level) — only present when the model supports it
+if [[ -n "$effort_level" ]]; then
+    # Note: /effort ultracode reports as "xhigh" here — there is no "ultra"
+    # value in the payload, so the two are indistinguishable in the statusline.
+    case "$effort_level" in
+        low)    eff_colour="1;32"       ;; # green
+        medium) eff_colour="1;37"       ;; # white
+        high)   eff_colour="1;33"       ;; # yellow
+        xhigh)  eff_colour="1;38;5;208" ;; # orange
+        max)    eff_colour="1;31"       ;; # red
+        *)      eff_colour="0;37"       ;; # fallback
+    esac
+    parts+=" \033[${eff_colour}m${effort_level}\033[0m"
+fi
+
 if [[ -n "$context_str" ]]; then
     if (( used_int < 10 )); then
         ctx_colour="1;32"        # green
