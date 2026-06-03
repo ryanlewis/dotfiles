@@ -99,16 +99,6 @@ end
 set -gx PATH /opt/homebrew/bin /opt/homebrew/sbin $PATH
 # JetBrains Toolbox shell scripts
 set -gx PATH "$HOME/Library/Application Support/JetBrains/Toolbox/scripts" $PATH
-# cmux ships shell integration for bash/zsh only, not fish. Prepend cmux's bundled
-# bin inside cmux panes so its `claude` wrapper runs (injects --session-id/--settings
-# → hooks fire → session registers → "Fork Conversation" can detect the session).
-# The wrapper skips its own dir when locating the real claude, so nothing is lost.
-if set -q CMUX_SHELL_INTEGRATION
-    set -l cmux_bin /Applications/cmux.app/Contents/Resources/bin
-    if test -d $cmux_bin; and not contains $cmux_bin $PATH
-        set -gx PATH $cmux_bin $PATH
-    end
-end
 # Obsidian CLI
 if test -x /Applications/Obsidian.app/Contents/MacOS/Obsidian
     alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
