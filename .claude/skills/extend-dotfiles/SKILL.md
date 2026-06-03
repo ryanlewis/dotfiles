@@ -1,15 +1,13 @@
 ---
 name: extend-dotfiles
 description: >-
-  Add a CLI tool or a Fish function to Ryan's chezmoi dotfiles repo so it lands
-  in every place it needs to — install source, README, test.sh, and the `tools`
-  function — instead of just one. Use this whenever working in the dotfiles repo
-  (chezmoi source dir, ~/.local/share/chezmoi) and the task is "add/install
-  <tool>", "wire up <tool>", "add a fish function for X", "make <X> a function",
-  or removing one of those. The whole point is that a tool or function lives in
-  several files that drift apart if you only edit one; this skill keeps them in
-  sync. Trigger it even when the user just says "add ripgrep" or "add a function
-  to do X" without naming chezmoi, as long as you're in this repo.
+  Add or remove a CLI tool or a Fish function from these dotfiles, keeping it
+  consistent across every place it lives — install source (mise aqua config or
+  the install-tools script), test.sh, README, the `tools` function (listed
+  twice), and a config.fish alias for coreutil replacements — instead of editing
+  just one and letting the rest drift. Use whenever the task is adding,
+  installing, or wiring up a tool, or adding/making a Fish function — e.g. "add
+  ripgrep", "wire up hyperfine", "add a function to do X".
 ---
 
 # Extending the dotfiles
