@@ -1,0 +1,44 @@
+{
+  "skill_name": "extend-dotfiles",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Add the hyperfine CLI tool to this dotfiles repo so I can benchmark commands.",
+      "expected_output": "All sync points updated consistently",
+      "assertions": [
+        "install source updated",
+        "test.sh check_command",
+        "README mentions tool",
+        "tools.fish array entry",
+        "tools.fish echo entry"
+      ],
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "Add procs to this dotfiles repo as a modern replacement for ps.",
+      "expected_output": "All sync points updated consistently",
+      "assertions": [
+        "install source updated",
+        "test.sh check_command",
+        "README mentions tool",
+        "tools.fish array entry",
+        "tools.fish echo entry"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Add a fish function called weather that shows the forecast for a given city by curling wttr.in (e.g. weather London).",
+      "expected_output": "All sync points updated consistently",
+      "assertions": [
+        "functions/<name>.fish created",
+        "test.sh check_fish_function",
+        "README mentions function",
+        "tools.fish array entry",
+        "tools.fish echo entry"
+      ],
+      "files": []
+    }
+  ]
+}
