@@ -4,241 +4,60 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is a cross-platform dotfiles repository managed by chezmoi. It provides a consistent development environment across macOS and Linux, optimized for Fish shell with modern CLI tool replacements.
+Cross-platform dotfiles managed by [chezmoi](https://chezmoi.io/), targeting macOS and Linux, optimized for Fish shell with modern CLI tool replacements. This repo also manages Claude Code's own config (see `dot_claude/`).
 
 ## Essential Commands
 
-### Installation
 ```bash
-# One-liner installation (recommended)
-curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
+# Edit / apply locally (run from anywhere; `dotfiles` is a Fish function)
+dotfiles edit          # cd to this source dir
+dotfiles diff          # preview what `apply` would change
+dotfiles apply         # apply to $HOME
+dotfiles push / pull   # commit+push, or pull+apply
 
-# With environment variables
-QUICK_INSTALL=true curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
+# Equivalent chezmoi primitives
+chezmoi diff
+chezmoi apply -v
+chezmoi add ~/.config/fish/foo.fish   # pull an external file into this repo
 
-# Or using chezmoi directly
-chezmoi init --apply ryanlewis/dotfiles
+# Test
+./test.sh              # verify tools/functions/configs are present
+./test.sh --minimal    # skip language-runtime checks (faster)
+./docker-test.sh       # clean Ubuntu 24.04 container; --ci for non-interactive
 ```
 
-### Testing
-```bash
-# Run complete test suite
-./test.sh
+There is no build step — "applying" is running the chezmoi templates against `$HOME`. CI (`.github/workflows/test.yml`) runs `install.sh` + `test.sh` across Ubuntu and macOS runners.
 
-# Run minimal tests (faster)
-./test.sh --minimal
+## Architecture
 
-# Test in Docker container (Ubuntu 24.04)
-./docker-test.sh
+### chezmoi source-state naming (how files map to `$HOME`)
+File/dir name prefixes are significant and determine the target path and behavior:
+- `dot_foo` → `~/.foo`; `private_` → mode 0600; `executable_` → +x; `.tmpl` → rendered as a Go template.
+- These compose: `private_dot_config/private_fish/config.fish.tmpl` → `~/.config/fish/config.fish`.
+- `dot_claude/` → `~/.claude/` — this repo manages Claude Code's subagents (`agents/`), slash commands (`commands/`), hooks (`hooks/`), statusline, and a `create_settings.json` reference for the settings file.
 
-# Docker CI mode
-./docker-test.sh --ci
-```
+### Templating and per-machine data
+`.chezmoi.toml.tmpl` computes the `[data]` map consumed by every `.tmpl`. Key variables: `.chezmoi.os` (darwin/linux), `.chezmoi.arch`, `.brewPrefix`, `.packageManager`, and the **work-machine** vars `.isWork` / `.workHostname` (prompted once on a personal machine). Example use: `.chezmoiignore` drops the managed `.gitconfig` on the work host so `gh`'s credential-helper writes don't cause drift. In CI or when `CHEZMOI_USER_NAME` is set, prompts are skipped and personal/non-work defaults are used.
 
-### Development Workflow
+`.chezmoiignore` lists files that exist in the repo but are **not** deployed (README, CLAUDE.md, install/test scripts, OS-gated `conf.d/*.fish`). `.chezmoiremove` deletes obsolete files from `$HOME` on apply.
 
-After installation, your dotfiles live in chezmoi's source directory at `~/.local/share/chezmoi`.
+### Install & tool provisioning
+`install.sh` is a minimal bootstrap: it only installs chezmoi and runs `chezmoi init --apply`. Everything else happens via ordered scripts in `.chezmoiscripts/`:
+- `run_once_*` — one-time setup (Fish, mise, tpm, bun); `run_once_after_*` runs at the end (set login shell).
+- `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_02-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation.
 
-#### Quick Commands (using Fish function)
-```bash
-dotfiles edit      # Go to chezmoi source for editing
-dotfiles diff      # Preview changes before applying
-dotfiles apply     # Apply changes locally
-dotfiles push      # Commit and push all changes
-dotfiles pull      # Pull latest from GitHub and apply
-dotfiles status    # Check git status
-```
+Tools come from two places — keep both in sync when adding/removing a tool:
+1. **mise** (`private_dot_config/mise/config.toml.tmpl`) — language runtimes + the `aqua:` backend tools (the bulk of the CLI suite) + a couple of mise plugins (`television`). This is the source of truth for versions; do **not** hardcode versions in docs.
+2. **`run_onchange_02-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
 
-#### Standard Chezmoi Workflow
-```bash
-# Make changes
-chezmoi cd                      # Go to source directory
-# Edit files
-chezmoi diff                    # Preview changes
-chezmoi apply                   # Apply locally
+Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 
-# Version control
-chezmoi git add -A
-chezmoi git commit -m "Update"
-chezmoi git push
+### Fish layout
+Config and functions live under `private_dot_config/private_fish/`. Functions are autoloaded from `functions/`; `conf.d/` files load on startup (several are `.tmpl` and OS-gated via `.chezmoiignore`). Machine-specific Fish config that should not be managed goes in `~/.config/fish/config.local.fish`.
 
-# Update from GitHub
-chezmoi update                  # Pull and apply latest
+## Conventions
 
-# Add new files
-chezmoi add ~/.config/fish/newfile.fish
-```
-
-## Architecture and Key Technologies
-
-### Core Components
-- **Package Manager**: chezmoi with Go templating for OS-specific configurations
-- **Shell**: Fish shell with vi-mode enabled
-- **Version Manager**: mise for Node.js, Python (Miniconda), Go, and Bun
-- **CLI Tool Manager**: mise aqua backend for 22 modern CLI tools (bat, fd, eza, kubectl, granted, etc.)
-- **Terminal Multiplexer**: tmux with vi-mode and mobile device optimizations
-
-### Template System
-- Files ending in `.tmpl` use chezmoi's Go templating
-- OS detection via `{{ .chezmoi.os }}` (darwin/linux)
-- Platform-specific features controlled through templates
-- Ubuntu-specific handling for tool names (batcat→bat, fdfind→fd)
-- User configuration via `.chezmoi.toml.tmpl` (prompts for name/email in interactive mode)
-
-### Directory Structure
-- `private_dot_config/`: Configs that become `~/.config/`
-- `dot_*`: Files that become `~/.*` (e.g., `dot_gitconfig.tmpl` → `~/.gitconfig`)
-- Templates process during `chezmoi apply` based on OS and environment
-
-### Installation Architecture
-- **Minimal bootstrap**: `install.sh` only installs chezmoi and runs `chezmoi init`
-- **Chezmoi scripts**: All tool installation happens via `.chezmoiscripts/`
-  - `run_once_*` scripts run once for initial setup (mise installation)
-  - `run_onchange_*` scripts re-run when tool versions change
-  - Templates handle OS-specific logic
-- **Tool installation**:
-  - **22 CLI tools via mise aqua backend** (bat, fd, eza, gh, kubectl, granted, etc.) - installed automatically from `~/.config/mise/config.toml`
-  - **Language runtimes via mise** (Node.js, Python, Go, Bun)
-  - **4 non-aqua tools** (httpie, broot, tldr, worktrunk) - binary downloads, package managers, or cargo (worktrunk: Homebrew on macOS, cargo on Linux)
-- **Architecture detection**: Automatic for x86_64, arm64
-- **Cleanup**: Old installations automatically removed after mise aqua setup
-- **Error handling**: Scripts continue on failure (e.g., Python/Conda ToS issue)
-
-## Development Patterns
-
-### Fish Functions
-- Custom functions in `private_dot_config/private_fish/functions/`
-- FZF integration functions prefixed with `f` (fcd, fgit, fgrep, fopen, fkill)
-- Functions automatically loaded by Fish on startup
-
-#### Key Fish Functions Reference
-- **dotfiles** - Manage dotfiles (edit, diff, apply, push, pull, status)
-- **tools** - Display all available tools with descriptions (--interactive, --table)
-- **yank** - Copy to clipboard via OSC 52 (works over SSH)
-- **ta** - Tmux session manager (attach or create)
-- **mkcd** - Make directory and cd into it
-- **backup** - Create timestamped backup
-- **extract** - Extract any archive format
-- **update** - Update system packages
-- **ports** - Show listening ports
-- **myip** - Display IP addresses
-- **mise-setup** - Show configured mise tools and install hints
-- **mise-install-latest** - Install latest versions
-- **mise-update** - Update mise and all plugins
-
-### Configuration Files
-- Fish config: `private_dot_config/private_fish/config.fish.tmpl`
-- Tmux config: `dot_tmux.conf`
-- Git config: `dot_gitconfig.tmpl`
-- Starship prompt: `private_dot_config/starship.toml`
-- Tool versions: `private_dot_config/mise/config.toml.tmpl`
-
-### Testing Approach
-- `test.sh` verifies all tools are installed and accessible
-- Tests check command availability, Fish functions, and configurations
-- Docker testing provides isolated environment verification
-
-## Important Notes
-
-### Mobile Development
-- Tmux configured for Terminus iPhone app compatibility
-- Special key mapping: Ctrl+_ mapped to Shift+Tab for Claude Code planning mode
-
-### Modern CLI Tools
-This repository replaces traditional Unix tools with modern alternatives:
-- `ls` → `eza`
-- `cat` → `bat`
-- `find` → `fd`
-- `grep` → `ripgrep (rg)`
-- `cd` → `zoxide (z)`
-- `top` → `btop`
-- `df` → `duf`
-- `du` → `dust`
-
-### Environment Variables
-- `CI`: Set in CI environments for non-interactive installation
-- `QUICK_INSTALL`: Skip language runtime installations
-- `NO_CONFIRM`: Skip installation confirmations
-- `CHEZMOI_USER_NAME`: Name for git config (avoids interactive prompt)
-- `CHEZMOI_USER_EMAIL`: Email for git config (avoids interactive prompt)
-
-### Cross-Platform Considerations
-- macOS uses Homebrew for some dependencies
-- Linux supports apt, dnf, and pacman package managers
-- Binary downloads automatically detect CPU architecture
-- Ubuntu requires special handling for renamed packages
-
-### Known Issues
-- Python/Miniconda installation may fail with "Terms of Service" error - the script continues without Python
-- Old installations (Homebrew, apt packages, binary downloads) are automatically cleaned up after mise aqua setup
-- mise aqua provides consistent binary names across platforms (bat, fd, etc.) - no more Ubuntu-specific renaming
-
-## Complete Tools Reference
-
-### Tool Installation Methods
-
-**mise aqua backend** (22 tools) - Managed via `~/.config/mise/config.toml`:
-- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
-- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
-- Kubernetes tools: kubectl, kubectx, kubens
-- AWS tools: granted
-
-**mise** (4 language runtimes) - Managed via `~/.config/mise/config.toml`:
-- Node.js 24.14.1, Python (Miniconda3-latest), Go 1.26.1, Bun 1.3.11
-
-**Non-aqua tools** (4 tools) - Installed via package managers, binary downloads, or cargo:
-- httpie, broot, tldr
-- worktrunk - Homebrew on macOS (`brew install worktrunk`), cargo on Linux (`cargo install worktrunk`); installer migrates any old cargo build to Homebrew on macOS
-
-### Installed Command-Line Tools
-
-#### Core Tools
-- **chezmoi** - Dotfiles manager (bootstrap)
-- **fish** - Modern shell with autosuggestions (system package)
-- **mise** - Version manager for languages and CLI tools
-
-#### Modern CLI Replacements (via mise aqua)
-- **eza** → ls (with icons, git info)
-- **bat** → cat (syntax highlighting)
-- **fd** → find (simpler, faster)
-- **ripgrep (rg)** → grep (blazing fast)
-- **zoxide (z)** → cd (learns your directories)
-- **btop** → top (beautiful UI)
-- **duf** → df (friendly disk usage)
-- **dust** → du (intuitive disk analyzer)
-
-#### Development Tools
-**Via mise aqua:**
-- **fzf** - Fuzzy finder (Ctrl+R, Ctrl+T, Alt+C)
-- **starship** - Cross-shell prompt with git info
-- **atuin** - Better shell history with search
-- **delta** - Beautiful git diffs
-- **lazygit (lg)** - Git TUI
-- **gh** - GitHub CLI
-- **jq** - JSON processor
-- **just** - Modern make/task runner
-- **gum** - Pretty shell scripts
-- **direnv** - Auto-load .envrc files
-
-**Via package managers / cargo:**
-- **httpie (https)** - Friendly HTTP client
-- **broot** - Interactive tree navigation
-- **tldr** - Simplified man pages
-- **worktrunk (wt)** - Git worktree manager for parallel AI agent workflows (Homebrew on macOS, cargo on Linux)
-
-#### Kubernetes Tools (via mise aqua)
-- **kubectl** - Kubernetes CLI
-- **kubectx** - Switch between contexts
-- **kubens** - Switch between namespaces
-
-#### AWS Tools (via mise aqua)
-- **granted** - AWS credential management (assume, assumego)
-
-#### Language Runtimes (via mise)
-- **Node.js** 24.14.1 (LTS)
-- **Python** (Miniconda3-latest)
-- **Go** 1.26.1
-- **Bun** 1.3.11
-
-### Testing & Validation
-Run `./test.sh` to verify all tools are installed correctly. Use `./test.sh --minimal` for faster testing without language runtime checks.
+- The canonical list of installed tools and Fish functions is the `tools` Fish function and the mise config — prefer those over re-listing here. README.md has the long-form human-facing tool descriptions.
+- Scripts continue on non-fatal failures (e.g. Miniconda ToS) rather than aborting the whole apply.
+- Renovate (`renovate.json`) opens PRs for mise tool versions, GitHub Actions, and binary versions pinned in scripts; minor/patch auto-merge, majors need review.
+- This repo replaces traditional Unix tools: `ls`→eza, `cat`→bat, `find`→fd, `grep`→rg, `cd`→zoxide (z), `top`→btop, `df`→duf, `du`→dust.
