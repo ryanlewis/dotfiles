@@ -10,7 +10,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🛠️ Useful Fish functions and utilities
 - 📦 Template-based configuration for different environments
 - 🔧 mise for language runtimes (Node.js, Python, Go, Bun)
-- 🌊 mise aqua backend for 21 modern CLI tools (bat, fd, eza, kubectl, gh, etc.)
+- 🌊 mise aqua backend for 22 modern CLI tools (bat, fd, eza, kubectl, gh, etc.)
 - 🔍 Modern CLI tools: Complete suite of replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
 - 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
@@ -231,16 +231,20 @@ This configuration includes a comprehensive suite of modern CLI tools:
 
 This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
-**Language Runtimes** (4 tools):
-- Node.js 22.11.0 (LTS)
+**Language Runtimes** (5 tools):
+- Node.js 24.14.1 (LTS)
 - Python (via Miniconda)
-- Go 1.25.1
-- Bun 1.3.8
+- Go 1.26.1
+- Bun 1.3.11
+- Java (Eclipse Temurin 21 LTS)
 
-**CLI Tools via aqua backend** (21 tools):
-- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, btop, duf, dust
-- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv
+**CLI Tools via aqua backend** (22 tools):
+- Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv, uv
 - Kubernetes tools: kubectl, kubectx, kubens
+- AWS tools: granted
+
+> Versions above track `private_dot_config/mise/config.toml.tmpl`, which is the source of truth.
 
 All tools are automatically installed via `~/.config/mise/config.toml` when you run:
 
@@ -473,23 +477,20 @@ Feel free to fork and customize for your own use!
 
 ## Tool Versions
 
-Last updated: January 2025
+Last updated: June 2026
+
+The authoritative version list is `private_dot_config/mise/config.toml.tmpl`; Renovate keeps it current. CLI tools track `latest`, so only the pinned language runtimes are listed here.
 
 ### Core Tools
-- mise: v2025.12.13
-- chezmoi: Latest from official installer
+- chezmoi: latest from official installer
+- mise: latest (e.g. v2026.3.17)
 
-### CLI Tools
-- delta: 0.18.2
-- dust: 1.1.1
-- Other tools: Latest available from package managers
-
-### Programming Languages
-- Node.js: 22.11.0 (LTS) - via mise
-- Python: miniconda3-latest - via mise
-- Go: 1.25.5 - via mise
-- Bun: 1.3.8 - via mise
-- Bun: latest - via official installer
+### Programming Languages (pinned via mise)
+- Node.js: 24.14.1 (LTS)
+- Python: miniconda3-latest
+- Go: 1.26.1
+- Bun: 1.3.11
+- Java: temurin-21 (Eclipse Temurin 21 LTS)
 
 ## License
 
