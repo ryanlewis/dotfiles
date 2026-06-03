@@ -51,3 +51,5 @@ fishd.*
 *.backup
 *.bak
 *.old
+# Personal, per-checkout Claude Code overrides (sandbox/permissions)
+.claude/settings.local.json
