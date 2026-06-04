@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Cross-platform dotfiles managed by [chezmoi](https://chezmoi.io/), targeting macOS and Linux, with modern CLI tool replacements. The interactive shell is **Zsh** (the default), with a parallel **Fish** configuration kept feature-for-feature in sync. This repo also manages Claude Code's own config (see `dot_claude/`).
+Cross-platform dotfiles managed by [chezmoi](https://chezmoi.io/), targeting macOS and Linux, with modern CLI tool replacements. Two interactive shells are maintained in parallel feature-for-feature: **Zsh** (the default) and **Fish**. This repo also manages Claude Code's own config (see `dot_claude/`).
 
 ## Essential Commands
 
@@ -52,12 +52,16 @@ Tools come from two places — keep both in sync when adding/removing a tool:
 
 Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 
-### Shell layout (Zsh + Fish, kept in sync)
-**Zsh is the default interactive shell**; the Fish config is maintained in parallel feature-for-feature. When adding/removing a tool alias, a shell function, or a `tools` cheat-sheet entry, edit **both** shells — the repo-local `extend-dotfiles` skill encodes the full dual-shell checklist.
+### Shell layout (Zsh + Fish)
+> **Invariant:** the two shells are kept feature-for-feature in sync. Any tool alias, shell function, or `tools` cheat-sheet entry must be edited in **both**. The repo-local `extend-dotfiles` skill encodes the full dual-shell checklist — use it.
 
-- **Zsh** — `~/.zshenv` (`dot_zshenv.tmpl`: PATH/env for all shells, incl. non-interactive) and `~/.zshrc` (`dot_zshrc.tmpl`: interactive setup). Functions live in `private_dot_config/zsh/functions/*.zsh` and are **sourced** in a loop by `.zshrc` (not autoloaded); `conf.d/*.zsh` (fzf, macos, greeting, motd) likewise. The features Fish ships built-in (autosuggestions, syntax-highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` via `.chezmoiexternal.toml.tmpl` — there is no plugin manager. Unmanaged machine config: `~/.config/zsh/config.local.zsh`.
+- **Zsh** (default interactive shell):
+  - *Entry points* — `~/.zshenv` (`dot_zshenv.tmpl`: PATH/env for all shells, incl. non-interactive) and `~/.zshrc` (`dot_zshrc.tmpl`: interactive setup).
+  - *Loading* — functions (`private_dot_config/zsh/functions/*.zsh`) and `conf.d/*.zsh` (fzf, macos, greeting, motd) are **sourced** in a `for` loop by `.zshrc`, not autoloaded.
+  - *Plugins* — the bits Fish ships built-in (autosuggestions, syntax-highlighting) plus `zsh-abbr` are cloned by chezmoi into `~/.config/zsh/plugins` via `.chezmoiexternal.toml.tmpl`; no plugin manager. (syntax-highlighting must be sourced last.)
+  - *Unmanaged* — `~/.config/zsh/config.local.zsh`.
 - **Fish** — under `private_dot_config/private_fish/`. Functions are autoloaded from `functions/`; `conf.d/` files load on startup (several `.tmpl`, OS-gated via `.chezmoiignore`). Unmanaged: `~/.config/fish/config.local.fish`.
-- starship (prompt) and atuin (history) are shared across both, so the two shells behave identically. cmux self-wires its own zsh/fish integration.
+- **Shared** — starship (prompt) and atuin (history) back both shells, so they behave identically. cmux self-wires its own zsh/fish integration.
 
 ## Conventions
 
