@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Cross-platform dotfiles managed by [chezmoi](https://chezmoi.io/), targeting macOS and Linux, optimized for Fish shell with modern CLI tool replacements. This repo also manages Claude Code's own config (see `dot_claude/`).
+Cross-platform dotfiles managed by [chezmoi](https://chezmoi.io/), targeting macOS and Linux, with modern CLI tool replacements. The interactive shell is **Zsh** (the default), with a parallel **Fish** configuration kept feature-for-feature in sync. This repo also manages Claude Code's own config (see `dot_claude/`).
 
 ## Essential Commands
 
 ```bash
-# Edit / apply locally (run from anywhere; `dotfiles` is a Fish function)
+# Edit / apply locally (run from anywhere; `dotfiles` is a shell function, defined for both Zsh and Fish)
 dotfiles edit          # cd to this source dir
 dotfiles diff          # preview what `apply` would change
 dotfiles apply         # apply to $HOME
@@ -43,7 +43,7 @@ File/dir name prefixes are significant and determine the target path and behavio
 
 ### Install & tool provisioning
 `install.sh` is a minimal bootstrap: it only installs chezmoi and runs `chezmoi init --apply`. Everything else happens via ordered scripts in `.chezmoiscripts/`:
-- `run_once_*` — one-time setup (Fish, mise, tpm, bun); `run_once_after_*` runs at the end (set login shell).
+- `run_once_*` — one-time setup (Fish, Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (set login shell — currently still Fish; switch to Zsh with `chsh`).
 - `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_02-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation.
 
 Tools come from two places — keep both in sync when adding/removing a tool:
@@ -52,12 +52,16 @@ Tools come from two places — keep both in sync when adding/removing a tool:
 
 Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 
-### Fish layout
-Config and functions live under `private_dot_config/private_fish/`. Functions are autoloaded from `functions/`; `conf.d/` files load on startup (several are `.tmpl` and OS-gated via `.chezmoiignore`). Machine-specific Fish config that should not be managed goes in `~/.config/fish/config.local.fish`.
+### Shell layout (Zsh + Fish, kept in sync)
+**Zsh is the default interactive shell**; the Fish config is maintained in parallel feature-for-feature. When adding/removing a tool alias, a shell function, or a `tools` cheat-sheet entry, edit **both** shells — the repo-local `extend-dotfiles` skill encodes the full dual-shell checklist.
+
+- **Zsh** — `~/.zshenv` (`dot_zshenv.tmpl`: PATH/env for all shells, incl. non-interactive) and `~/.zshrc` (`dot_zshrc.tmpl`: interactive setup). Functions live in `private_dot_config/zsh/functions/*.zsh` and are **sourced** in a loop by `.zshrc` (not autoloaded); `conf.d/*.zsh` (fzf, macos, greeting, motd) likewise. The features Fish ships built-in (autosuggestions, syntax-highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` via `.chezmoiexternal.toml.tmpl` — there is no plugin manager. Unmanaged machine config: `~/.config/zsh/config.local.zsh`.
+- **Fish** — under `private_dot_config/private_fish/`. Functions are autoloaded from `functions/`; `conf.d/` files load on startup (several `.tmpl`, OS-gated via `.chezmoiignore`). Unmanaged: `~/.config/fish/config.local.fish`.
+- starship (prompt) and atuin (history) are shared across both, so the two shells behave identically. cmux self-wires its own zsh/fish integration.
 
 ## Conventions
 
-- The canonical list of installed tools and Fish functions is the `tools` Fish function and the mise config — prefer those over re-listing here. README.md has the long-form human-facing tool descriptions.
+- The canonical list of installed tools and shell functions is the `tools` function (defined in **both** `tools.zsh` and `tools.fish`) and the mise config — prefer those over re-listing here. README.md has the long-form human-facing tool descriptions.
 - Scripts continue on non-fatal failures (e.g. Miniconda ToS) rather than aborting the whole apply.
 - Renovate (`renovate.json`) opens PRs for mise tool versions, GitHub Actions, and binary versions pinned in scripts; minor/patch auto-merge, majors need review.
 - This repo replaces traditional Unix tools: `ls`→eza, `cat`→bat, `find`→fd, `grep`→rg, `cd`→zoxide (z), `top`→btop, `df`→duf, `du`→dust.
