@@ -1,0 +1,285 @@
+# ~/.zshrc — interactive zsh configuration.
+# Cross-platform analogue of private_dot_config/private_fish/config.fish.
+# PATH and non-interactive environment live in ~/.zshenv. This file is only
+# read by interactive shells.
+
+# ── Homebrew ──────────────────────────────────────────────────────────────
+# Run early so brew-installed tools (and completions) resolve for everything
+# below. macOS /etc/zprofile runs path_helper between .zshenv and .zshrc, so we
+# (re-)assert our priority prepends here for interactive shells.
+{{- if .homebrew }}
+if [[ -x {{ .brewPrefix }}/bin/brew ]]; then
+    eval "$({{ .brewPrefix }}/bin/brew shellenv)"
+fi
+{{- end }}
+
+# ── OS-specific PATH additions (priority prepends) ────────────────────────
+{{- if eq .chezmoi.os "darwin" }}
+path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+# JetBrains Toolbox shell scripts
+path=("$HOME/Library/Application Support/JetBrains/Toolbox/scripts" $path)
+# Obsidian CLI
+[[ -x /Applications/Obsidian.app/Contents/MacOS/Obsidian ]] \
+    && alias obsidian="/Applications/Obsidian.app/Contents/MacOS/Obsidian"
+{{- end }}
+
+# ── History ───────────────────────────────────────────────────────────────
+# atuin owns Ctrl-R, but keep a sane on-disk history as a fallback.
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=50000
+setopt EXTENDED_HISTORY HIST_IGNORE_ALL_DUPS HIST_IGNORE_SPACE \
+       HIST_REDUCE_BLANKS SHARE_HISTORY INC_APPEND_HISTORY
+setopt AUTO_PUSHD PUSHD_IGNORE_DUPS PUSHD_SILENT
+setopt INTERACTIVE_COMMENTS   # allow `#` comments at the prompt
+setopt EXTENDED_GLOB
+unsetopt BEEP
+
+# ── Environment ───────────────────────────────────────────────────────────
+# Editor (resolved at apply time, same precedence as fish).
+export EDITOR={{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+export VISUAL="$EDITOR"
+
+# Pager — vi keys in less.
+export PAGER="less"
+export LESS="-R"
+export LESSKEY="$HOME/.lesskey"
+
+# GPG: tell gpg-agent which terminal to draw pinentry on (needed when stdin
+# isn't a TTY, e.g. `pbpaste | gpg --decrypt`).
+export GPG_TTY=$(tty)
+
+{{- if eq .chezmoi.os "darwin" }}
+export HOMEBREW_NO_ANALYTICS=1
+export HOMEBREW_NO_ENV_HINTS=1
+{{- end }}
+
+# ── Completions ───────────────────────────────────────────────────────────
+{{- if eq .chezmoi.os "darwin" }}
+[[ -d {{ .brewPrefix }}/share/zsh/site-functions ]] \
+    && fpath=({{ .brewPrefix }}/share/zsh/site-functions $fpath)
+{{- end }}
+autoload -Uz compinit
+# Cache the dump under XDG to avoid a dotfile in $HOME.
+() {
+    local zcd="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
+    [[ -d $zcd ]] || mkdir -p $zcd
+    # -i: silently ignore insecure (e.g. group-writable brew) dirs rather than
+    # blocking startup on the interactive security prompt.
+    compinit -i -d "$zcd/zcompdump"
+}
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'   # case-insensitive
+zstyle ':completion:*' list-colors ''
+
+# ── Plugins (fetched by chezmoi externals; sourced defensively) ───────────
+ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
+# abbr (declare abbreviations further down). Loads after compinit.
+[[ -r $ZSH_PLUGIN_DIR/zsh-abbr/zsh-abbr.zsh ]] \
+    && source $ZSH_PLUGIN_DIR/zsh-abbr/zsh-abbr.zsh
+# Autosuggestions — must be loaded before we bind a key to accept them.
+[[ -r $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+    && source $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
+# (zsh-syntax-highlighting is sourced LAST, at the bottom of this file.)
+
+# ── Vi mode + key bindings (analogue of fish vi mode + key bindings) ──────
+bindkey -v
+export KEYTIMEOUT=1   # snappy ESC / mode switch
+
+# Cursor shape per mode: block in command mode, line in insert mode.
+# (starship renders the mode indicator in the prompt itself.)
+_zsh_cursor_for_keymap() {
+    case ${KEYMAP:-main} in
+        vicmd)        print -n '\e[2 q' ;;   # block
+        main|viins|*) print -n '\e[6 q' ;;   # line
+    esac
+}
+zle -N zle-keymap-select _zsh_cursor_for_keymap
+_zsh_cursor_init() { print -n '\e[6 q'; }
+zle -N zle-line-init _zsh_cursor_init
+
+# Ctrl+Space accepts the autosuggestion; Ctrl+P/N search history by prefix.
+if (( $+widgets[autosuggest-accept] )); then
+    bindkey -M viins '^ '  autosuggest-accept   # Ctrl+Space (some terms)
+    bindkey -M viins '^@'  autosuggest-accept   # Ctrl+Space (NUL on most)
+fi
+bindkey -M viins '^P' up-line-or-search
+bindkey -M viins '^N' down-line-or-search
+# Sensible insert-mode editing keys (zsh vi-insert is otherwise sparse).
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^U' backward-kill-line
+
+# ── Abbreviations (zsh-abbr; analogue of fish `abbr`) ─────────────────────
+if (( $+functions[abbr] )); then
+{{- if lookPath "wt" }}
+    abbr --session --quiet wsc='wt switch --create -x claude' 2>/dev/null
+{{- end }}
+    abbr --session --quiet cca='claude --enable-auto-mode' 2>/dev/null
+fi
+
+# ── Tool initialisation ───────────────────────────────────────────────────
+# mise — version manager / shims.
+if command -v mise >/dev/null; then
+    eval "$(mise activate zsh)"
+fi
+
+# Java env via asdf (legacy; no-op when java is managed by mise).
+if command -v java >/dev/null && command -v asdf >/dev/null; then
+    _real_java_path=$(asdf which java 2>/dev/null)
+    [[ -n $_real_java_path ]] && export JAVA_HOME=${_real_java_path:h:h}
+    unset _real_java_path
+fi
+
+# zoxide — smarter cd (replaces `cd`). Set DISABLE_STARSHIP=1 etc. as needed.
+if command -v zoxide >/dev/null; then
+    eval "$(zoxide init --cmd cd zsh)"
+fi
+
+# fzf — official zsh integration (Ctrl-T, Alt-C, completion). Loaded BEFORE
+# atuin so atuin wins the Ctrl-R binding (matches the fish setup).
+if command -v fzf >/dev/null; then
+    if fzf --zsh >/dev/null 2>&1; then
+        source <(fzf --zsh)
+    fi
+fi
+
+# atuin — better shell history (Ctrl-R). Must come after fzf.
+if command -v atuin >/dev/null; then
+    eval "$(atuin init zsh)"
+    export ATUIN_EDIT_MODE="vi"
+fi
+
+# starship prompt (set DISABLE_STARSHIP=1 to skip).
+if command -v starship >/dev/null && [[ -z $DISABLE_STARSHIP ]]; then
+    eval "$(starship init zsh)"
+fi
+
+# direnv — automatic environment loading.
+if command -v direnv >/dev/null; then
+    eval "$(direnv hook zsh)"
+fi
+
+# broot — `br` launcher. broot's bash launcher is POSIX and works under zsh.
+if [[ -f ~/.config/broot/launcher/bash/br ]]; then
+    source ~/.config/broot/launcher/bash/br
+elif command -v broot >/dev/null; then
+    br() {
+        local cmd_file
+        cmd_file=$(mktemp)
+        if broot --outcmd "$cmd_file" "$@"; then
+            source "$cmd_file"; rm -f "$cmd_file"
+        else
+            local code=$?; rm -f "$cmd_file"; return $code
+        fi
+    }
+fi
+
+# ── Terminal title (analogue of fish_title) ───────────────────────────────
+# Overrides terminal process-detection that can show misleading names.
+autoload -Uz add-zsh-hook
+_zsh_title_precmd()  { print -Pn "\e]2;%1~\a"; }   # at prompt: current dir
+_zsh_title_preexec() {
+    local cmd=${1%% *}
+    case $cmd in
+        ssh)        print -Pn "\e]2;ssh: ${${(z)1}[2]}\a" ;;
+        vim|nvim)   print -Pn "\e]2;vim: %1~\a" ;;
+        claude)     print -Pn "\e]2;claude: %1~\a" ;;
+        *)          print -Pn "\e]2;${cmd}: %1~\a" ;;
+    esac
+}
+add-zsh-hook precmd  _zsh_title_precmd
+add-zsh-hook preexec _zsh_title_preexec
+
+# ── Aliases (cross-platform) ──────────────────────────────────────────────
+{{- if lookPath "eza" }}
+alias ls="eza --icons --group-directories-first"
+alias ll="eza -la --icons --group-directories-first"
+alias la="eza -a --icons --group-directories-first"
+alias l="eza -F --icons --group-directories-first"
+alias lt="eza --tree --icons --group-directories-first"
+alias tree="eza --tree --icons --group-directories-first"
+{{- else }}
+alias ll="ls -la"
+alias la="ls -A"
+alias l="ls -CF"
+{{- end }}
+
+# Git aliases
+alias g="git"
+alias gs="git status"
+alias gc="git commit"
+alias gp="git push"
+alias gl="git log --oneline --graph"
+alias gd="git diff"
+
+# Modern CLI tool aliases
+# (mise aqua provides standard names bat/fd across platforms; the batcat/fdfind
+# aliases keep Ubuntu/Debian package names working too.)
+{{- if or (lookPath "bat") (lookPath "batcat") }}
+{{ if lookPath "batcat" -}}
+alias cat="batcat"
+alias bat="batcat"
+{{- else -}}
+alias cat="bat"
+{{- end }}
+{{- end }}
+{{- if and (lookPath "fdfind") (not (lookPath "fd")) }}
+alias fd="fdfind"
+{{- end }}
+
+alias preview="fzf --preview 'bat --color=always --style=numbers --line-range=:500 {}'"
+
+{{- if lookPath "nvim" }}
+alias vim="nvim"
+{{- end }}
+{{- if lookPath "lazygit" }}
+alias lg="lazygit"
+{{- end }}
+{{- if lookPath "btop" }}
+alias top="btop"
+alias htop="btop"
+{{- end }}
+{{- if lookPath "duf" }}
+alias df="duf"
+{{- end }}
+{{- if lookPath "dust" }}
+alias du="dust"
+{{- end }}
+{{- if lookPath "httpie" }}
+alias https="http --default-scheme=https"
+{{- end }}
+
+# Platform-specific aliases
+{{- if eq .chezmoi.os "darwin" }}
+alias updatedb="sudo /usr/libexec/locate.updatedb"
+alias showfiles="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
+alias hidefiles="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
+{{- else if eq .chezmoi.os "linux" }}
+alias open="xdg-open"
+{{- end }}
+
+# ── conf.d (env/theme setters, then greeting + MOTD) ──────────────────────
+if [[ -d ~/.config/zsh/conf.d ]]; then
+    for _f in ~/.config/zsh/conf.d/*.zsh(N); do
+        source $_f
+    done
+    unset _f
+fi
+
+# ── Custom functions (one file per function, mirrors fish functions/) ─────
+if [[ -d ~/.config/zsh/functions ]]; then
+    for _f in ~/.config/zsh/functions/*.zsh(N); do
+        source $_f
+    done
+    unset _f
+fi
+
+# ── Local, unmanaged config ───────────────────────────────────────────────
+[[ -f ~/.config/zsh/config.local.zsh ]] && source ~/.config/zsh/config.local.zsh
+
+# ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
+[[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+    && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

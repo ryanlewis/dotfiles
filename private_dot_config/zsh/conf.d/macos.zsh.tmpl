@@ -1,0 +1,23 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# macOS-specific zsh configuration.
+# (Homebrew shellenv, HOMEBREW_NO_* and the completion fpath are handled in
+# ~/.zshrc; this file adds the GNU coreutils paths, iTerm2 integration and the
+# macOS-only aliases.)
+
+# Use GNU coreutils / sed if installed.
+[[ -d {{ .brewPrefix }}/opt/coreutils/libexec/gnubin ]] \
+    && path=({{ .brewPrefix }}/opt/coreutils/libexec/gnubin $path)
+[[ -d {{ .brewPrefix }}/opt/gnu-sed/libexec/gnubin ]] \
+    && path=({{ .brewPrefix }}/opt/gnu-sed/libexec/gnubin $path)
+
+# iTerm2 shell integration.
+[[ -e ~/.iterm2_shell_integration.zsh ]] && source ~/.iterm2_shell_integration.zsh
+
+# macOS-specific aliases.
+alias flushdns="sudo dscacheutil -flushcache"
+alias afk="open -a ScreenSaverEngine"
+alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
+alias ql="qlmanage -p &>/dev/null"
+alias hidedesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showdesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+{{- end -}}

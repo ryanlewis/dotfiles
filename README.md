@@ -5,6 +5,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 ## Features
 
 - 🐟 Fish shell configuration with cross-platform support
+- 🦓 Zsh configuration that mirrors the Fish setup (opt-in; Fish stays the default shell)
 - 🍎 macOS-specific optimizations (Homebrew, iTerm2, etc.)
 - 🐧 Linux compatibility
 - 🛠️ Useful Fish functions and utilities
@@ -305,7 +306,22 @@ chezmoi update    # Pull latest changes and apply them
 
 ### Local Configuration
 
-Create `~/.config/fish/config.local.fish` for machine-specific configuration that won't be managed by chezmoi.
+Create `~/.config/fish/config.local.fish` (Fish) or `~/.config/zsh/config.local.zsh` (Zsh) for machine-specific configuration that won't be managed by chezmoi.
+
+### Zsh (coexisting alternative shell)
+
+Fish remains the default login shell. A parallel Zsh configuration is provided for when a POSIX-ish shell is preferable (e.g. tools that emit `export FOO=bar`, `&&`/`||` chains, or heredocs that Fish can't run verbatim). It mirrors the Fish setup feature-for-feature:
+
+- `~/.zshenv` — PATH/environment for all shells (the non-interactive half of `config.fish`).
+- `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the same MOTD/greeting.
+- `~/.config/zsh/functions/*.zsh` — a 1:1 port of every Fish function (`mkcd`, `extract`, `fcd`, `fgit`, `ca`, `crpr`, `tools`, …).
+- `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
+
+The prompt (starship), history (atuin), and the modern-CLI aliases are shared, so both shells behave identically.
+
+Plugins that Fish ships built-in (autosuggestions, syntax highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` (see `.chezmoiexternal.toml`) — there is no separate plugin manager.
+
+Try it without switching: just run `zsh`. To make it your login shell when ready: `chsh -s "$(command -v zsh)"`.
 
 ### Templates
 
@@ -322,11 +338,17 @@ This repository uses chezmoi templates to handle OS-specific differences. Key te
 ~/dev/dotfiles/
 ├── .chezmoi.toml.tmpl          # Chezmoi configuration template
 ├── .chezmoiignore              # Files to ignore by OS
+├── .chezmoiexternal.toml.tmpl  # Externally-fetched files (zsh plugins)
+├── dot_zshenv.tmpl             # Zsh env for all shells (PATH, etc.)
+├── dot_zshrc.tmpl              # Main Zsh interactive config
 ├── private_dot_config/
-│   └── private_fish/
-│       ├── config.fish.tmpl    # Main Fish config
-│       ├── functions/          # Fish functions
-│       └── conf.d/             # Fish conf.d files
+│   ├── private_fish/
+│   │   ├── config.fish.tmpl    # Main Fish config
+│   │   ├── functions/          # Fish functions
+│   │   └── conf.d/             # Fish conf.d files
+│   └── zsh/
+│       ├── functions/          # Zsh functions (1:1 port of Fish)
+│       └── conf.d/             # Zsh conf.d files (fzf, macos, greeting, motd)
 └── README.md                   # This file
 ```
 

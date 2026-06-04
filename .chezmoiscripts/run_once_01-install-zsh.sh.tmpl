@@ -1,0 +1,41 @@
+#!/bin/bash
+# Install Zsh - runs once during dotfile application.
+# Zsh coexists with Fish; this does NOT change the login shell (Fish stays
+# default). macOS ships zsh, so this is a no-op there.
+set -e
+
+# Check if zsh is already installed.
+if command -v zsh &> /dev/null; then
+    echo "✓ Zsh already installed"
+    exit 0
+fi
+
+echo "🦓 Installing Zsh..."
+
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS ships zsh; only reach here in the unlikely case it's missing.
+if command -v brew &> /dev/null; then
+    brew install zsh
+else
+    echo "❌ Homebrew not found. Please install Homebrew first."
+    exit 1
+fi
+{{ else if eq .chezmoi.os "linux" -}}
+# Linux
+if command -v apt &> /dev/null; then
+    sudo apt-get update -qq
+    sudo apt-get install -y -qq zsh
+elif command -v dnf &> /dev/null; then
+    sudo dnf install -y zsh
+elif command -v pacman &> /dev/null; then
+    sudo pacman -S --noconfirm zsh
+elif command -v zypper &> /dev/null; then
+    sudo zypper install -y zsh
+else
+    echo "⚠️  Unable to install Zsh automatically on this system"
+    echo "Please install Zsh manually: https://www.zsh.org/"
+    exit 1
+fi
+{{ end -}}
+
+echo "✓ Zsh installed successfully (Fish remains the default shell)"

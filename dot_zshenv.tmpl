@@ -1,0 +1,24 @@
+# ~/.zshenv — read by EVERY zsh (interactive, scripts, ssh/scp/rsync).
+# Keep this to PATH + environment only; interactive setup lives in ~/.zshrc.
+# This mirrors the pre-`is-interactive` half of config.fish so non-interactive
+# shells (scp/rsync, scripts, `television`) see the same tools.
+
+# `path` is tied to `PATH`; `-U` keeps it de-duplicated as we prepend.
+typeset -gU path PATH
+
+# Clean default PATH first to avoid duplicates.
+path=(/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin)
+
+{{- if eq .chezmoi.os "linux" }}
+# snap and games paths on Linux
+[[ -d /snap/bin ]] && path+=(/snap/bin)
+[[ -d /usr/games ]] && path+=(/usr/games /usr/local/games)
+{{- end }}
+
+# Universal additions (prepend for priority).
+path=($HOME/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/.claude/local $HOME/.bun/bin $path)
+
+# mise shims for non-interactive shells (e.g. television, scripts).
+[[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
+
+export PATH

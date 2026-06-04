@@ -168,6 +168,15 @@ else
     echo -e "${RED}✗${NC} Fish config NOT found"
 fi
 
+if [ -f "$HOME/.zshrc" ] && [ -d "$HOME/.config/zsh/functions" ]; then
+    echo -e "${GREEN}✓${NC} Zsh config exists"
+    if command -v zsh >/dev/null 2>&1 && zsh -n "$HOME/.zshrc" 2>/dev/null; then
+        echo -e "${GREEN}✓${NC} Zsh config parses"
+    fi
+else
+    echo -e "${RED}✗${NC} Zsh config NOT found"
+fi
+
 if [ -f "$HOME/.config/starship.toml" ]; then
     echo -e "${GREEN}✓${NC} Starship config exists"
 else

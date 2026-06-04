@@ -1,0 +1,72 @@
+{{- if .motd }}
+# MOTD — quick reads and a few random tips on interactive shell start.
+() {
+    [[ -o interactive ]] || return
+
+    local dim=$'\e[90m' accent=$'\e[94m' cmd=$'\e[96m' reset=$'\e[0m'
+    local today=$(date "+%A, %d %B %Y")
+    local col=28
+
+    # Tips pool: "command;description"
+    local -a tips=(
+        'fcd;Fuzzy find and cd into a directory'
+        'fgit add;Interactively stage files with preview'
+        'fgit checkout;Fuzzy browse and switch branches'
+        'fgit log;Browse commit history with preview'
+        'fgit diff;Fuzzy select files to diff'
+        'fopen;Fuzzy find a file and open in editor'
+        'fkill;Fuzzy search and kill a process'
+        'fgrep "term";Search file contents and jump to line'
+        'lg;Lazygit — full git TUI'
+        'ta <name>;Attach or create a tmux session'
+        'y;Yazi file manager with dir persistence'
+        'tools;Show all installed tools'
+        'tools -i;Interactive tool browser with fzf'
+        'yank;Copy to clipboard over SSH (OSC 52)'
+        'dotfiles push;Commit and push dotfile changes'
+        'dotfiles diff;Preview dotfile changes'
+        'mkcd dir;Create a directory and cd into it'
+        'backup file;Create a timestamped backup'
+        'extract file;Auto-extract any archive format'
+        'ports;Show all listening network ports'
+        'myip;Show local and public IP addresses'
+        'ghostty-keys;Ghostty keybinding reference'
+        'preview;Fuzzy find files with bat preview'
+        'z dir;Zoxide — jump to frecent directories'
+        'Ctrl+R;Search shell history (fzf)'
+        'Ctrl+T;Search files (fzf)'
+        'Alt+C;Search and cd into directory (fzf)'
+        'btop;Beautiful system monitor'
+        'duf;Friendly disk usage overview'
+        'dust;Intuitive disk space analyser'
+        'wtfutil;Personal terminal dashboard'
+        'hx;Helix — modal editor with LSP built in'
+        'claude -r;Resume a previous Claude Code session'
+        'claude -c;Continue most recent Claude session'
+    )
+
+    # Pick 3 random tips (without repeats).
+    local -a indices
+    indices=( ${(f)"$(seq 1 ${#tips} | sort -R | head -3)"} )
+
+    # Build tip lines.
+    local -a tip_lines
+    local i idx branch
+    local -a parts
+    for i in 1 2 3; do
+        idx=${indices[$i]}
+        parts=( ${(s.;.)tips[$idx]} )
+        branch="├─"; [[ $i -eq 3 ]] && branch="└─"
+        tip_lines+=( "${dim}${branch}${reset} ${cmd}${parts[1]}${reset} ${dim}·${reset} ${parts[2]}" )
+    done
+
+    print
+    print -r -- "  ${dim}${today}${reset}"
+    print
+    print -r -- "  ${accent}Quick reads${reset}$(printf '%*s' $((col-11)) '')${accent}Tips${reset}"
+    print -r -- "  ${dim}├─${reset} ${cmd}clx${reset} ${dim}·${reset} Hacker News$(printf '%*s' $((col-20)) '')${tip_lines[1]}"
+    print -r -- "  ${dim}└─${reset} ${cmd}newsboat${reset} ${dim}·${reset} RSS feeds$(printf '%*s' $((col-23)) '')${tip_lines[2]}"
+    print -r -- "  $(printf '%*s' $col '')${tip_lines[3]}"
+    print
+}
+{{- end }}
