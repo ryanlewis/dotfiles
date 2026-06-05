@@ -43,7 +43,7 @@ File/dir name prefixes are significant and determine the target path and behavio
 
 ### Install & tool provisioning
 `install.sh` is a minimal bootstrap: it only installs chezmoi and runs `chezmoi init --apply`. Everything else happens via ordered scripts in `.chezmoiscripts/`:
-- `run_once_*` — one-time setup (Fish, Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (set login shell — currently still Fish; switch to Zsh with `chsh`).
+- `run_once_*` — one-time setup (Fish, Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (recommends Zsh as login shell; never runs `chsh` itself).
 - `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_02-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation.
 
 Tools come from two places — keep both in sync when adding/removing a tool:
