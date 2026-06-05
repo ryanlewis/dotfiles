@@ -3,6 +3,13 @@
 # PATH and non-interactive environment live in ~/.zshenv. This file is only
 # read by interactive shells.
 
+# Enforce that contract: zsh normally sources .zshrc only for interactive
+# shells, but a wrapper that force-sources it non-interactively (e.g. a tool's
+# shell-integration shim) would otherwise run all the interactive setup below —
+# wasting ~150ms and tripping zoxide's "initialized last?" doctor on every `cd`.
+# Bail out early so non-interactive sourcing is a no-op.
+[[ -o interactive ]] || return
+
 # ── Homebrew ──────────────────────────────────────────────────────────────
 # Run early so brew-installed tools (and completions) resolve for everything
 # below. macOS /etc/zprofile runs path_helper between .zshenv and .zshrc, so we
