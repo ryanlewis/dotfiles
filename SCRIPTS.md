@@ -3,27 +3,26 @@
 ## Installation Scripts
 
 ### `install.sh`
-Main installation script with full language runtime support.
+Minimal bootstrap: installs chezmoi and runs `chezmoi init --apply`. It takes no CLI options — everything else (shells, mise, tools, languages) happens via the ordered scripts in `.chezmoiscripts/`.
 
 **Usage:**
 ```bash
-./install.sh [options]
+./install.sh
 ```
 
-**Options:**
-- `--ci` - Run in CI mode (non-interactive)
-- `--no-confirm` - Skip confirmation prompts
-- `--quick` - Skip language runtimes, install pre-compiled tools only
+**Environment variables** (read by install.sh and the chezmoi scripts):
+- `CI=true` - non-interactive mode; skips prompts and the login-shell step
+- `QUICK_INSTALL=true` - skip language runtimes and Claude plugin setup
+- `CHEZMOI_USER_NAME` / `CHEZMOI_USER_EMAIL` - pre-seed identity (defaults from git config)
 
-**What it installs:**
-- Fish shell
+**What an apply installs:**
+- Zsh (default shell) and Fish configurations
 - mise with Node.js, Python (via Miniconda), Go, Bun, Java
 - Modern CLI tools (fzf, bat, fd, ripgrep, etc.)
-- All tools install to `~/.local/bin` when possible
 
 ### `setup-aliases.sh`
 Creates symlinks for Ubuntu-specific tool names (batcat→bat, fdfind→fd).
-Automatically called by install.sh on Linux.
+Called by docker-test.sh; run manually on bare Ubuntu if needed.
 
 ## Test Scripts
 

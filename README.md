@@ -1,16 +1,16 @@
 # Cross-Platform Dotfiles with Chezmoi
 
-This repository contains my personal dotfiles managed by [chezmoi](https://chezmoi.io/), optimized for Fish shell and supporting both Linux and macOS.
+This repository contains my personal dotfiles managed by [chezmoi](https://chezmoi.io/), supporting both Linux and macOS. Zsh is the default shell, with a parallel Fish configuration kept feature-for-feature in sync.
 
 ## Features
 
-- 🐟 Fish shell configuration with cross-platform support
-- 🦓 Zsh configuration that mirrors the Fish setup (opt-in; Fish stays the default shell)
-- 🍎 macOS-specific optimizations (Homebrew, iTerm2, etc.)
+- 🦓 Zsh configuration (the default shell) with cross-platform support
+- 🐟 Fish configuration that mirrors the Zsh setup feature-for-feature
+- 🍎 macOS-specific optimizations (Homebrew, Ghostty, etc.)
 - 🐧 Linux compatibility
-- 🛠️ Useful Fish functions and utilities
+- 🛠️ Useful shell functions and utilities (ported 1:1 across both shells)
 - 📦 Template-based configuration for different environments
-- 🔧 mise for language runtimes (Node.js, Python, Go, Bun)
+- 🔧 mise for language runtimes (Node.js, Python, Go, Bun, Java)
 - 🌊 mise aqua backend for 22 modern CLI tools (bat, fd, eza, kubectl, gh, etc.)
 - 🔍 Modern CLI tools: Complete suite of replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
@@ -233,11 +233,11 @@ This configuration includes a comprehensive suite of modern CLI tools:
 This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
 **Language Runtimes** (5 tools):
-- Node.js 24.14.1 (LTS)
+- Node.js (LTS)
 - Python (via Miniconda)
-- Go 1.26.1
-- Bun 1.3.11
-- Java (Eclipse Temurin 21 LTS)
+- Go
+- Bun
+- Java (Eclipse Temurin LTS)
 
 **CLI Tools via aqua backend** (22 tools):
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
@@ -308,9 +308,9 @@ chezmoi update    # Pull latest changes and apply them
 
 Create `~/.config/fish/config.local.fish` (Fish) or `~/.config/zsh/config.local.zsh` (Zsh) for machine-specific configuration that won't be managed by chezmoi.
 
-### Zsh (coexisting alternative shell)
+### Zsh (the default shell)
 
-Fish remains the default login shell. A parallel Zsh configuration is provided for when a POSIX-ish shell is preferable (e.g. tools that emit `export FOO=bar`, `&&`/`||` chains, or heredocs that Fish can't run verbatim). It mirrors the Fish setup feature-for-feature:
+Zsh is the default login shell (the provisioning script recommends it on fresh machines; `chsh -s $(which zsh)` to switch an existing one). A parallel Fish configuration is kept feature-for-feature in sync for when an interactive-first shell is preferred. The Zsh side comprises:
 
 - `~/.zshenv` — PATH/environment for all shells (the non-interactive half of `config.fish`).
 - `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the same MOTD/greeting.
@@ -505,14 +505,10 @@ The authoritative version list is `private_dot_config/mise/config.toml.tmpl`; Re
 
 ### Core Tools
 - chezmoi: latest from official installer
-- mise: latest (e.g. v2026.3.17)
+- mise: latest
 
 ### Programming Languages (pinned via mise)
-- Node.js: 24.14.1 (LTS)
-- Python: miniconda3-latest
-- Go: 1.26.1
-- Bun: 1.3.11
-- Java: temurin-21 (Eclipse Temurin 21 LTS)
+Node.js, Python (miniconda3), Go, Bun, and Java (Eclipse Temurin LTS) — exact pinned versions live in `private_dot_config/mise/config.toml.tmpl`, the source of truth, and are bumped automatically by Renovate.
 
 ## License
 
