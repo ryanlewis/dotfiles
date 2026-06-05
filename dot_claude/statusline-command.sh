@@ -103,30 +103,30 @@ if [[ -n "$used_pct" ]]; then
     context_str="${used_int}%"
 fi
 
-# Build the status line with colours matching Starship theme
-#   directory    → bold cyan    |  git branch  → bold purple
-#   git worktree → bold yellow  |  git status  → bold red
-#   model        → normal white |  context     → bold yellow
+# Build the status line with colours matching Starship theme. Rendered over two
+# rows (Claude Code shows one terminal line per output line):
+#   line 1 — directory (bold cyan), branch (bold purple), worktree (bold
+#            yellow), git status (bold red)
+#   line 2 — model (normal white), effort, context + weekly usage (bold yellow)
 
-parts="\033[1;36m${truncated_dir}\033[0m"
+line1="\033[1;36m${truncated_dir}\033[0m"
 
 if [[ -n "$git_branch" ]]; then
-    parts+=" \033[1;35m ${git_branch}\033[0m"
+    line1+=" \033[1;35m ${git_branch}\033[0m"
     if [[ -n "$git_worktree_label" ]]; then
         if [[ "$git_worktree_label" == "$git_branch" || "$git_worktree_label" == "${git_branch//\//-}" ]]; then
-            parts+=" \033[1;33m[wt]\033[0m"
+            line1+=" \033[1;33m[wt]\033[0m"
         else
-            parts+=" \033[1;33m[wt:${git_worktree_label}]\033[0m"
+            line1+=" \033[1;33m[wt:${git_worktree_label}]\033[0m"
         fi
     fi
-    [[ -n "$git_status_str" ]] && parts+=" \033[1;31m${git_status_str}\033[0m"
+    [[ -n "$git_status_str" ]] && line1+=" \033[1;31m${git_status_str}\033[0m"
 fi
 
-parts+=" \033[2;37m|\033[0m"
-parts+=" \033[0;37m${model_name}\033[0m"
+line2="\033[0;37m${model_name}\033[0m"
 
 # Fast mode (/fast toggle) — bolt indicator next to the model
-[[ "$fast_mode" == "true" ]] && parts+=" \033[1;33m⚡\033[0m"
+[[ "$fast_mode" == "true" ]] && line2+=" \033[1;33m⚡\033[0m"
 
 # Model effort (reasoning level) — only present when the model supports it
 if [[ -n "$effort_level" ]]; then
@@ -140,7 +140,7 @@ if [[ -n "$effort_level" ]]; then
         max)    eff_colour="1;31"       ;; # red
         *)      eff_colour="0;37"       ;; # fallback
     esac
-    parts+=" \033[${eff_colour}m${effort_level}\033[0m"
+    line2+=" \033[${eff_colour}m${effort_level}\033[0m"
 fi
 
 if [[ -n "$context_str" ]]; then
@@ -153,7 +153,7 @@ if [[ -n "$context_str" ]]; then
     else
         ctx_colour="1;31"        # red
     fi
-    parts+=" \033[${ctx_colour}mctx:${context_str}\033[0m"
+    line2+=" \033[${ctx_colour}mctx:${context_str}\033[0m"
 fi
 
 # Weekly rate-limit usage (Claude.ai Pro/Max only; absent for API-key/free
@@ -169,7 +169,7 @@ if [[ -n "$week_pct" ]]; then
     else
         wk_colour="1;31"        # red
     fi
-    parts+=" \033[${wk_colour}mwk:${week_int}%\033[0m"
+    line2+=" \033[${wk_colour}mwk:${week_int}%\033[0m"
 fi
 
-printf '%b' "$parts"
+printf '%b' "${line1}\n${line2}"
