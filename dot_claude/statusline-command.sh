@@ -13,6 +13,7 @@
     IFS= read -r worktree_branch
     IFS= read -r effort_level
     IFS= read -r fast_mode
+    IFS= read -r week_pct
 } < <(
     jq -r '
         .model.display_name,
@@ -21,7 +22,8 @@
         (.worktree.name // ""),
         (.worktree.branch // ""),
         (.effort.level // ""),
-        (.fast_mode // false)
+        (.fast_mode // false),
+        (.rate_limits.seven_day.used_percentage // "")
     ' </dev/stdin
 )
 
@@ -152,6 +154,22 @@ if [[ -n "$context_str" ]]; then
         ctx_colour="1;31"        # red
     fi
     parts+=" \033[${ctx_colour}mctx:${context_str}\033[0m"
+fi
+
+# Weekly rate-limit usage (Claude.ai Pro/Max only; absent for API-key/free
+# accounts and before the first API response of a session)
+if [[ -n "$week_pct" ]]; then
+    printf -v week_int "%.0f" "$week_pct"
+    if (( week_int < 50 )); then
+        wk_colour="1;32"        # green
+    elif (( week_int < 75 )); then
+        wk_colour="1;33"        # yellow
+    elif (( week_int < 90 )); then
+        wk_colour="1;38;5;208"  # orange
+    else
+        wk_colour="1;31"        # red
+    fi
+    parts+=" \033[${wk_colour}mwk:${week_int}%\033[0m"
 fi
 
 printf '%b' "$parts"
