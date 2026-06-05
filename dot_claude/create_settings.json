@@ -382,7 +382,7 @@
   "enabledPlugins": {},
   "extraKnownMarketplaces": {},
   "sandbox": {
-    "enabled": true,
+    "enabled": false,
     "filesystem": {
       "allowWrite": [
         "//tmp",
