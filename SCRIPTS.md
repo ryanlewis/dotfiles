@@ -17,7 +17,7 @@ Main installation script with full language runtime support.
 
 **What it installs:**
 - Fish shell
-- asdf with Node.js, Python (via Miniconda), Go, Bun
+- mise with Node.js, Python (via Miniconda), Go, Bun, Java
 - Modern CLI tools (fzf, bat, fd, ripgrep, etc.)
 - All tools install to `~/.local/bin` when possible
 

@@ -128,16 +128,9 @@ if (( $+functions[abbr] )); then
 fi
 
 # ── Tool initialisation ───────────────────────────────────────────────────
-# mise — version manager / shims.
+# mise — version manager / shims (also exports JAVA_HOME for the java toolchain).
 if command -v mise >/dev/null; then
     eval "$(mise activate zsh)"
-fi
-
-# Java env via asdf (legacy; no-op when java is managed by mise).
-if command -v java >/dev/null && command -v asdf >/dev/null; then
-    _real_java_path=$(asdf which java 2>/dev/null)
-    [[ -n $_real_java_path ]] && export JAVA_HOME=${_real_java_path:h:h}
-    unset _real_java_path
 fi
 
 # zoxide — smarter cd (replaces `cd`). Set DISABLE_STARSHIP=1 etc. as needed.

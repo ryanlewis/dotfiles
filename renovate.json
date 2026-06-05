@@ -31,18 +31,6 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Update asdf version in chezmoi script",
-      "managerFilePatterns": [
-        "/.chezmoiscripts/run_once_01-install-asdf.sh.tmpl/"
-      ],
-      "matchStrings": [
-        "ASDF_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ],
-      "depNameTemplate": "asdf-vm/asdf",
-      "datasourceTemplate": "github-releases"
-    },
-    {
-      "customType": "regex",
       "description": "Update FZF version in install.sh",
       "managerFilePatterns": [
         "/^install\\.sh$/"

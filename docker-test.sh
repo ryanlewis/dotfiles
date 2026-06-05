@@ -59,7 +59,7 @@ if [[ "$CI_MODE" == "true" ]]; then
             
             echo ''
             echo '🧪 Running tests...'
-            export PATH=\"\$HOME/.asdf/bin:\$HOME/.asdf/shims:\$HOME/.bun/bin:\$HOME/.local/bin:\$HOME/go/bin:\$PATH\"
+            export PATH=\"\$HOME/.local/share/mise/shims:\$HOME/.bun/bin:\$HOME/.local/bin:\$HOME/go/bin:\$PATH\"
             ./test.sh
             
             echo ''

@@ -39,18 +39,9 @@ set fish_cursor_visual block
 eval ({{ .brewPrefix }}/bin/brew shellenv)
 {{- end }}
 
-# mise configuration
+# mise configuration (also exports JAVA_HOME for the java toolchain)
 if type -q mise
     mise activate fish | source
-end
-
-# Set Java environment variables for all shells (if Java is installed via asdf)
-if type -q java; and type -q asdf
-    set -l real_java_path (asdf which java ^/dev/null)
-    if test -n "$real_java_path"
-        # JAVA_HOME is two directories up from the real java binary (bin/java)
-        set -gx JAVA_HOME (dirname (dirname "$real_java_path"))
-    end
 end
 
 # zoxide - smarter cd command (--cmd=cd replaces cd with zoxide directly)
