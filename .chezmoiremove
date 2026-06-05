@@ -4,3 +4,9 @@
 
 # Removed agent no longer in use (April 2026)
 .claude/agents/cursor-code-orchestrator.md
+
+# Removed unprovisioned tooling (June 2026): yazi `y` helper and the wtfutil
+# dashboard config (neither tool is installed by any managed source).
+.config/fish/functions/y.fish
+.config/zsh/functions/y.zsh
+.config/wtf/config.yml

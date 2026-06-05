@@ -11,7 +11,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🛠️ Useful shell functions and utilities (ported 1:1 across both shells)
 - 📦 Template-based configuration for different environments
 - 🔧 mise for language runtimes (Node.js, Python, Go, Bun, Java)
-- 🌊 mise aqua backend for 22 modern CLI tools (bat, fd, eza, kubectl, gh, etc.)
+- 🌊 mise aqua backend for the modern CLI suite (bat, fd, eza, kubectl, gh, etc.)
 - 🔍 Modern CLI tools: Complete suite of replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
 - 📜 Atuin for enhanced shell history (better search, statistics, deduplication)
@@ -155,6 +155,8 @@ When running on macOS, additional features are enabled:
   - `flushdns` - Flush DNS cache
   - `ql <file>` - Quick Look preview
   - `showfiles/hidefiles` - Toggle hidden files in Finder
+  - `showdesktop/hidedesktop` - Toggle desktop icons
+  - `afk` - Start the screensaver (lock away from keyboard)
   - `cleanup` - Remove .DS_Store files
 
 ### Modern CLI Tools
@@ -203,6 +205,14 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - Query and manipulate JSON data
 - **[just](https://github.com/casey/just)** - Modern `make`
   - Simpler command runner
+- **[worktrunk](https://github.com/worktrunk/worktrunk)** - Git worktree manager
+  - Create/switch worktrees fast; launched via `wt` (and the `wsc` abbreviation)
+- **[biome](https://biomejs.dev/)** - JS/TS formatter and linter
+  - Single fast toolchain for formatting and linting
+- **[uv](https://github.com/astral-sh/uv)** - Fast Python package/project manager
+- **[helix](https://helix-editor.com/)** - Modal editor with LSP built in
+  - Launched via `hx`; resolved as `$EDITOR` when present
+- **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter/formatter (macOS only)
 
 #### Shell Enhancements
 - **[fzf](https://github.com/junegunn/fzf)** - Fuzzy finder
@@ -239,13 +249,18 @@ This configuration includes [mise](https://mise.jdx.dev/) for managing:
 - Bun
 - Java (Eclipse Temurin LTS)
 
-**CLI Tools via aqua backend** (22 tools):
+**CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
 - Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv, uv
 - Kubernetes tools: kubectl, kubectx, kubens
-- AWS tools: granted
+- AWS tools: granted (`assume`)
+- Fuzzy finder TUI: television (`tv`, via a mise plugin)
 
-> Versions above track `private_dot_config/mise/config.toml.tmpl`, which is the source of truth.
+Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, tmux, helix,
+worktrunk, biome, and macOS-only eza/ktlint) are installed by
+`.chezmoiscripts/run_onchange_after_05-install-tools.sh.tmpl`.
+
+> The exact tool list and versions track `private_dot_config/mise/config.toml.tmpl`, which is the source of truth.
 
 All tools are automatically installed via `~/.config/mise/config.toml` when you run:
 
@@ -334,22 +349,33 @@ This repository uses chezmoi templates to handle OS-specific differences. Key te
 
 ## Directory Structure
 
+The chezmoi source directory lives at `~/.local/share/chezmoi` (run `chezmoi cd`
+to jump there; `~/dev/dotfiles` is only the mount path used by `docker-test.sh`).
+
 ```
-~/dev/dotfiles/
-├── .chezmoi.toml.tmpl          # Chezmoi configuration template
-├── .chezmoiignore              # Files to ignore by OS
-├── .chezmoiexternal.toml.tmpl  # Externally-fetched files (zsh plugins)
-├── dot_zshenv.tmpl             # Zsh env for all shells (PATH, etc.)
-├── dot_zshrc.tmpl              # Main Zsh interactive config
+chezmoi source/
+├── .chezmoi.toml.tmpl              # Per-machine data (prompts, .isWork, etc.)
+├── .chezmoiignore                  # Files present in the repo but not deployed
+├── .chezmoiremove                  # Files chezmoi deletes from $HOME on apply
+├── .chezmoiexternal.toml.tmpl      # Externally-fetched files (zsh plugins)
+├── .chezmoiscripts/                # Ordered run_once / run_onchange install scripts
+├── dot_zshenv.tmpl                 # Zsh env for all shells (PATH, etc.)
+├── dot_zshrc.tmpl                  # Main Zsh interactive config
+├── dot_gitconfig.tmpl              # Git config (delta, etc.)
+├── dot_tmux.conf                   # tmux configuration
+├── dot_inputrc / dot_lesskey       # readline / less key bindings
+├── dot_claude/                     # Claude Code config (agents, commands, hooks, statusline)
 ├── private_dot_config/
-│   ├── private_fish/
-│   │   ├── config.fish.tmpl    # Main Fish config
-│   │   ├── functions/          # Fish functions
-│   │   └── conf.d/             # Fish conf.d files
-│   └── zsh/
-│       ├── functions/          # Zsh functions (1:1 port of Fish)
-│       └── conf.d/             # Zsh conf.d files (fzf, macos, greeting, motd)
-└── README.md                   # This file
+│   ├── private_fish/               # config.fish.tmpl, functions/, conf.d/
+│   ├── zsh/                        # functions/ (1:1 port of Fish), conf.d/
+│   ├── mise/                       # mise config (tool + runtime source of truth)
+│   ├── ghostty/ helix/ lazygit/    # per-tool configs
+│   ├── starship.toml.tmpl          # shared prompt
+│   └── tmux/ worktrunk/            # tmux helper scripts, worktrunk config
+├── private_dot_gnupg/              # gpg-agent config
+├── install.sh test.sh docker-test.sh setup-aliases.sh
+├── Dockerfile renovate.json
+└── README.md CLAUDE.md SCRIPTS.md  # docs (not deployed)
 ```
 
 ## Testing with Docker
@@ -371,15 +397,14 @@ fish
 ### Manual Docker Commands
 ```bash
 # Build the test image
-docker build -f Dockerfile.test -t dotfiles-test .
+docker build -f Dockerfile -t dotfiles-test .
 
 # Run container with mounted dotfiles
 docker run -it --rm -v "$(pwd):/home/testuser/dev/dotfiles:ro" dotfiles-test
-
-# Or use docker-compose
-docker-compose up -d dotfiles-test
-docker exec -it dotfiles-test fish
 ```
+
+> `./docker-test.sh` (and `./docker-test.sh --ci`) wrap these commands; there is
+> no `Dockerfile.test` or docker-compose file.
 
 ### Test Script
 The `test.sh` script verifies all tools are installed correctly:
@@ -393,18 +418,18 @@ The `test.sh` script verifies all tools are installed correctly:
 This repository includes automated testing via GitHub Actions:
 
 ### Continuous Integration
-- Tests on Ubuntu 22.04 and 24.04
-- Tests on macOS 13 and 14
-- Docker-based testing
-- Full tool installation verification
+- Tests on Ubuntu 24.04 and macOS 26 (GitHub-hosted runners)
+- Full tool installation verification (`install.sh` + `test.sh`)
+- Docker-based testing is available locally via `./docker-test.sh`
 
 ### Running in CI Mode
+install.sh takes no CLI flags; CI behaviour is driven by environment variables.
 ```bash
-# Install with CI mode (non-interactive)
-./install.sh --ci
+# Non-interactive install (skips prompts and the login-shell step)
+CI=true ./install.sh
 
-# Or just skip confirmations
-./install.sh --no-confirm
+# Non-interactive and skip language runtimes
+CI=true QUICK_INSTALL=true ./install.sh
 ```
 
 Environment variables for CI:
@@ -430,15 +455,15 @@ Ensure `~/.local/bin` is in your PATH:
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-#### Fish doesn't start with correct configuration
+#### Fish (or Zsh) doesn't start with correct configuration
 ```bash
 # Re-apply dotfiles
 chezmoi apply -v
-
-# Install Fisher plugins manually
-fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher"
-fish -c "fisher install PatrickF1/fzf.fish"
 ```
+There is no plugin manager to set up: fzf key bindings come from `conf.d/fzf.fish`
+(and `fzf --zsh` in `~/.zshrc`), and every CLI tool is provided by mise. If a tool
+is missing, ensure mise is active (`eval "$(mise activate bash)"`) and re-run
+`chezmoi apply -v`.
 
 #### Tools not found after installation
 ```bash
@@ -465,15 +490,14 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - Action versions (e.g., `actions/checkout`)
 - GitHub-hosted runner versions
 
-#### 3. **Binary Tools in install.sh**
-- mise version manager
-- fzf (fuzzy finder)
-- delta (git diff viewer)
-- atuin (shell history)
-- just (command runner)
-- kubectx/kubens (Kubernetes tools)
-- duf (disk usage)
-- dust (du alternative)
+#### 3. **Pinned binaries in the install-tools script** (`.chezmoiscripts/run_onchange_after_05-install-tools.sh.tmpl`)
+- btop (system monitor)
+- tealdeer / tldr (man-page examples)
+- broot (tree navigation)
+
+These are the only tools with hardcoded version pins; everything else tracks
+`latest` (or a pinned version) via the mise config above. install.sh itself is a
+flagless bootstrap and contains no version pins.
 
 ### How It Works
 

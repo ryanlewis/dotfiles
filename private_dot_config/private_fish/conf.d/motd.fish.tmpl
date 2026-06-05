@@ -6,7 +6,6 @@ if status is-interactive
     set -l cmd (set_color brcyan)
     set -l reset (set_color normal)
     set -l today (date "+%A, %d %B %Y")
-    set -l col 28
 
     # Tips pool: "command;description"
     set -l tips \
@@ -20,7 +19,6 @@ if status is-interactive
         "fgrep \"term\";Search file contents and jump to line" \
         "lg;Lazygit — full git TUI" \
         "ta <name>;Attach or create a tmux session" \
-        "y;Yazi file manager with dir persistence" \
         "tools;Show all installed tools" \
         "tools -i;Interactive tool browser with fzf" \
         "yank;Copy to clipboard over SSH (OSC 52)" \
@@ -40,7 +38,6 @@ if status is-interactive
         "btop;Beautiful system monitor" \
         "duf;Friendly disk usage overview" \
         "dust;Intuitive disk space analyser" \
-        "wtfutil;Personal terminal dashboard" \
         "hx;Helix — modal editor with LSP built in" \
         "claude -r;Resume a previous Claude Code session" \
         "claude -c;Continue most recent Claude session"
@@ -61,10 +58,10 @@ if status is-interactive
     echo ""
     echo "  $dim$today$reset"
     echo ""
-    echo "  $accent""Quick reads$reset"(string repeat -n (math "$col - 11") " ")"$accent""Tips$reset"
-    echo "  $dim├─$reset $cmd""clx$reset $dim·$reset Hacker News"(string repeat -n (math "$col - 20") " ")"$tip_lines[1]"
-    echo "  $dim└─$reset $cmd""newsboat$reset $dim·$reset RSS feeds"(string repeat -n (math "$col - 23") " ")"$tip_lines[2]"
-    echo "  "(string repeat -n $col " ")"$tip_lines[3]"
+    echo "  $accent""Tips$reset"
+    echo "  $tip_lines[1]"
+    echo "  $tip_lines[2]"
+    echo "  $tip_lines[3]"
     echo ""
 end
 {{- end }}

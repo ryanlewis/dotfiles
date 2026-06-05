@@ -58,8 +58,8 @@ Run installation and tests in an isolated Docker container.
 # Full installation with languages
 ./install.sh
 
-# Quick installation (no languages)
-./install.sh --quick
+# Quick installation (no languages) — controlled by an env var, not a flag
+QUICK_INSTALL=true ./install.sh
 ```
 
 ### CI/CD Pipeline
@@ -73,16 +73,3 @@ Run installation and tests in an isolated Docker container.
 # Test in Docker interactively
 ./docker-test.sh
 ```
-
-## Scripts to be Removed
-
-The following scripts are redundant and will be removed:
-- install-fast.sh (use `install.sh --quick`)
-- install-quick.sh (use `install.sh --quick`)
-- install-remaining.sh (not needed)
-- test-minimal.sh (use `test.sh --minimal`)
-- docker-test-ci.sh (use `docker-test.sh --ci`)
-- docker-test-minimal.sh (redundant)
-- docker-test-simple.sh (redundant)
-- ci-test.sh (use `docker-test.sh --ci`)
-- quick-test.sh (redundant)

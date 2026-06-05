@@ -13,7 +13,7 @@ function cn --description "Open Claude in notes vault"
     end
     if test (count $argv) -gt 0
         if test -n "$prompt"
-            set prompt "$prompt\n"(string join ' ' $argv)
+            set prompt "$prompt"\n(string join ' ' $argv)
         else
             set prompt (string join ' ' $argv)
         end

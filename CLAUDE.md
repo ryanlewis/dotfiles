@@ -23,7 +23,7 @@ chezmoi add ~/.config/fish/foo.fish   # pull an external file into this repo
 # Test
 ./test.sh              # verify tools/functions/configs are present
 ./test.sh --minimal    # skip language-runtime checks (faster)
-./docker-test.sh       # clean Ubuntu 24.04 container; --ci for non-interactive
+./docker-test.sh       # clean Ubuntu 26.04 container; --ci for non-interactive
 ```
 
 There is no build step — "applying" is running the chezmoi templates against `$HOME`. CI (`.github/workflows/test.yml`) runs `install.sh` + `test.sh` across Ubuntu and macOS runners.
@@ -44,11 +44,11 @@ File/dir name prefixes are significant and determine the target path and behavio
 ### Install & tool provisioning
 `install.sh` is a minimal bootstrap: it only installs chezmoi and runs `chezmoi init --apply`. Everything else happens via ordered scripts in `.chezmoiscripts/`:
 - `run_once_*` — one-time setup (Fish, Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (recommends Zsh as login shell; never runs `chsh` itself).
-- `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_02-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation.
+- `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_after_05-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation. It runs in the `after` pass (post-`03-install-languages`, post-`04-cleanup`) so node/npm exist for the npm-installed tools and freshly-installed binaries survive the cleanup sweep.
 
 Tools come from two places — keep both in sync when adding/removing a tool:
 1. **mise** (`private_dot_config/mise/config.toml.tmpl`) — language runtimes + the `aqua:` backend tools (the bulk of the CLI suite) + a couple of mise plugins (`television`). This is the source of truth for versions; do **not** hardcode versions in docs.
-2. **`run_onchange_02-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
+2. **`run_onchange_after_05-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `tmux`, `helix`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
 
 Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 

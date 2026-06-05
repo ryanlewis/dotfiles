@@ -17,8 +17,9 @@ fi
 
 echo "🔧 Installing mise..."
 
-# Use official mise installer
-curl https://mise.run | sh
+# Use official mise installer (-fsSL: fail on HTTP errors so an error page or
+# captive-portal redirect is never piped into sh)
+curl -fsSL https://mise.run | sh
 
 # Verify installation
 if command -v mise &> /dev/null; then

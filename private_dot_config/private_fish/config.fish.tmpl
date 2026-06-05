@@ -102,22 +102,8 @@ end
 set -gx EDITOR {{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 set -gx VISUAL $EDITOR
 
-# fzf configuration with vi keybindings
-if type -q fzf
-    # Enable vi-style movement in fzf
-    set -gx FZF_DEFAULT_OPTS '--height 40% --layout=reverse --border --bind=ctrl-j:down,ctrl-k:up,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:page-down,ctrl-b:page-up'
-
-    # Use fd/fdfind for better performance
-    if type -q fd
-        set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
-        set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
-        set -gx FZF_ALT_C_COMMAND 'fd --type d --hidden --follow --exclude .git'
-    else if type -q fdfind
-        set -gx FZF_DEFAULT_COMMAND 'fdfind --type f --hidden --follow --exclude .git'
-        set -gx FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
-        set -gx FZF_ALT_C_COMMAND 'fdfind --type d --hidden --follow --exclude .git'
-    end
-end
+# fzf options, theme and key bindings are configured in conf.d/fzf.fish
+# (loaded before this file), mirroring the zsh split.
 
 # Pager configuration
 set -gx PAGER "less"
@@ -176,11 +162,9 @@ alias cat="bat"
 {{- end }}
 {{- end }}
 
-{{- if or (lookPath "fd") (lookPath "fdfind") }}
-# Use fd instead of find
-{{ if lookPath "fdfind" -}}
+{{- if and (lookPath "fdfind") (not (lookPath "fd")) }}
+# Use fd instead of find (Ubuntu/Debian ships it as fdfind)
 alias fd="fdfind"
-{{- end }}
 {{- end }}
 
 # Useful aliases combining tools

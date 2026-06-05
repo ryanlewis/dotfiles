@@ -37,6 +37,8 @@ if [[ "$CI_MODE" == "true" ]]; then
     echo "🚀 Running automated CI tests..."
     echo "================================"
     
+    # Don't let `set -e` abort before we can report the container's exit code.
+    set +e
     docker run --rm \
         -v "$(pwd):/home/testuser/dev/dotfiles:ro" \
         -e CI=true \
@@ -47,26 +49,29 @@ if [[ "$CI_MODE" == "true" ]]; then
             echo '📂 Setting up test environment...'
             cp -r /home/testuser/dev/dotfiles /tmp/dotfiles
             cd /tmp/dotfiles
-            
+
             echo ''
             echo '⚡ Running full installation (includes language runtimes)...'
             echo '   This will install Node.js, Python, Go, and Bun'
-            ./install.sh --ci
-            
+            # CI=true is already exported into the container (see -e above);
+            # install.sh takes no CLI flags.
+            ./install.sh
+
             echo ''
             echo '🔗 Setting up aliases...'
             ./setup-aliases.sh
-            
+
             echo ''
             echo '🧪 Running tests...'
             export PATH=\"\$HOME/.local/share/mise/shims:\$HOME/.bun/bin:\$HOME/.local/bin:\$HOME/go/bin:\$PATH\"
             ./test.sh
-            
+
             echo ''
             echo '✅ CI tests completed!'
         "
-    
+
     EXIT_CODE=$?
+    set -e
     if [ $EXIT_CODE -eq 0 ]; then
         echo ""
         echo "✅ All CI tests passed!"
@@ -82,8 +87,8 @@ else
     echo ""
     echo "To test the installation, run:"
     echo "  cd /home/testuser/dev/dotfiles"
-    echo "  ./install.sh [--quick]"
-    echo "  fish"
+    echo "  ./install.sh                 # or: QUICK_INSTALL=true ./install.sh"
+    echo "  zsh                          # (fish is the parallel shell)"
     echo "  ./test.sh [--minimal]"
     echo ""
     

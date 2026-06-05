@@ -123,6 +123,17 @@ check_command direnv
 check_command just
 check_command gum
 check_command wt
+check_command uv
+check_command tv
+check_command biome
+check_command hx
+check_command tmux
+# granted ships the `assume` wrapper
+check_command assume
+# ktlint is macOS-only (Homebrew); skip the check elsewhere
+if [[ "$(uname)" == "Darwin" ]]; then
+    check_command ktlint
+fi
 
 echo ""
 echo "☸️  Checking Kubernetes tools..."
@@ -149,6 +160,11 @@ check_fish_function fish_greeting
 check_fish_function dotfiles
 check_fish_function yank
 check_fish_function ca
+check_fish_function cn
+check_fish_function crpr
+check_fish_function slugify
+check_fish_function dogpound
+check_fish_function tools
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
     echo ""

@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Claude Code Auto-Formatting Hook
-# Automatically formats source code files after Claude edits them
+# Automatically formats source code files after Claude edits them.
+#
+# NOTE: intentionally NOT registered in dot_claude/create_settings.json yet —
+# it ships to ~/.claude/hooks so it is ready to wire up as a PostToolUse hook on
+# Edit|Write|MultiEdit when wanted, but is deliberately dormant for now. This is
+# by design, not an oversight (see audit M13).
 
 # Read JSON input from stdin
 json_input=$(cat)

@@ -1,12 +1,18 @@
 #!/bin/bash
 # Install command-line tools NOT managed by mise aqua backend
 # Most tools are now managed via mise aqua (see private_dot_config/mise/config.toml.tmpl)
-# This script only installs tools not available in the aqua registry:
+# This script only installs tools not available in (or not taken from) the aqua registry:
 #   - btop (asset naming issue in aqua registry)
 #   - httpie (not in aqua, httpie-go is different)
 #   - broot (not in aqua registry)
 #   - tldr/tealdeer (tlrc available but different implementation)
 #   - pinentry (passphrase prompt for gpg-agent)
+#   - tmux + helix (terminal multiplexer / editor; from the OS package manager)
+#   - worktrunk, biome, eza (macOS), ktlint (macOS)
+#
+# Runs in the `after` pass *following* run_onchange_after_03-install-languages so
+# that mise-provided node/npm exist for the biome step, and after the cleanup in
+# run_onchange_after_04 so freshly-installed binaries are never swept away.
 #
 # Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
 set -e
@@ -183,8 +189,47 @@ if ! command -v pinentry &> /dev/null; then
 fi
 {{ end -}}
 
+# Install tmux (terminal multiplexer; drives ta/ca/cn/dogpound and the MOTD tips)
+if ! command -v tmux &> /dev/null; then
+    echo "🖥️  Installing tmux..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install tmux
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        sudo apt-get update -qq && sudo apt-get install -y -qq tmux
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y tmux
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm tmux
+    fi
+    {{ end -}}
+fi
+
+# Install helix (modal editor; $EDITOR resolves to hx when present)
+if ! command -v hx &> /dev/null; then
+    echo "✏️  Installing helix..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install helix
+    {{ else if eq .chezmoi.os "linux" -}}
+    if command -v apt &> /dev/null; then
+        # helix is absent from older Ubuntu base repos (e.g. 24.04); pull in the
+        # maintained PPA when the package isn't already available, then install.
+        if ! apt-cache show helix &> /dev/null; then
+            sudo add-apt-repository -y ppa:maveonair/helix-editor 2>/dev/null || true
+            sudo apt-get update -qq || true
+        fi
+        sudo apt-get install -y -qq helix || echo "⚠️  helix unavailable via apt, skipping"
+    elif command -v dnf &> /dev/null; then
+        sudo dnf install -y helix
+    elif command -v pacman &> /dev/null; then
+        sudo pacman -S --noconfirm helix
+    fi
+    {{ end -}}
+fi
+
 # Install worktrunk (git worktree manager)
-# macOS: Homebrew. Linux: cargo (no upstream Homebrew bottle we want to rely on).
+# macOS: Homebrew. Linux: cargo (no upstream Homebrew bottle we want to rely on;
+# CI runners ship rust, a fresh Linux box needs rustup first — non-fatal if absent).
 {{ if eq .chezmoi.os "darwin" -}}
 # Migrate any old cargo-installed copy over to Homebrew.
 if command -v cargo &> /dev/null && cargo install --list 2>/dev/null | grep -q '^worktrunk '; then
@@ -212,11 +257,14 @@ if ! command -v wt &> /dev/null; then
 fi
 {{ end -}}
 
-# Install biome (via npm)
+# Install biome (via npm; node/npm come from mise, hence the after-languages order)
 if ! command -v biome &> /dev/null; then
     echo "🧹 Installing biome..."
     if command -v npm &> /dev/null; then
         npm install --global @biomejs/biome
+        # npm globals under mise-managed node aren't on $PATH until reshimmed;
+        # generate the shim so `biome` resolves via ~/.local/share/mise/shims.
+        command -v mise &> /dev/null && mise reshim 2>/dev/null || true
     else
         echo "⚠️  npm not found, skipping biome installation. Install Node.js first."
     fi

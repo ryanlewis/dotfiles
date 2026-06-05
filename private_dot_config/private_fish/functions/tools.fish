@@ -42,6 +42,9 @@ function tools --description "Show TLDR of all available commands and tools"
         "Custom:📋 yank:Copy to clipboard (works over SSH!)" \
         "Custom:⚙️  dotfiles:Manage dotfiles easily" \
         "Custom:🛠️  tools:Show this command reference" \
+        "Custom:📝 cn:Open Claude in notes vault" \
+        "Custom:🔗 crpr:Review a GitHub PR in cmux" \
+        "Custom:🏷️  slugify:AI kebab-case slug from text" \
         "FZF:📂 fcd:Fuzzy change directory" \
         "FZF:📄 fopen:Fuzzy open files in editor" \
         "FZF:💀 fkill:Fuzzy kill processes" \
@@ -60,11 +63,18 @@ function tools --description "Show TLDR of all available commands and tools"
         "Dev:✨ starship:Customizable prompt" \
         "Dev:📜 atuin:Better shell history (Ctrl+R)" \
         "Dev:🌳 wt:Worktrunk - git worktree manager" \
+        "Dev:✏️  hx:Helix - modal editor with LSP" \
+        "Dev:🦄 uv:Fast Python package manager" \
+        "Dev:🔐 assume:AWS role switcher (granted)" \
+        "Dev:📺 tv:Television - fuzzy finder TUI" \
+        "Dev:🧹 biome:JS/TS formatter and linter" \
+        "Dev:🅺 ktlint:Kotlin linter/formatter (macOS)" \
         "Dev:☸️  kubectl:Kubernetes CLI" \
         "Dev:🔄 kubectx:Switch K8s contexts" \
         "Dev:📦 kubens:Switch K8s namespaces" \
         "Tmux:🖥️  ta:Tmux session manager" \
-        "Tmux:🤖 ca:Spawn Claude agents in worktrees"
+        "Tmux:🤖 ca:Spawn Claude agents in worktrees" \
+        "Tmux:🐕 dogpound:Open dogpound project in tmux + Claude"
     
     # Interactive mode with gum filter
     if test "$interactive" = "true"
@@ -114,7 +124,7 @@ function tools --description "Show TLDR of all available commands and tools"
                 case "Replace"
                     echo (set_color green)"━━━ 🔄 Modern CLI Replacements ━━━"(set_color normal)
                 case "Custom"
-                    echo (set_color magenta)"━━━ ⚡ Custom Fish Functions ━━━"(set_color normal)
+                    echo (set_color magenta)"━━━ ⚡ Custom Functions ━━━"(set_color normal)
                 case "FZF"
                     echo (set_color cyan)"━━━ 🔍 FZF-Powered Tools ━━━"(set_color normal)
                 case "Dev"
@@ -186,7 +196,7 @@ function tools --description "Show TLDR of all available commands and tools"
         echo ""
         
         # Custom Fish Functions
-        echo (set_color magenta)"━━━ ⚡ Custom Fish Functions ━━━"(set_color normal)
+        echo (set_color magenta)"━━━ ⚡ Custom Functions ━━━"(set_color normal)
         echo (set_color brmagenta)"• mkcd"(set_color normal)"    - Make dir and enter it"
         echo (set_color brmagenta)"• backup"(set_color normal)"  - Timestamp backup files"
         echo (set_color brmagenta)"• extract"(set_color normal)" - Extract any archive"
@@ -196,6 +206,9 @@ function tools --description "Show TLDR of all available commands and tools"
         echo (set_color brmagenta)"• yank"(set_color normal)"    - Copy to clipboard "(set_color yellow)"(works over SSH!)"(set_color normal)
         echo (set_color brmagenta)"• dotfiles"(set_color normal)" - Manage dotfiles easily"
         echo (set_color brmagenta)"• tools"(set_color normal)"   - Show this help"
+        echo (set_color brmagenta)"• cn"(set_color normal)"      - Open Claude in notes vault"
+        echo (set_color brmagenta)"• crpr"(set_color normal)"    - Review a GitHub PR in cmux"
+        echo (set_color brmagenta)"• slugify"(set_color normal)" - AI kebab-case slug from text"
         echo ""
         
         # FZF-Powered
@@ -222,6 +235,12 @@ function tools --description "Show TLDR of all available commands and tools"
         echo (set_color bryellow)"• starship"(set_color normal)" - Pretty prompt"
         echo (set_color bryellow)"• atuin"(set_color normal)"    - Better shell history"
         echo (set_color bryellow)"• wt"(set_color normal)"       - Git worktree manager"
+        echo (set_color bryellow)"• hx"(set_color normal)"       - Helix modal editor"
+        echo (set_color bryellow)"• uv"(set_color normal)"       - Fast Python package manager"
+        echo (set_color bryellow)"• assume"(set_color normal)"   - AWS role switcher (granted)"
+        echo (set_color bryellow)"• tv"(set_color normal)"       - Television fuzzy finder"
+        echo (set_color bryellow)"• biome"(set_color normal)"    - JS/TS formatter & linter"
+        echo (set_color bryellow)"• ktlint"(set_color normal)"   - Kotlin linter (macOS)"
         echo ""
         
         # Kubernetes Tools
@@ -235,6 +254,7 @@ function tools --description "Show TLDR of all available commands and tools"
         echo (set_color white)"━━━ 🖥️  Tmux Helper ━━━"(set_color normal)
         echo (set_color brwhite)"• ta"(set_color normal)" - Tmux session manager "(set_color brblack)"(attach/create)"(set_color normal)
         echo (set_color brwhite)"• ca"(set_color normal)" - Spawn Claude agents in worktrees"
+        echo (set_color brwhite)"• dogpound"(set_color normal)" - Open dogpound project in tmux + Claude"
         echo ""
         
         # Footer tips

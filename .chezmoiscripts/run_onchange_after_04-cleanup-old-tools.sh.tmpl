@@ -158,7 +158,10 @@ for tool in "${BINARY_TOOLS[@]}"; do
         if ! grep -q "mise" "$HOME/.local/bin/$tool" 2>/dev/null; then
             echo "  🗑️  Removing $HOME/.local/bin/$tool"
             rm -f "$HOME/.local/bin/$tool"
-            ((REMOVED_COUNT++))
+            # Use arithmetic assignment, not ((x++)): the post-increment returns
+            # the old value, so it yields exit status 1 when the count is 0 and
+            # aborts the loop under `set -e` (bash 4+/Linux).
+            REMOVED_COUNT=$((REMOVED_COUNT + 1))
         fi
     fi
 done

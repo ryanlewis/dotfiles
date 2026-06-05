@@ -45,6 +45,9 @@ tools() {
         "Custom:📋 yank:Copy to clipboard (works over SSH!)"
         "Custom:⚙️  dotfiles:Manage dotfiles easily"
         "Custom:🛠️  tools:Show this command reference"
+        "Custom:📝 cn:Open Claude in notes vault"
+        "Custom:🔗 crpr:Review a GitHub PR in cmux"
+        "Custom:🏷️  slugify:AI kebab-case slug from text"
         "FZF:📂 fcd:Fuzzy change directory"
         "FZF:📄 fopen:Fuzzy open files in editor"
         "FZF:💀 fkill:Fuzzy kill processes"
@@ -63,11 +66,18 @@ tools() {
         "Dev:✨ starship:Customizable prompt"
         "Dev:📜 atuin:Better shell history (Ctrl+R)"
         "Dev:🌳 wt:Worktrunk - git worktree manager"
+        "Dev:✏️  hx:Helix - modal editor with LSP"
+        "Dev:🦄 uv:Fast Python package manager"
+        "Dev:🔐 assume:AWS role switcher (granted)"
+        "Dev:📺 tv:Television - fuzzy finder TUI"
+        "Dev:🧹 biome:JS/TS formatter and linter"
+        "Dev:🅺 ktlint:Kotlin linter/formatter (macOS)"
         "Dev:☸️  kubectl:Kubernetes CLI"
         "Dev:🔄 kubectx:Switch K8s contexts"
         "Dev:📦 kubens:Switch K8s namespaces"
         "Tmux:🖥️  ta:Tmux session manager"
         "Tmux:🤖 ca:Spawn Claude agents in worktrees"
+        "Tmux:🐕 dogpound:Open dogpound project in tmux + Claude"
     )
 
     local item
@@ -168,6 +178,9 @@ tools() {
         print -r -- "${C_brmagenta}• yank${C_reset}    - Copy to clipboard ${C_yellow}(works over SSH!)${C_reset}"
         print -r -- "${C_brmagenta}• dotfiles${C_reset} - Manage dotfiles easily"
         print -r -- "${C_brmagenta}• tools${C_reset}   - Show this help"
+        print -r -- "${C_brmagenta}• cn${C_reset}      - Open Claude in notes vault"
+        print -r -- "${C_brmagenta}• crpr${C_reset}    - Review a GitHub PR in cmux"
+        print -r -- "${C_brmagenta}• slugify${C_reset} - AI kebab-case slug from text"
         print
 
         print -r -- "${C_cyan}━━━ 🔍 FZF-Powered (fuzzy search) ━━━${C_reset}"
@@ -192,6 +205,12 @@ tools() {
         print -r -- "${C_bryellow}• starship${C_reset} - Pretty prompt"
         print -r -- "${C_bryellow}• atuin${C_reset}    - Better shell history"
         print -r -- "${C_bryellow}• wt${C_reset}       - Git worktree manager"
+        print -r -- "${C_bryellow}• hx${C_reset}       - Helix modal editor"
+        print -r -- "${C_bryellow}• uv${C_reset}       - Fast Python package manager"
+        print -r -- "${C_bryellow}• assume${C_reset}   - AWS role switcher (granted)"
+        print -r -- "${C_bryellow}• tv${C_reset}       - Television fuzzy finder"
+        print -r -- "${C_bryellow}• biome${C_reset}    - JS/TS formatter & linter"
+        print -r -- "${C_bryellow}• ktlint${C_reset}   - Kotlin linter (macOS)"
         print
 
         print -r -- "${C_red}━━━ ☸️  Kubernetes Tools ━━━${C_reset}"
@@ -203,6 +222,7 @@ tools() {
         print -r -- "${C_white}━━━ 🖥️  Tmux Helper ━━━${C_reset}"
         print -r -- "${C_brwhite}• ta${C_reset} - Tmux session manager ${C_brblack}(attach/create)${C_reset}"
         print -r -- "${C_brwhite}• ca${C_reset} - Spawn Claude agents in worktrees"
+        print -r -- "${C_brwhite}• dogpound${C_reset} - Open dogpound project in tmux + Claude"
         print
 
         print -r -- "${C_brblack}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_reset}"

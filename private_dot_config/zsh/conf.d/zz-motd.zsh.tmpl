@@ -5,7 +5,6 @@
 
     local dim=$'\e[90m' accent=$'\e[94m' cmd=$'\e[96m' reset=$'\e[0m'
     local today=$(date "+%A, %d %B %Y")
-    local col=28
 
     # Tips pool: "command;description"
     local -a tips=(
@@ -19,7 +18,6 @@
         'fgrep "term";Search file contents and jump to line'
         'lg;Lazygit — full git TUI'
         'ta <name>;Attach or create a tmux session'
-        'y;Yazi file manager with dir persistence'
         'tools;Show all installed tools'
         'tools -i;Interactive tool browser with fzf'
         'yank;Copy to clipboard over SSH (OSC 52)'
@@ -39,7 +37,6 @@
         'btop;Beautiful system monitor'
         'duf;Friendly disk usage overview'
         'dust;Intuitive disk space analyser'
-        'wtfutil;Personal terminal dashboard'
         'hx;Helix — modal editor with LSP built in'
         'claude -r;Resume a previous Claude Code session'
         'claude -c;Continue most recent Claude session'
@@ -63,10 +60,10 @@
     print
     print -r -- "  ${dim}${today}${reset}"
     print
-    print -r -- "  ${accent}Quick reads${reset}$(printf '%*s' $((col-11)) '')${accent}Tips${reset}"
-    print -r -- "  ${dim}├─${reset} ${cmd}clx${reset} ${dim}·${reset} Hacker News$(printf '%*s' $((col-20)) '')${tip_lines[1]}"
-    print -r -- "  ${dim}└─${reset} ${cmd}newsboat${reset} ${dim}·${reset} RSS feeds$(printf '%*s' $((col-23)) '')${tip_lines[2]}"
-    print -r -- "  $(printf '%*s' $col '')${tip_lines[3]}"
+    print -r -- "  ${accent}Tips${reset}"
+    print -r -- "  ${tip_lines[1]}"
+    print -r -- "  ${tip_lines[2]}"
+    print -r -- "  ${tip_lines[3]}"
     print
 }
 {{- end }}
