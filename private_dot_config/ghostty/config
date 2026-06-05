@@ -1,17 +1,18 @@
 # Ghostty Terminal Configuration
 
 # ── Theme ────────────────────────────────────────────────────
-# Auto light/dark switching based on macOS appearance
-# Run `ghostty +list-themes` to browse alternatives
-#theme = light:Catppuccin Latte,dark:Ayu
-theme = Ayu
+# Auto light/dark switching that follows the macOS system appearance.
+# Dark mode uses the built-in Ayu; light mode uses the built-in Catppuccin Latte.
+# Run `ghostty +list-themes` to browse alternatives.
+theme = light:Catppuccin Latte,dark:Ayu
 
 # ── Font ─────────────────────────────────────────────────────
 #font-family = IosevkaNerdFont
 #font-family = "IoskeleyMono Nerd Font"
-font-family = Maple Mono NF
+font-family = "Maple Mono NF"
 font-size = 14
-#font-thicken = true
+# Faux-bold the strokes a touch (macOS); helps text read heavier on light backgrounds.
+font-thicken = true
 font-feature = +liga
 font-feature = +calt
 
@@ -22,14 +23,15 @@ macos-window-buttons = hidden
 window-padding-x = 0
 window-padding-y = 0
 window-padding-balance = true
-background-opacity = 0.95
+# Both modes run fully opaque (no background-opacity set). background-blur-radius
+# only takes effect if you reintroduce transparency.
 background-blur-radius = 10
 window-save-state = always
 macos-window-shadow = true
-# Dim unfocused splits with a pure black fill so the active pane pops
+# Dim unfocused splits so the active pane pops. The fill defaults to the
+# theme background, so dimming adapts to light/dark mode automatically.
 unfocused-split-opacity = 0.75
-unfocused-split-fill = #000000
-# Lighter split borders (visible against dark backgrounds)
+# Mid-grey split borders, legible against both light and dark backgrounds
 split-divider-color = #555555
 
 
