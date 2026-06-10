@@ -280,6 +280,9 @@ fi
 # ── Local, unmanaged config ───────────────────────────────────────────────
 [[ -f ~/.config/zsh/config.local.zsh ]] && source ~/.config/zsh/config.local.zsh
 
+# ── Worktrunk shell integration ───────────────────────────────────────────
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
 # ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
 [[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
     && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
