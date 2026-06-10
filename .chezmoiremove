@@ -11,14 +11,7 @@
 .config/zsh/functions/y.zsh
 .config/wtf/config.yml
 
-# Repo-meta files deployed to ~ by an early apply, before they were added to
-# .chezmoiignore (June 2026). Ignoring stopped re-management but left the
-# orphaned copies on disk; purge them here so other machines clean up too.
-Dockerfile
-SCRIPTS.md
-docker-test.sh
-install.sh
-renovate.json
-setup-aliases.sh
-test-chezmoi-data.yaml
-test.sh
+# NOTE: orphaned repo-meta files (Dockerfile, install.sh, etc.) cannot be
+# purged here — they are listed in .chezmoiignore, and chezmoi never removes
+# ignored targets. They are cleaned up by run_once_before_purge-orphaned-
+# repo-meta.sh instead.
