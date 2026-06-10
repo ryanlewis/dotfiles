@@ -7,6 +7,7 @@ command_timeout = 1000
 
 # Format of the prompt
 format = """
+${custom.exedev}\
 $username\
 $hostname\
 $directory\
@@ -54,6 +55,12 @@ add_newline = false
 [character]
 success_symbol = "[➜](bold green)"
 error_symbol = "[➜](bold red)"
+
+# Lightning bolt when on an exe.dev host (logged in as exedev)
+[custom.exedev]
+when = 'test "$USER" = "exedev"'
+format = "[⚡]($style) "
+style = "bold yellow"
 
 [directory]
 truncation_length = 3
