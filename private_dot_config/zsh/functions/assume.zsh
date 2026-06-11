@@ -11,6 +11,12 @@ assume() {
     # granted ships `assume` (bash/zsh) alongside `assume.fish`.
     assume_script="$granted_path/assume"
     if [[ -f $assume_script ]]; then
+        # The script only detects alias-based invocation (`alias assume=". assume"`).
+        # Sourced from a function instead, we must declare the integration ourselves:
+        # GRANTED_ALIAS_CONFIGURED stops assumego prompting to install an alias, and
+        # GRANTED_RETURN_STATUS makes the script return assumego's real exit status.
+        local -x GRANTED_ALIAS_CONFIGURED=true
+        local GRANTED_RETURN_STATUS=true
         source "$assume_script" "$@"
     else
         echo "Error: assume not found at $assume_script" >&2
