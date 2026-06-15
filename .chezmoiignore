@@ -8,6 +8,21 @@
 .gitconfig
 {{ end }}
 
+# macOS launcher scripts (Tuna -> ~/Library/Scripts, Raycast -> ~/dev/raycast-scripts).
+# Gate by OS and by app install. Off-darwin: suppress whole trees (no stray ~/Library
+# on Linux VMs). On darwin: deploy each set only when its app bundle is present.
+{{ if ne .chezmoi.os "darwin" }}
+Library/**
+dev/raycast-scripts/**
+{{ else }}
+{{ if not (stat "/Applications/Tuna.app") }}
+Library/Scripts
+{{ end }}
+{{ if not (stat "/Applications/Raycast.app") }}
+dev/raycast-scripts
+{{ end }}
+{{ end }}
+
 # Always ignore
 README.md
 CLAUDE.md
