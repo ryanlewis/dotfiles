@@ -46,6 +46,10 @@ cursor-style = bar
 cursor-style-blink = false
 adjust-cursor-thickness = 2
 
+# ── Global Hotkeys ───────────────────────────────────────────
+# Show/hide all Ghostty windows from anywhere (works even when unfocused)
+keybind = global:alt+space=toggle_visibility
+
 # ── Quick Terminal (hotkey window) ───────────────────────────
 # keybind = global:§=toggle_quick_terminal
 quick-terminal-position = top
