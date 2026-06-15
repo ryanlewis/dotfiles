@@ -1,8 +1,7 @@
 git:
-  paging:
-    colorArg: always
-    pager: delta --dark --paging=never
-  
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
 gui:
   # Use delta for better diff viewing
   showFileTree: true
@@ -12,12 +11,10 @@ gui:
       - reverse
     selectedRangeBgColor:
       - reverse
-
 os:
   # Don't open difftool, use the built-in pager instead
   editCommand: '{{- if lookPath "nvim" }}nvim{{- else if lookPath "vim" }}vim{{- else }}vi{{- end }}'
   editCommandTemplate: '{{`{{editor}}`}} {{`{{filename}}`}}'
-
 keybinding:
   universal:
     quit: 'q'
