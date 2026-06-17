@@ -15,3 +15,10 @@ enabled = true
 
 [keys]
 prefix = "ctrl+a"
+
+# Open lazygit in a temporary pane (closes when lazygit exits)
+[[keys.command]]
+key = "prefix+alt+g"
+type = "pane"
+command = "lazygit"
+description = "lazygit"
