@@ -16,7 +16,7 @@ Minimal bootstrap: installs chezmoi and runs `chezmoi init --apply`. It takes no
 - `CHEZMOI_USER_NAME` / `CHEZMOI_USER_EMAIL` - pre-seed identity (defaults from git config)
 
 **What an apply installs:**
-- Zsh (default shell) and Fish configurations
+- Zsh configuration
 - mise with Node.js, Python (via Miniconda), Go, Bun, Java
 - Modern CLI tools (fzf, bat, fd, ripgrep, etc.)
 

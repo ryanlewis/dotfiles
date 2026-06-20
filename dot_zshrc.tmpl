@@ -1,5 +1,4 @@
 # ~/.zshrc — interactive zsh configuration.
-# Cross-platform analogue of private_dot_config/private_fish/config.fish.
 # PATH and non-interactive environment live in ~/.zshenv. This file is only
 # read by interactive shells.
 
@@ -43,7 +42,7 @@ setopt EXTENDED_GLOB
 unsetopt BEEP
 
 # ── Environment ───────────────────────────────────────────────────────────
-# Editor (resolved at apply time, same precedence as fish).
+# Editor (resolved at apply time).
 export EDITOR={{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 export VISUAL="$EDITOR"
 
@@ -89,7 +88,7 @@ ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
     && source $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
 # (zsh-syntax-highlighting is sourced LAST, at the bottom of this file.)
 
-# ── Vi mode + key bindings (analogue of fish vi mode + key bindings) ──────
+# ── Vi mode + key bindings ────────────────────────────────────────────────
 bindkey -v
 export KEYTIMEOUT=1   # snappy ESC / mode switch
 
@@ -119,7 +118,7 @@ bindkey -M viins '^W' backward-kill-word
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^U' backward-kill-line
 
-# ── Abbreviations (zsh-abbr; analogue of fish `abbr`) ─────────────────────
+# ── Abbreviations (zsh-abbr) ──────────────────────────────────────────────
 if (( $+functions[abbr] )); then
 {{- if lookPath "wt" }}
     abbr --session --quiet wsc='wt switch --create -x claude' 2>/dev/null
@@ -139,7 +138,7 @@ if command -v zoxide >/dev/null; then
 fi
 
 # fzf — official zsh integration (Ctrl-T, Alt-C, completion). Loaded BEFORE
-# atuin so atuin wins the Ctrl-R binding (matches the fish setup).
+# atuin so atuin wins the Ctrl-R binding.
 if command -v fzf >/dev/null; then
     if fzf --zsh >/dev/null 2>&1; then
         source <(fzf --zsh)
@@ -177,7 +176,7 @@ elif command -v broot >/dev/null; then
     }
 fi
 
-# ── Terminal title (analogue of fish_title) ───────────────────────────────
+# ── Terminal title ────────────────────────────────────────────────────────
 # Overrides terminal process-detection that can show misleading names.
 autoload -Uz add-zsh-hook
 _zsh_title_precmd()  { print -Pn "\e]2;%1~\a"; }   # at prompt: current dir
@@ -269,7 +268,7 @@ if [[ -d ~/.config/zsh/conf.d ]]; then
     unset _f
 fi
 
-# ── Custom functions (one file per function, mirrors fish functions/) ─────
+# ── Custom functions (one file per function) ──────────────────────────────
 if [[ -d ~/.config/zsh/functions ]]; then
     for _f in ~/.config/zsh/functions/*.zsh(N); do
         source $_f

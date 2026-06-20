@@ -25,8 +25,8 @@ cn() {
         [[ -n $slug ]] && win_name="$slug"
     fi
 
-    # Build the claude command (POSIX command substitution; works in zsh and in
-    # fish 3.4+, whichever the spawned tmux window runs).
+    # Build the claude command (POSIX command substitution; runs in the zsh
+    # window spawned by tmux).
     local claude_cmd="claude"
     local can_attach=true
     if [[ -n $prompt_file ]]; then

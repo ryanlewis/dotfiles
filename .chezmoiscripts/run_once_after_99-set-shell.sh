@@ -35,8 +35,3 @@ echo ""
 echo "To set Zsh as your default shell, run:"
 echo "  chsh -s ${ZSH_PATH}"
 echo ""
-if command -v fish &> /dev/null; then
-    echo "Fish is also installed and kept feature-for-feature in sync; to use it instead:"
-    echo "  chsh -s $(which fish)"
-    echo ""
-fi

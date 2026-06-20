@@ -56,14 +56,14 @@ check_command() {
     fi
 }
 
-# Function to check Fish function
-check_fish_function() {
+# Function to check Zsh function (one file per function under ~/.config/zsh/functions)
+check_zsh_function() {
     TOTAL_TESTS=$((TOTAL_TESTS + 1))
-    if fish -c "functions -q $1" 2>/dev/null; then
-        echo -e "${GREEN}✓${NC} Fish function '$1' exists"
+    if [ -f "$HOME/.config/zsh/functions/$1.zsh" ]; then
+        echo -e "${GREEN}✓${NC} Zsh function '$1' exists"
         return 0
     else
-        echo -e "${RED}✗${NC} Fish function '$1' NOT found"
+        echo -e "${RED}✗${NC} Zsh function '$1' NOT found"
         FAILED_TESTS=$((FAILED_TESTS + 1))
         return 1
     fi
@@ -71,7 +71,6 @@ check_fish_function() {
 
 echo ""
 echo "📦 Checking core tools..."
-check_command fish
 check_command chezmoi
 
 check_command mise
@@ -142,29 +141,28 @@ check_command kubectx
 check_command kubens
 
 echo ""
-echo "🐟 Checking Fish functions..."
-check_fish_function mkcd
-check_fish_function backup
-check_fish_function extract
-check_fish_function update
-check_fish_function ports
-check_fish_function myip
-check_fish_function fcd
-check_fish_function fopen
-check_fish_function fkill
-check_fish_function fgrep
-check_fish_function fgit
-check_fish_function mise-setup
-check_fish_function ta
-check_fish_function fish_greeting
-check_fish_function dotfiles
-check_fish_function yank
-check_fish_function ca
-check_fish_function cn
-check_fish_function crpr
-check_fish_function slugify
-check_fish_function dogpound
-check_fish_function tools
+echo "🦓 Checking Zsh functions..."
+check_zsh_function mkcd
+check_zsh_function backup
+check_zsh_function extract
+check_zsh_function update
+check_zsh_function ports
+check_zsh_function myip
+check_zsh_function fcd
+check_zsh_function fopen
+check_zsh_function fkill
+check_zsh_function fgrep
+check_zsh_function fgit
+check_zsh_function mise-setup
+check_zsh_function ta
+check_zsh_function dotfiles
+check_zsh_function yank
+check_zsh_function ca
+check_zsh_function cn
+check_zsh_function crpr
+check_zsh_function slugify
+check_zsh_function dogpound
+check_zsh_function tools
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
     echo ""
@@ -178,12 +176,6 @@ fi
 
 echo ""
 echo "⚙️  Checking configurations..."
-if [ -f "$HOME/.config/fish/config.fish" ]; then
-    echo -e "${GREEN}✓${NC} Fish config exists"
-else
-    echo -e "${RED}✗${NC} Fish config NOT found"
-fi
-
 if [ -f "$HOME/.zshrc" ] && [ -d "$HOME/.config/zsh/functions" ]; then
     echo -e "${GREEN}✓${NC} Zsh config exists"
     if command -v zsh >/dev/null 2>&1 && zsh -n "$HOME/.zshrc" 2>/dev/null; then

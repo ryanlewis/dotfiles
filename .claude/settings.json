@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '.tool_input.file_path // \"\"' | grep -qE '(mise/config\\.toml\\.tmpl|run_onchange_02-install-tools\\.sh\\.tmpl|/install\\.sh|functions/tools\\.fish)$' && printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"You edited a file that README.md documents (tool list, versions, install methods, or the tools Fish function). Consider whether README.md needs a matching refresh \\u2014 e.g. the Tool Versions section, aqua/runtime counts, or install steps. README is human-facing; mise/config.toml.tmpl stays the source of truth for versions.\"}}' || true",
+            "command": "jq -r '.tool_input.file_path // \"\"' | grep -qE '(mise/config\\.toml\\.tmpl|run_onchange_02-install-tools\\.sh\\.tmpl|/install\\.sh|functions/tools\\.zsh)$' && printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"You edited a file that README.md documents (tool list, versions, install methods, or the tools Zsh function). Consider whether README.md needs a matching refresh \\u2014 e.g. the Tool Versions section, aqua/runtime counts, or install steps. README is human-facing; mise/config.toml.tmpl stays the source of truth for versions.\"}}' || true",
             "statusMessage": "Checking if README needs a refresh"
           }
         ]

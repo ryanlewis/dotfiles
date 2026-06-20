@@ -88,7 +88,7 @@ else
     echo "To test the installation, run:"
     echo "  cd /home/testuser/dev/dotfiles"
     echo "  ./install.sh                 # or: QUICK_INSTALL=true ./install.sh"
-    echo "  zsh                          # (fish is the parallel shell)"
+    echo "  zsh                          # the configured shell"
     echo "  ./test.sh [--minimal]"
     echo ""
     

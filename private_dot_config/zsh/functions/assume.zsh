@@ -8,7 +8,7 @@ assume() {
         return 1
     fi
 
-    # granted ships `assume` (bash/zsh) alongside `assume.fish`.
+    # granted ships an `assume` script for bash/zsh.
     assume_script="$granted_path/assume"
     if [[ -f $assume_script ]]; then
         # The script only detects alias-based invocation (`alias assume=". assume"`).

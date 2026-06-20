@@ -42,11 +42,6 @@ Temporary Items
 .chezmoidata.json
 .chezmoistate.json
 
-# Fish
-fish_history
-fish_variables
-fishd.*
-
 # Backup files
 *.backup
 *.bak

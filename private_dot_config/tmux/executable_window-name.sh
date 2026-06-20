@@ -1,8 +1,8 @@
 #!/bin/sh
 # tmux window-name formatter
 # Modes:
-#   label <cmd>             -> friendly command name, empty for fish
-#   path  <cmd> <path>      -> shortened path (command) or full path (fish)
+#   label <cmd>             -> friendly command name, empty for the shell
+#   path  <cmd> <path>      -> shortened path (command) or full path (shell)
 #   <cmd> <path>            -> combined "cmd:short" or "full" (for #W)
 
 case "$1" in
@@ -44,7 +44,7 @@ shorten() {
     }'
 }
 
-is_shell() { [ "$cmd" = "fish" ]; }
+is_shell() { [ "$cmd" = "zsh" ]; }
 
 case "$mode" in
     label)

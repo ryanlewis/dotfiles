@@ -7,9 +7,12 @@
 
 # Removed unprovisioned tooling (June 2026): yazi `y` helper and the wtfutil
 # dashboard config (neither tool is installed by any managed source).
-.config/fish/functions/y.fish
 .config/zsh/functions/y.zsh
 .config/wtf/config.yml
+
+# Fish shell retired (June 2026): zsh is now the only managed shell. Remove the
+# whole managed fish config tree from existing installs.
+.config/fish
 
 # NOTE: orphaned repo-meta files (Dockerfile, install.sh, etc.) cannot be
 # purged here — they are listed in .chezmoiignore, and chezmoi never removes

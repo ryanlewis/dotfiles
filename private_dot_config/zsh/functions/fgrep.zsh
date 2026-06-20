@@ -1,5 +1,5 @@
-# Fuzzy grep with preview (note: intentionally shadows the system fgrep, as in
-# the fish setup — rg replaces grep here anyway).
+# Fuzzy grep with preview (note: intentionally shadows the system fgrep —
+# rg replaces grep here anyway).
 fgrep() {
     if (( $# == 0 )); then
         echo "Usage: fgrep <search-term>"

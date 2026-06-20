@@ -36,9 +36,9 @@ split-divider-color = #555555
 
 
 # ── Shell ────────────────────────────────────────────────────
-# Explicit fish path; remove if fish is your login shell
-command = /opt/homebrew/bin/fish
-shell-integration = fish
+# Explicit zsh path; remove if zsh is your login shell
+command = /bin/zsh
+shell-integration = zsh
 shell-integration-features = cursor,sudo,title
 
 # ── Cursor ───────────────────────────────────────────────────

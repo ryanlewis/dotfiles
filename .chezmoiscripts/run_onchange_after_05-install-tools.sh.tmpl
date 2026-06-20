@@ -239,7 +239,7 @@ fi
 if ! brew list worktrunk &> /dev/null; then
     echo "🌳 Installing worktrunk via Homebrew..."
     brew install worktrunk
-    # Set up Fish shell integration (wrapper function + completions)
+    # Set up shell integration (wrapper function + completions)
     command -v wt &> /dev/null && wt config shell install -y
 fi
 {{ else if eq .chezmoi.os "linux" -}}
@@ -249,7 +249,7 @@ if ! command -v wt &> /dev/null; then
         # worktrunk's MSRV moves with the toolchain; keep stable current first.
         command -v rustup &> /dev/null && rustup update stable
         cargo install worktrunk
-        # Set up Fish shell integration (wrapper function + completions)
+        # Set up shell integration (wrapper function + completions)
         command -v wt &> /dev/null && wt config shell install -y
     else
         echo "⚠️  cargo not found, skipping worktrunk installation"

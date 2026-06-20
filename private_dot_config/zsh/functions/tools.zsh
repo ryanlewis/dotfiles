@@ -26,7 +26,7 @@ tools() {
     # All tools: "Category:emoji cmd:Description"
     local -a tools_data=(
         "Core:🏠 chezmoi:Dotfiles manager"
-        "Core:🐠 fish:Modern shell with autosuggestions"
+        "Core:🦓 zsh:Shell with autosuggestions + syntax highlighting"
         "Core:📦 mise:Version manager for Node/Python/Go"
         "Replace:📂 eza → ls:Lists with icons and git info"
         "Replace:🦇 bat → cat:Syntax highlighting and line numbers"
@@ -153,7 +153,7 @@ tools() {
 
         print -r -- "${C_blue}━━━ 🏠 Core Commands ━━━${C_reset}"
         print -r -- "${C_brblue}• chezmoi${C_reset} - Dotfiles manager"
-        print -r -- "${C_brblue}• fish${C_reset}    - Modern shell with autosuggestions"
+        print -r -- "${C_brblue}• zsh${C_reset}     - Shell with autosuggestions + syntax highlighting"
         print -r -- "${C_brblue}• mise${C_reset}    - Version manager for Node/Python/Go"
         print
 

@@ -1,8 +1,3 @@
-# Files to ignore based on OS
-{{ if ne .chezmoi.os "darwin" }}
-.config/fish/conf.d/macos.fish
-{{ end }}
-
 # Per-host ignores: managed gitconfig drifts here (gh credential helper writes)
 {{ if and .isWork (eq .chezmoi.hostname .workHostname) }}
 .gitconfig

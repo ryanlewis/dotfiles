@@ -1,7 +1,7 @@
 #!/bin/bash
 # Install Zsh - runs once during dotfile application.
-# Zsh coexists with Fish; this does NOT change the login shell (Fish stays
-# default). macOS ships zsh, so this is a no-op there.
+# Zsh is the shell these dotfiles target. macOS ships zsh, so this is a no-op
+# there. This does NOT change the login shell (see run_once_after_99-set-shell).
 set -e
 
 # Check if zsh is already installed.
@@ -38,4 +38,4 @@ else
 fi
 {{ end -}}
 
-echo "✓ Zsh installed successfully (Fish remains the default shell)"
+echo "✓ Zsh installed successfully"

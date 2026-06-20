@@ -1,14 +1,13 @@
 # Cross-Platform Dotfiles with Chezmoi
 
-This repository contains my personal dotfiles managed by [chezmoi](https://chezmoi.io/), supporting both Linux and macOS. Zsh is the default shell, with a parallel Fish configuration kept feature-for-feature in sync.
+This repository contains my personal dotfiles managed by [chezmoi](https://chezmoi.io/), supporting both Linux and macOS. Zsh is the shell.
 
 ## Features
 
-- 🦓 Zsh configuration (the default shell) with cross-platform support
-- 🐟 Fish configuration that mirrors the Zsh setup feature-for-feature
+- 🦓 Zsh configuration with cross-platform support
 - 🍎 macOS-specific optimizations (Homebrew, Ghostty, etc.)
 - 🐧 Linux compatibility
-- 🛠️ Useful shell functions and utilities (ported 1:1 across both shells)
+- 🛠️ Useful shell functions and utilities
 - 📦 Template-based configuration for different environments
 - 🔧 mise for language runtimes (Node.js, Python, Go, Bun, Java)
 - 🌊 mise aqua backend for the modern CLI suite (bat, fd, eza, kubectl, gh, etc.)
@@ -63,7 +62,7 @@ CHEZMOI_USER_NAME="Your Name" CHEZMOI_USER_EMAIL="you@example.com" \
 
 The installation process automatically sets up:
 
-1. **Fish shell** - Modern, user-friendly shell
+1. **Zsh** - Interactive shell with plugins and abbreviations
 2. **chezmoi** - Dotfiles manager
 3. **mise** - Universal version manager
 4. **Modern CLI tools**:
@@ -94,13 +93,13 @@ The installation process automatically sets up:
 
 - `chezmoi diff` - See what changes would be made
 - `chezmoi apply` - Apply the configuration
-- `chezmoi add ~/.config/fish/newfile.fish` - Add a new file
-- `chezmoi edit ~/.config/fish/config.fish` - Edit a managed file
+- `chezmoi add ~/.config/zsh/functions/foo.zsh` - Add a new file
+- `chezmoi edit ~/.zshrc` - Edit a managed file
 - `chezmoi update` - Pull latest changes and apply
 
-### Fish Functions
+### Zsh Functions
 
-This configuration includes several useful Fish functions:
+This configuration includes several useful Zsh functions:
 
 - `mkcd <dir>` - Create a directory and cd into it
 - `backup <file>` - Create a timestamped backup of a file
@@ -285,7 +284,7 @@ After installation, your dotfiles are managed by chezmoi. To make changes:
 chezmoi cd
 
 # Edit files directly
-vim .config/fish/config.fish.tmpl
+vim dot_zshrc.tmpl
 
 # Preview changes
 chezmoi diff
@@ -295,11 +294,11 @@ chezmoi apply
 
 # Commit and push
 git add -A
-git commit -m "Update fish config"
+git commit -m "Update zsh config"
 git push
 ```
 
-Or use the included `dotfiles` Fish function:
+Or use the included `dotfiles` function:
 
 ```bash
 dotfiles edit     # Go to source directory
@@ -321,20 +320,20 @@ chezmoi update    # Pull latest changes and apply them
 
 ### Local Configuration
 
-Create `~/.config/fish/config.local.fish` (Fish) or `~/.config/zsh/config.local.zsh` (Zsh) for machine-specific configuration that won't be managed by chezmoi.
+Create `~/.config/zsh/config.local.zsh` for machine-specific configuration that won't be managed by chezmoi.
 
-### Zsh (the default shell)
+### Zsh
 
-Zsh is the default login shell (the provisioning script recommends it on fresh machines; `chsh -s $(which zsh)` to switch an existing one). A parallel Fish configuration is kept feature-for-feature in sync for when an interactive-first shell is preferred. The Zsh side comprises:
+Zsh is the login shell (the provisioning script recommends it on fresh machines; `chsh -s $(which zsh)` to switch an existing one). It comprises:
 
-- `~/.zshenv` — PATH/environment for all shells (the non-interactive half of `config.fish`).
-- `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the same MOTD/greeting.
-- `~/.config/zsh/functions/*.zsh` — a 1:1 port of every Fish function (`mkcd`, `extract`, `fcd`, `fgit`, `ca`, `crpr`, `tools`, …).
+- `~/.zshenv` — PATH/environment for all shells (the non-interactive half).
+- `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the MOTD/greeting.
+- `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `ca`, `crpr`, `tools`, …).
 - `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
 
-The prompt (starship), history (atuin), and the modern-CLI aliases are shared, so both shells behave identically.
+The prompt (starship) and history (atuin) round out the setup.
 
-Plugins that Fish ships built-in (autosuggestions, syntax highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` (see `.chezmoiexternal.toml`) — there is no separate plugin manager.
+Plugins (autosuggestions, syntax highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` (see `.chezmoiexternal.toml`) — there is no separate plugin manager.
 
 Try it without switching: just run `zsh`. To make it your login shell when ready: `chsh -s "$(command -v zsh)"`.
 
@@ -366,8 +365,7 @@ chezmoi source/
 ├── dot_inputrc / dot_lesskey       # readline / less key bindings
 ├── dot_claude/                     # Claude Code config (agents, commands, hooks, statusline)
 ├── private_dot_config/
-│   ├── private_fish/               # config.fish.tmpl, functions/, conf.d/
-│   ├── zsh/                        # functions/ (1:1 port of Fish), conf.d/
+│   ├── zsh/                        # functions/, conf.d/
 │   ├── mise/                       # mise config (tool + runtime source of truth)
 │   ├── ghostty/ helix/ lazygit/    # per-tool configs
 │   ├── starship.toml.tmpl          # shared prompt
@@ -390,7 +388,7 @@ You can test the dotfiles installation in a clean Docker environment:
 # Inside the container:
 cd /home/testuser/dev/dotfiles
 ./install.sh
-fish
+zsh
 ./test.sh  # Run the test suite
 ```
 
@@ -409,7 +407,7 @@ docker run -it --rm -v "$(pwd):/home/testuser/dev/dotfiles:ro" dotfiles-test
 ### Test Script
 The `test.sh` script verifies all tools are installed correctly:
 - Checks all CLI tools are available
-- Verifies Fish functions exist
+- Verifies Zsh functions exist
 - Confirms configurations are in place
 - Tests mise tools
 
@@ -455,12 +453,12 @@ Ensure `~/.local/bin` is in your PATH:
 export PATH="$HOME/.local/bin:$PATH"
 ```
 
-#### Fish (or Zsh) doesn't start with correct configuration
+#### Zsh doesn't start with correct configuration
 ```bash
 # Re-apply dotfiles
 chezmoi apply -v
 ```
-There is no plugin manager to set up: fzf key bindings come from `conf.d/fzf.fish`
+There is no plugin manager to set up: fzf key bindings come from `conf.d/fzf.zsh`
 (and `fzf --zsh` in `~/.zshrc`), and every CLI tool is provided by mise. If a tool
 is missing, ensure mise is active (`eval "$(mise activate bash)"`) and re-run
 `chezmoi apply -v`.
@@ -470,8 +468,8 @@ is missing, ensure mise is active (`eval "$(mise activate bash)"`) and re-run
 # Activate mise in current shell
 eval "$(mise activate bash)"
 
-# Or start a new Fish shell
-fish
+# Or start a new Zsh shell
+zsh
 ```
 
 ## Automated Dependency Updates with Renovate Bot

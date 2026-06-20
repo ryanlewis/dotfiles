@@ -44,5 +44,5 @@ ENV TERM=xterm-256color
 # Create dev directory
 RUN mkdir -p /home/testuser/dev
 
-# Default command - bash shell (will switch to fish after install)
+# Default command - bash shell (will switch to zsh after install)
 CMD ["/bin/bash"]

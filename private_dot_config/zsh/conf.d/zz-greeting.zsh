@@ -1,4 +1,4 @@
-# Greeting on interactive shell start — system info (analogue of fish_greeting).
+# Greeting on interactive shell start — system info.
 # `zz-` prefix so it runs after the env-setting conf.d files.
 #
 # Hot path — avoid forking where zsh has a built-in: $OSTYPE replaces `uname`

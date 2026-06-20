@@ -18,10 +18,6 @@ indent_size = 4
 indent_size = 4
 shell_variant = bash
 
-# Fish shell scripts
-[*.fish]
-indent_size = 4
-
 # Chezmoi templates and scripts
 [*.tmpl]
 indent_size = 4
