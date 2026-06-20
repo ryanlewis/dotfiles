@@ -43,7 +43,7 @@ File/dir name prefixes are significant and determine the target path and behavio
 
 ### Install & tool provisioning
 `install.sh` is a minimal bootstrap: it only installs chezmoi and runs `chezmoi init --apply`. Everything else happens via ordered scripts in `.chezmoiscripts/`:
-- `run_once_*` — one-time setup (Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (recommends Zsh as login shell; never runs `chsh` itself).
+- `run_once_*` — one-time setup (Zsh, mise, tpm, bun); `run_once_after_*` runs at the end (recommends Zsh as login shell, never running `chsh` itself — except it auto-`chsh`es to zsh when the current login shell is the now-retired fish).
 - `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_after_05-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation. It runs in the `after` pass (post-`03-install-languages`, post-`04-cleanup`) so node/npm exist for the npm-installed tools and freshly-installed binaries survive the cleanup sweep.
 
 Tools come from two places — keep both in sync when adding/removing a tool:
