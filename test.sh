@@ -114,6 +114,7 @@ check_command tldr
 check_command jq
 check_command http
 check_command gh
+check_command cf
 check_command duf
 check_command dust
 check_command broot

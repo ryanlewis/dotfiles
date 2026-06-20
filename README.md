@@ -199,6 +199,8 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - npm package `hunkdiff`; run as `hunk`
 - **[gh](https://cli.github.com/)** - GitHub CLI
   - Manage PRs, issues from terminal
+- **[cf](https://www.npmjs.com/package/cf)** - Cloudflare CLI
+  - Manage DNS, zones, Workers deploys from terminal
 - **[httpie](https://httpie.io/)** - Better `curl`
   - Human-friendly HTTP client
   - `https` alias for HTTPS requests
