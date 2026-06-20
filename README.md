@@ -195,6 +195,8 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[delta](https://github.com/dandavison/delta)** - Better git diffs
   - Syntax highlighting, side-by-side view
   - Auto-configured in gitconfig
+- **[hunk](https://github.com/modem-dev/hunk)** - Diff viewer/pager
+  - npm package `hunkdiff`; run as `hunk`
 - **[gh](https://cli.github.com/)** - GitHub CLI
   - Manage PRs, issues from terminal
 - **[httpie](https://httpie.io/)** - Better `curl`

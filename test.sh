@@ -107,6 +107,7 @@ check_command rg
 check_command zoxide
 check_command eza
 check_command delta
+check_command hunk
 check_command lazygit
 check_command btop
 check_command tldr
