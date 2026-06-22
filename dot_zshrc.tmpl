@@ -9,13 +9,51 @@
 # Bail out early so non-interactive sourcing is a no-op.
 [[ -o interactive ]] || return
 
+# ── Tool-init cache ─────────────────────────────────────────────────────────
+# `eval "$(tool init zsh)"` forks the tool on every new shell. On a corporate
+# Mac every exec is scanned by endpoint security (Defender/DLP), so a dozen
+# such forks per shell is the dominant startup cost — and it balloons under
+# load. The init output is deterministic per tool version, so cache it to a
+# file and source that instead. Rebuild only when the resolved binary changes
+# (mise/aqua install paths embed the version; brew symlinks repoint on upgrade)
+# or when the invocation string itself changes. Defined inline (not in
+# functions/, which is sourced *after* this) so it's available below.
+typeset -g _ZSH_INIT_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init"
+_evalcache() {
+    emulate -L zsh
+    local name=$1; shift
+    local cache="$_ZSH_INIT_CACHE/$name.zsh"
+    local marker="# evalcache: $*"
+    local bin=$1
+    [[ $bin == /* ]] || bin=${commands[$1]}   # resolve via hash table (no fork)
+    # Reuse the cache when it exists, the invocation is unchanged, and the
+    # binary is no newer than the cache.
+    if [[ -s $cache && ( -z $bin || ! $bin -nt $cache ) ]]; then
+        local first; IFS= read -r first < $cache
+        if [[ $first == "$marker" ]]; then
+            source $cache
+            return
+        fi
+    fi
+    # (Re)generate atomically so a cached file is never half-written.
+    [[ -d $_ZSH_INIT_CACHE ]] || mkdir -p $_ZSH_INIT_CACHE
+    { print -r -- "$marker"; "$@" } > "$cache.$$" 2>/dev/null
+    if [[ -s $cache.$$ ]]; then
+        mv -f "$cache.$$" $cache
+        source $cache
+    else
+        rm -f "$cache.$$"
+        eval "$("$@" 2>/dev/null)"   # generation failed — fall back to direct eval
+    fi
+}
+
 # ── Homebrew ──────────────────────────────────────────────────────────────
 # Run early so brew-installed tools (and completions) resolve for everything
 # below. macOS /etc/zprofile runs path_helper between .zshenv and .zshrc, so we
 # (re-)assert our priority prepends here for interactive shells.
 {{- if .homebrew }}
 if [[ -x {{ .brewPrefix }}/bin/brew ]]; then
-    eval "$({{ .brewPrefix }}/bin/brew shellenv)"
+    _evalcache brew {{ .brewPrefix }}/bin/brew shellenv
 fi
 {{- end }}
 
@@ -52,8 +90,9 @@ export LESS="-R"
 export LESSKEY="$HOME/.lesskey"
 
 # GPG: tell gpg-agent which terminal to draw pinentry on (needed when stdin
-# isn't a TTY, e.g. `pbpaste | gpg --decrypt`).
-export GPG_TTY=$(tty)
+# isn't a TTY, e.g. `pbpaste | gpg --decrypt`). $TTY is a zsh builtin param —
+# avoids forking `tty` on every interactive shell.
+export GPG_TTY=$TTY
 
 {{- if eq .chezmoi.os "darwin" }}
 export HOMEBREW_NO_ANALYTICS=1
@@ -126,39 +165,40 @@ if (( $+functions[abbr] )); then
     abbr --session --quiet cca='claude --enable-auto-mode' 2>/dev/null
 fi
 
-# ── Tool initialisation ───────────────────────────────────────────────────
+# ── Tool initialisation (cached via _evalcache; see top of file) ───────────
 # mise — version manager / shims (also exports JAVA_HOME for the java toolchain).
+# NOT cached: unlike the other tools, `mise activate` output is environment-
+# sensitive — it bakes in a PATH snapshot and session state, so a cached copy
+# would poison freshly-started shells with stale state.
 if command -v mise >/dev/null; then
     eval "$(mise activate zsh)"
 fi
 
 # zoxide — smarter cd (replaces `cd`). Set DISABLE_STARSHIP=1 etc. as needed.
 if command -v zoxide >/dev/null; then
-    eval "$(zoxide init --cmd cd zsh)"
+    _evalcache zoxide zoxide init --cmd cd zsh
 fi
 
 # fzf — official zsh integration (Ctrl-T, Alt-C, completion). Loaded BEFORE
 # atuin so atuin wins the Ctrl-R binding.
 if command -v fzf >/dev/null; then
-    if fzf --zsh >/dev/null 2>&1; then
-        source <(fzf --zsh)
-    fi
+    _evalcache fzf fzf --zsh
 fi
 
 # atuin — better shell history (Ctrl-R). Must come after fzf.
 if command -v atuin >/dev/null; then
-    eval "$(atuin init zsh)"
+    _evalcache atuin atuin init zsh
     export ATUIN_EDIT_MODE="vi"
 fi
 
 # starship prompt (set DISABLE_STARSHIP=1 to skip).
 if command -v starship >/dev/null && [[ -z $DISABLE_STARSHIP ]]; then
-    eval "$(starship init zsh)"
+    _evalcache starship starship init zsh
 fi
 
 # direnv — automatic environment loading.
 if command -v direnv >/dev/null; then
-    eval "$(direnv hook zsh)"
+    _evalcache direnv direnv hook zsh
 fi
 
 # broot — `br` launcher. broot's bash launcher is POSIX and works under zsh.
@@ -280,7 +320,7 @@ fi
 [[ -f ~/.config/zsh/config.local.zsh ]] && source ~/.config/zsh/config.local.zsh
 
 # ── Worktrunk shell integration ───────────────────────────────────────────
-if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+if command -v wt >/dev/null 2>&1; then _evalcache wt wt config shell init zsh; fi
 
 # ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
 [[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
