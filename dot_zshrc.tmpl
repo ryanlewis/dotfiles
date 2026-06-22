@@ -19,8 +19,12 @@
 # or when the invocation string itself changes. Defined inline (not in
 # functions/, which is sourced *after* this) so it's available below.
 typeset -g _ZSH_INIT_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init"
+# NB: deliberately NO `emulate -L zsh` here — that sets LOCAL_OPTIONS, which
+# would revert any `setopt` the sourced init performs when this function returns
+# (e.g. starship's `setopt promptsubst`, leaving the literal `$(starship …)` in
+# the prompt). A plain function lets those option changes persist, exactly as
+# the original top-level `eval "$(tool init)"` did.
 _evalcache() {
-    emulate -L zsh
     local name=$1; shift
     local cache="$_ZSH_INIT_CACHE/$name.zsh"
     local marker="# evalcache: $*"
