@@ -17,7 +17,6 @@ font-feature = +liga
 font-feature = +calt
 
 # ── Window & Appearance ──────────────────────────────────────
-#macos-titlebar-style = hidden
 macos-titlebar-style = transparent
 macos-window-buttons = hidden
 window-padding-x = 0
@@ -73,7 +72,7 @@ keybind = cmd+ctrl+right=resize_split:right,20
 keybind = cmd+ctrl+up=resize_split:up,20
 keybind = cmd+ctrl+down=resize_split:down,20
 
-# Zoom/unzoom current split (like tmux prefix+z)
+# Zoom/unzoom current split
 keybind = cmd+shift+enter=toggle_split_zoom
 
 # Equalise splits
@@ -96,32 +95,12 @@ clipboard-paste-protection = true
 # ── Scrollback ───────────────────────────────────────────────
 scrollback-limit = 100000
 
-# ── tmux shortcuts (Alt+Shift → panes/windows) ──────────────────
-# Window access (1-9)
-keybind = alt+shift+1=text:\x1b!
-keybind = alt+shift+2=text:\x1b@
-keybind = alt+shift+3=text:\x1b#
-keybind = alt+shift+4=text:\x1b$
-keybind = alt+shift+5=text:\x1b%
-keybind = alt+shift+6=text:\x1b^
-keybind = alt+shift+7=text:\x1b&
-keybind = alt+shift+8=text:\x1b*
-keybind = alt+shift+9=text:\x1b(
-# Pane navigation (hjkl)
-keybind = alt+shift+h=text:\x1bH
-keybind = alt+shift+j=text:\x1bJ
-keybind = alt+shift+k=text:\x1bK
-keybind = alt+shift+l=text:\x1bL
-# Window navigation ([ / ])
-keybind = alt+shift+left_bracket=text:\x1b{
-keybind = alt+shift+right_bracket=text:\x1b}
-
-# ── Claude Code (Shift+Enter for newline in tmux) ────────────
+# ── Claude Code (Shift+Enter sends ESC+CR for newline) ──────
 keybind = shift+enter=text:\x1b\r
 
 # ── Modifier Keys ────────────────────────────────────────────
-# Right Option sends Alt/ESC sequences (tmux, readline, alt+shift+* binds)
-# Left Option stays as macOS compose key (ø, å, accents)
+# Right Option sends Alt/ESC sequences (readline, herdr prefix chords).
+# Left Option stays as macOS compose key — needed for # (Opt+3) on UK layout.
 macos-option-as-alt = right
 
 # ── Misc ─────────────────────────────────────────────────────

@@ -48,7 +48,7 @@ File/dir name prefixes are significant and determine the target path and behavio
 
 Tools come from two places — keep both in sync when adding/removing a tool:
 1. **mise** (`private_dot_config/mise/config.toml.tmpl`) — language runtimes + the `aqua:` backend tools (the bulk of the CLI suite) + a couple of mise plugins (`television`). This is the source of truth for versions; do **not** hardcode versions in docs.
-2. **`run_onchange_after_05-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `tmux`, `helix`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
+2. **`run_onchange_after_05-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `helix`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
 
 Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 

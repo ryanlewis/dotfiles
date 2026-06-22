@@ -14,6 +14,18 @@
 # whole managed fish config tree from existing installs.
 .config/fish
 
+# tmux decommissioned in favour of herdr (June 2026): config, helper scripts,
+# the tpm clone, and the tmux-based shell functions. (Fish helpers are covered
+# by the .config/fish removal above.)
+.tmux.conf
+.tmux
+.config/tmux
+.config/zsh/functions/ta.zsh
+.config/zsh/functions/ca.zsh
+.config/zsh/functions/dogpound.zsh
+.config/zsh/functions/tmux-keys.zsh
+.claude/commands/branch-to-tmux-split.md
+
 # NOTE: orphaned repo-meta files (Dockerfile, install.sh, etc.) cannot be
 # purged here — they are listed in .chezmoiignore, and chezmoi never removes
 # ignored targets. They are cleaned up by run_once_before_purge-orphaned-

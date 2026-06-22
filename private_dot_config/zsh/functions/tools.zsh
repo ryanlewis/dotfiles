@@ -78,9 +78,6 @@ tools() {
         "Dev:☸️  kubectl:Kubernetes CLI"
         "Dev:🔄 kubectx:Switch K8s contexts"
         "Dev:📦 kubens:Switch K8s namespaces"
-        "Tmux:🖥️  ta:Tmux session manager"
-        "Tmux:🤖 ca:Spawn Claude agents in worktrees"
-        "Tmux:🐕 dogpound:Open dogpound project in tmux + Claude"
     )
 
     local item
@@ -112,7 +109,7 @@ tools() {
         echo ""
 
         local category cmd desc cmd_with_emoji
-        local -a categories=(Core Replace Custom FZF Dev Tmux) csv_lines
+        local -a categories=(Core Replace Custom FZF Dev) csv_lines
         for category in $categories; do
             case $category in
                 Core)    print -r -- "${C_blue}━━━ 🏠 Core Commands ━━━${C_reset}" ;;
@@ -120,7 +117,6 @@ tools() {
                 Custom)  print -r -- "${C_magenta}━━━ ⚡ Custom Functions ━━━${C_reset}" ;;
                 FZF)     print -r -- "${C_cyan}━━━ 🔍 FZF-Powered Tools ━━━${C_reset}" ;;
                 Dev)     print -r -- "${C_yellow}━━━ 🚀 Development Tools ━━━${C_reset}" ;;
-                Tmux)    print -r -- "${C_white}━━━ 🖥️  Tmux Helper ━━━${C_reset}" ;;
             esac
 
             csv_lines=("Command,Description")
@@ -223,12 +219,6 @@ tools() {
         print -r -- "${C_brred}• kubectl${C_reset}  - Kubernetes CLI"
         print -r -- "${C_brred}• kubectx${C_reset} - Switch contexts easily"
         print -r -- "${C_brred}• kubens${C_reset}  - Switch namespaces"
-        print
-
-        print -r -- "${C_white}━━━ 🖥️  Tmux Helper ━━━${C_reset}"
-        print -r -- "${C_brwhite}• ta${C_reset} - Tmux session manager ${C_brblack}(attach/create)${C_reset}"
-        print -r -- "${C_brwhite}• ca${C_reset} - Spawn Claude agents in worktrees"
-        print -r -- "${C_brwhite}• dogpound${C_reset} - Open dogpound project in tmux + Claude"
         print
 
         print -r -- "${C_brblack}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_reset}"

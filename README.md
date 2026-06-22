@@ -128,7 +128,6 @@ ssh server "cat /var/log/nginx/error.log | yank"
 
 **Why use yank?**
 - Works over SSH without X11 forwarding
-- Works in tmux/screen sessions  
 - Universal solution across different terminals (iTerm2, Terminal.app, Alacritty, Windows Terminal, etc.)
 - No need for platform-specific tools (pbcopy/xclip)
 
@@ -261,7 +260,7 @@ This configuration includes [mise](https://mise.jdx.dev/) for managing:
 - AWS tools: granted (`assume`)
 - Fuzzy finder TUI: television (`tv`, via a mise plugin)
 
-Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, tmux, helix,
+Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, helix,
 md-tui, worktrunk, biome, and macOS-only eza/ktlint) are installed by
 `.chezmoiscripts/run_onchange_after_05-install-tools.sh.tmpl`.
 
@@ -334,7 +333,7 @@ Zsh is the login shell (the provisioning script recommends it on fresh machines;
 
 - `~/.zshenv` — PATH/environment for all shells (the non-interactive half).
 - `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the MOTD/greeting.
-- `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `ca`, `crpr`, `tools`, …).
+- `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `crpr`, `tools`, …).
 - `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
 
 The prompt (starship) and history (atuin) round out the setup.
@@ -367,7 +366,6 @@ chezmoi source/
 ├── dot_zshenv.tmpl                 # Zsh env for all shells (PATH, etc.)
 ├── dot_zshrc.tmpl                  # Main Zsh interactive config
 ├── dot_gitconfig.tmpl              # Git config (delta, etc.)
-├── dot_tmux.conf                   # tmux configuration
 ├── dot_inputrc / dot_lesskey       # readline / less key bindings
 ├── dot_claude/                     # Claude Code config (agents, commands, hooks, statusline)
 ├── private_dot_config/
@@ -375,7 +373,7 @@ chezmoi source/
 │   ├── mise/                       # mise config (tool + runtime source of truth)
 │   ├── ghostty/ helix/ lazygit/    # per-tool configs
 │   ├── starship.toml.tmpl          # shared prompt
-│   └── tmux/ worktrunk/            # tmux helper scripts, worktrunk config
+│   └── herdr/ worktrunk/           # herdr (multiplexer) and worktrunk configs
 ├── private_dot_gnupg/              # gpg-agent config
 ├── install.sh test.sh docker-test.sh setup-aliases.sh
 ├── Dockerfile renovate.json

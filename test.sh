@@ -129,7 +129,6 @@ check_command uv
 check_command tv
 check_command biome
 check_command hx
-check_command tmux
 # granted ships the `assume` wrapper
 check_command assume
 # ktlint is macOS-only (Homebrew); skip the check elsewhere
@@ -157,14 +156,11 @@ check_zsh_function fkill
 check_zsh_function fgrep
 check_zsh_function fgit
 check_zsh_function mise-setup
-check_zsh_function ta
 check_zsh_function dotfiles
 check_zsh_function yank
-check_zsh_function ca
 check_zsh_function cn
 check_zsh_function crpr
 check_zsh_function slugify
-check_zsh_function dogpound
 check_zsh_function tools
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
