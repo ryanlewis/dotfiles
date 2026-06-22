@@ -212,8 +212,10 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[biome](https://biomejs.dev/)** - JS/TS formatter and linter
   - Single fast toolchain for formatting and linting
 - **[uv](https://github.com/astral-sh/uv)** - Fast Python package/project manager
+- **[Neovim](https://neovim.io/)** - Hyperextensible modal editor; resolved as `$EDITOR`
+  - Launched via `nvim` (also aliased to `vim`); personal config lives in `~/.config/nvim`
 - **[helix](https://helix-editor.com/)** - Modal editor with LSP built in
-  - Launched via `hx`; resolved as `$EDITOR` when present
+  - Launched via `hx`; kept as a fallback editor
 - **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter/formatter (macOS only)
 - **[md-tui](https://github.com/henriklovhaug/md-tui)** - Markdown viewer (TUI)
   - Render and browse markdown in the terminal; launched via `mdt`
@@ -256,6 +258,7 @@ This configuration includes [mise](https://mise.jdx.dev/) for managing:
 **CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
 - Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv, uv
+- Editor: neovim (`nvim`), tree-sitter CLI (builds nvim-treesitter parsers)
 - Kubernetes tools: kubectl, kubectx, kubens
 - AWS tools: granted (`assume`)
 - Fuzzy finder TUI: television (`tv`, via a mise plugin)

@@ -128,6 +128,9 @@ check_command wt
 check_command uv
 check_command tv
 check_command biome
+check_command nvim
+# tree-sitter CLI — required by nvim-treesitter (main branch) to build parsers
+check_command tree-sitter
 check_command hx
 # granted ships the `assume` wrapper
 check_command assume

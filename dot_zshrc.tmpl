@@ -85,7 +85,7 @@ unsetopt BEEP
 
 # ── Environment ───────────────────────────────────────────────────────────
 # Editor (resolved at apply time).
-export EDITOR={{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+export EDITOR={{ if lookPath "nvim" }}nvim{{ else if lookPath "hx" }}hx{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 export VISUAL="$EDITOR"
 
 # Pager — vi keys in less.
