@@ -46,7 +46,10 @@ television = "latest" # TUI fuzzy finder (tv)
 "npm:cf" = "latest" # Cloudflare CLI
 
 [settings]
-lockfile = true
+# No lockfile: mise.lock is shared with machine-local tools (conf.d/local.toml),
+# so a managed/committed lock perpetually drifts against what mise writes here.
+# The versions that matter are pinned above; everything else tracks latest.
+lockfile = false
 
 # Machine-local tools (e.g. codex, salesforce sf) live in
 # ~/.config/mise/conf.d/local.toml — kept out of this repo on purpose.
