@@ -171,21 +171,27 @@ if ! command -v broot &> /dev/null; then
     {{ end -}}
 fi
 
-# Install md-tui (markdown viewer TUI; `mdt`)
+# Install md-tui (markdown viewer TUI; `mdt`) — not in Homebrew or the aqua
+# registry, so grab the prebuilt release binary on both macOS and Linux.
 if ! command -v mdt &> /dev/null; then
     echo "📰 Installing md-tui..."
-    {{ if eq .chezmoi.os "darwin" -}}
-    brew install md-tui
-    {{ else if eq .chezmoi.os "linux" -}}
     MDTUI_VERSION="0.10.1"
+    {{ if eq .chezmoi.os "darwin" -}}
+    if [[ "$ARCH" == "x86_64" ]]; then
+        MDTUI_ARCH="x86_64-apple-darwin"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        MDTUI_ARCH="aarch64-apple-darwin"
+    fi
+    {{ else if eq .chezmoi.os "linux" -}}
     if [[ "$ARCH" == "x86_64" ]]; then
         MDTUI_ARCH="x86_64-unknown-linux-gnu"
     elif [[ "$ARCH" == "arm64" ]]; then
         MDTUI_ARCH="aarch64-unknown-linux-gnu"
     fi
+    {{ end -}}
 
     if [[ -n "${MDTUI_ARCH:-}" ]]; then
-        if wget -qO /tmp/md-tui.tar.xz "https://github.com/henriklovhaug/md-tui/releases/download/v${MDTUI_VERSION}/md-tui-${MDTUI_ARCH}.tar.xz" 2>/dev/null; then
+        if curl -fsSL -o /tmp/md-tui.tar.xz "https://github.com/henriklovhaug/md-tui/releases/download/v${MDTUI_VERSION}/md-tui-${MDTUI_ARCH}.tar.xz" 2>/dev/null; then
             if tar -xJf /tmp/md-tui.tar.xz -C /tmp 2>/dev/null && [[ -f "/tmp/md-tui-${MDTUI_ARCH}/mdt" ]]; then
                 mv "/tmp/md-tui-${MDTUI_ARCH}/mdt" "$HOME/.local/bin/"
                 chmod +x "$HOME/.local/bin/mdt"
@@ -198,7 +204,6 @@ if ! command -v mdt &> /dev/null; then
             echo "⚠️  Failed to download md-tui, skipping..."
         fi
     fi
-    {{ end -}}
 fi
 
 # Install pinentry (passphrase prompt for gpg-agent)
