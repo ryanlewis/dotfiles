@@ -216,6 +216,8 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[helix](https://helix-editor.com/)** - Modal editor with LSP built in
   - Launched via `hx`; resolved as `$EDITOR` when present
 - **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter/formatter (macOS only)
+- **[md-tui](https://github.com/henriklovhaug/md-tui)** - Markdown viewer (TUI)
+  - Render and browse markdown in the terminal; launched via `mdt`
 
 #### Shell Enhancements
 - **[fzf](https://github.com/junegunn/fzf)** - Fuzzy finder
@@ -260,7 +262,7 @@ This configuration includes [mise](https://mise.jdx.dev/) for managing:
 - Fuzzy finder TUI: television (`tv`, via a mise plugin)
 
 Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, tmux, helix,
-worktrunk, biome, and macOS-only eza/ktlint) are installed by
+md-tui, worktrunk, biome, and macOS-only eza/ktlint) are installed by
 `.chezmoiscripts/run_onchange_after_05-install-tools.sh.tmpl`.
 
 > The exact tool list and versions track `private_dot_config/mise/config.toml.tmpl`, which is the source of truth.
@@ -496,6 +498,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - btop (system monitor)
 - tealdeer / tldr (man-page examples)
 - broot (tree navigation)
+- md-tui (markdown viewer)
 
 These are the only tools with hardcoded version pins; everything else tracks
 `latest` (or a pinned version) via the mise config above. install.sh itself is a

@@ -64,6 +64,18 @@
       ],
       "depNameTemplate": "Canop/broot",
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "customType": "regex",
+      "description": "Update md-tui version pinned in the chezmoi install-tools script",
+      "managerFilePatterns": [
+        "/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"
+      ],
+      "matchStrings": [
+        "MDTUI_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "henriklovhaug/md-tui",
+      "datasourceTemplate": "github-releases"
     }
   ],
   "mise": {

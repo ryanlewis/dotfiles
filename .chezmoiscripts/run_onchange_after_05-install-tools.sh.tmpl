@@ -8,6 +8,7 @@
 #   - tldr/tealdeer (tlrc available but different implementation)
 #   - pinentry (passphrase prompt for gpg-agent)
 #   - tmux + helix (terminal multiplexer / editor; from the OS package manager)
+#   - md-tui (markdown viewer TUI; not in aqua registry)
 #   - worktrunk, biome, eza (macOS), ktlint (macOS)
 #
 # Runs in the `after` pass *following* run_onchange_after_03-install-languages so
@@ -165,6 +166,36 @@ if ! command -v broot &> /dev/null; then
             rm -rf /tmp/broot.zip /tmp/${BROOT_ARCH} 2>/dev/null || true
         else
             echo "⚠️  Failed to download broot, skipping..."
+        fi
+    fi
+    {{ end -}}
+fi
+
+# Install md-tui (markdown viewer TUI; `mdt`)
+if ! command -v mdt &> /dev/null; then
+    echo "📰 Installing md-tui..."
+    {{ if eq .chezmoi.os "darwin" -}}
+    brew install md-tui
+    {{ else if eq .chezmoi.os "linux" -}}
+    MDTUI_VERSION="0.10.1"
+    if [[ "$ARCH" == "x86_64" ]]; then
+        MDTUI_ARCH="x86_64-unknown-linux-gnu"
+    elif [[ "$ARCH" == "arm64" ]]; then
+        MDTUI_ARCH="aarch64-unknown-linux-gnu"
+    fi
+
+    if [[ -n "${MDTUI_ARCH:-}" ]]; then
+        if wget -qO /tmp/md-tui.tar.xz "https://github.com/henriklovhaug/md-tui/releases/download/v${MDTUI_VERSION}/md-tui-${MDTUI_ARCH}.tar.xz" 2>/dev/null; then
+            if tar -xJf /tmp/md-tui.tar.xz -C /tmp 2>/dev/null && [[ -f "/tmp/md-tui-${MDTUI_ARCH}/mdt" ]]; then
+                mv "/tmp/md-tui-${MDTUI_ARCH}/mdt" "$HOME/.local/bin/"
+                chmod +x "$HOME/.local/bin/mdt"
+                echo "✓ md-tui installed successfully"
+            else
+                echo "⚠️  Failed to extract md-tui, skipping..."
+            fi
+            rm -rf /tmp/md-tui.tar.xz "/tmp/md-tui-${MDTUI_ARCH}"
+        else
+            echo "⚠️  Failed to download md-tui, skipping..."
         fi
     fi
     {{ end -}}

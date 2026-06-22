@@ -118,6 +118,7 @@ check_command cf
 check_command duf
 check_command dust
 check_command broot
+check_command mdt
 check_command atuin
 check_command starship
 check_command direnv
