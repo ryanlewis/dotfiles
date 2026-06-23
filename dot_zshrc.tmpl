@@ -250,10 +250,17 @@ alias la="ls -A"
 alias l="ls -CF"
 {{- end }}
 
+# Directory navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+
 # Git aliases
 alias g="git"
 alias gs="git status"
+alias gst="git status"
 alias gc="git commit"
+alias gca="git commit -a"
 alias gp="git push"
 alias gl="git log --oneline --graph"
 alias gd="git diff"
