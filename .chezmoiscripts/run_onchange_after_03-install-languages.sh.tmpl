@@ -1,11 +1,17 @@
 #!/bin/bash
 # Install language runtimes and CLI tools via mise
 #
-# This script installs everything defined in ~/.config/mise/config.toml:
-#   - Language runtimes: Node.js, Python, Go, Bun, Java
+# This script installs everything mise resolves from ~/.config/mise/config.toml
+# *and* ~/.config/mise/conf.d/*.toml:
+#   - Core runtime: Node.js (always); bun is self-managed via its own installer
+#     (run_once_04-install-bun.sh), not mise
+#   - Opt-in runtimes: Go, Java, Python — only when selected at `chezmoi init`
+#     (see conf.d/runtimes.toml); off by default
 #   - CLI tools via aqua backend (bat, fd, gh, kubectl, etc.)
 #
-# Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}
+# Version hash: {{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }} {{ include "private_dot_config/mise/conf.d/runtimes.toml.tmpl" | sha256sum }}
+# Re-run when the per-machine runtime selection changes:
+# runtimes go={{ dig "runtimeGo" false . }} java={{ dig "runtimeJava" false . }} python={{ dig "runtimePython" false . }}
 set -e
 
 # Skip if quick install mode
@@ -25,8 +31,9 @@ fi
 echo "🚀 Installing language runtimes and CLI tools via mise..."
 cd "$HOME"
 
-# Trust the global config so mise will install from it
+# Trust the global config + the managed conf.d so mise will install from them
 mise trust "$HOME/.config/mise/config.toml" 2>/dev/null || true
+mise trust "$HOME/.config/mise/conf.d/runtimes.toml" 2>/dev/null || true
 mise install || echo "⚠️  Some installations failed, continuing..."
 
 # Ensure shims are generated for tools that did install, even if others failed
@@ -36,9 +43,15 @@ mise reshim 2>/dev/null || true
 echo ""
 echo "✅ Verifying language runtimes:"
 command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
-command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
+{{ if dig "runtimeGo" false . -}}
 command -v go >/dev/null 2>&1 && echo "  ✓ Go: $(go version)" || echo "  ⚠️  Go not available"
-command -v bun >/dev/null 2>&1 && echo "  ✓ Bun: $(bun --version)" || echo "  ⚠️  Bun not available"
+{{ end -}}
+{{ if dig "runtimeJava" false . -}}
+command -v java >/dev/null 2>&1 && echo "  ✓ Java: $(java -version 2>&1 | head -1)" || echo "  ⚠️  Java not available"
+{{ end -}}
+{{ if dig "runtimePython" false . -}}
+command -v python3 >/dev/null 2>&1 && echo "  ✓ Python: $(python3 --version 2>&1)" || echo "  ⚠️  Python not available"
+{{ end -}}
 
 echo ""
 echo "✓ mise setup complete"

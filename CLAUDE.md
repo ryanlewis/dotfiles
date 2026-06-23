@@ -37,7 +37,7 @@ File/dir name prefixes are significant and determine the target path and behavio
 - `dot_claude/` → `~/.claude/` — this repo manages Claude Code's subagents (`agents/`), slash commands (`commands/`), hooks (`hooks/`), statusline, and a `create_settings.json` reference for the settings file.
 
 ### Templating and per-machine data
-`.chezmoi.toml.tmpl` computes the `[data]` map consumed by every `.tmpl`. Key variables: `.chezmoi.os` (darwin/linux), `.chezmoi.arch`, `.brewPrefix`, `.packageManager`, and the **work-machine** vars `.isWork` / `.workHostname` (prompted once on a personal machine). Example use: `.chezmoiignore` drops the managed `.gitconfig` on the work host so `gh`'s credential-helper writes don't cause drift. In CI or when `CHEZMOI_USER_NAME` is set, prompts are skipped and personal/non-work defaults are used.
+`.chezmoi.toml.tmpl` computes the `[data]` map consumed by every `.tmpl`. Key variables: `.chezmoi.os` (darwin/linux), `.chezmoi.arch`, `.brewPrefix`, `.packageManager`, the **work-machine** vars `.isWork` / `.workHostname`, and the **opt-in runtime** vars `.runtimeGo` / `.runtimeJava` / `.runtimePython` (all prompted once on a personal machine; default off). Example use: `.chezmoiignore` drops the managed `.gitconfig` on the work host so `gh`'s credential-helper writes don't cause drift. In CI or when `CHEZMOI_USER_NAME` is set, prompts are skipped and personal/non-work defaults are used.
 
 `.chezmoiignore` lists files that exist in the repo but are **not** deployed (README, CLAUDE.md, install/test scripts, OS-gated launcher trees). `.chezmoiremove` deletes obsolete files from `$HOME` on apply.
 
@@ -47,10 +47,12 @@ File/dir name prefixes are significant and determine the target path and behavio
 - `run_onchange_*` — re-run **only when their content hash changes**. `run_onchange_after_05-install-tools.sh.tmpl` embeds `{{ include "private_dot_config/mise/config.toml.tmpl" | sha256sum }}` so editing the mise config re-triggers tool installation. It runs in the `after` pass (post-`03-install-languages`, post-`04-cleanup`) so node/npm exist for the npm-installed tools and freshly-installed binaries survive the cleanup sweep.
 
 Tools come from two places — keep both in sync when adding/removing a tool:
-1. **mise** (`private_dot_config/mise/config.toml.tmpl`) — language runtimes + the `aqua:` backend tools (the bulk of the CLI suite) + a couple of mise plugins (`television`). This is the source of truth for versions; do **not** hardcode versions in docs.
+1. **mise** (`private_dot_config/mise/config.toml.tmpl`) — the **core** runtime (`node`) + the `aqua:`/`npm:` backend tools (the bulk of the CLI suite) + a couple of mise plugins (`television`). This is the source of truth for versions; do **not** hardcode versions in docs. (**bun** is deliberately *not* in mise — it's installed by `run_once_04-install-bun.sh` and self-updates via `bun upgrade`.)
 2. **`run_onchange_after_05-install-tools.sh.tmpl`** — tools *not* in the aqua registry, installed via Homebrew / apt-dnf-pacman / binary / cargo / npm: `btop`, `httpie`, `broot`, `tldr`, `pinentry`, `helix`, `worktrunk`, `biome`, plus macOS-only `eza` and `ktlint`.
 
-Machine-local-only tools live in `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
+**Opt-in language runtimes (Go/Java/Python):** removed from the default install. They live in the **managed** `private_dot_config/mise/conf.d/runtimes.toml.tmpl`, where each tool is gated by its `.runtime*` data var (selected at `chezmoi init`, default off — so VMs/CI stay lean). Version pins + `# renovate:` comments stay in that file, so add it to `renovate.json`'s `mise.managerFilePatterns` (already done). `run_onchange_after_03-install-languages` embeds both the `config.toml.tmpl` **and** the `runtimes.toml.tmpl` content hashes in its version-hash comment, so flipping a runtime selection *or* editing a runtime's pinned version/tools (e.g. bumping `go`, adding `gopls`) re-triggers `mise install`. mise never auto-uninstalls; `run_after_zz-mise-runtimes.sh.tmpl` prints the selection on every apply and flags installed-but-deselected runtimes (reminder-only — nothing is deleted).
+
+Machine-local-only tools (e.g. `codex`, `sf`) live in the **unmanaged** `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 
 ### Shell layout (Zsh)
 Zsh is the only managed shell. When adding a tool alias, shell function, or `tools` cheat-sheet entry, keep the install source, `test.sh`, README, and the `tools` cheat-sheet in sync. The repo-local `extend-dotfiles` skill encodes the full checklist — use it.

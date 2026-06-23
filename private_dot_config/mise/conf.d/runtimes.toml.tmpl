@@ -1,0 +1,23 @@
+# Opt-in language runtimes — installed per machine.
+#
+# Which runtimes land here is chosen once at `chezmoi init` (the prompts default
+# to "no", so a fresh machine / VM / CI stays lean). To change the selection
+# later: `chezmoi init --prompt` (or edit ~/.config/chezmoi/chezmoi.toml).
+#
+# mise merges this file on top of ~/.config/mise/config.toml. The version pins
+# live here (not in config.toml) so Renovate keeps bumping them even though the
+# runtimes themselves only install on machines that opted in.
+#
+# For ad-hoc, machine-only tools that should NOT be tracked in this repo, use
+# the unmanaged ~/.config/mise/conf.d/local.toml instead.
+[tools]
+{{ if dig "runtimeGo" false . -}}
+# renovate: datasource=github-tags depName=golang/go
+go = "1.26.1" # Latest stable
+{{ end -}}
+{{ if dig "runtimeJava" false . -}}
+java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS
+{{ end -}}
+{{ if dig "runtimePython" false . -}}
+python = "miniconda3-latest" # Pre-compiled Python via Miniconda
+{{ end -}}

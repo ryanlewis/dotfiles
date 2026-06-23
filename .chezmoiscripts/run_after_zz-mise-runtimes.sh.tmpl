@@ -1,0 +1,48 @@
+#!/bin/bash
+# Post-apply summary of optional language runtimes on this machine.
+#
+# Plain run_ (not once/onchange) so it prints on EVERY `chezmoi apply`, echoing
+# the current selection per the "remind after apply" design. The "zz" name sorts
+# it after the other after-scripts so it's the last thing shown.
+#
+# It also flags runtimes that are installed on disk but no longer selected, so
+# you can reclaim space — it NEVER deletes anything (tidy-up is reminder-only).
+set -e
+
+# Stay quiet in CI / non-interactive bootstraps.
+[[ "${CI:-}" == "true" ]] && exit 0
+
+export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+command -v mise >/dev/null 2>&1 || exit 0
+
+go_sel={{ if dig "runtimeGo" false . }}1{{ else }}0{{ end }}
+java_sel={{ if dig "runtimeJava" false . }}1{{ else }}0{{ end }}
+python_sel={{ if dig "runtimePython" false . }}1{{ else }}0{{ end }}
+
+onoff() { [[ "$1" == 1 ]] && printf 'on' || printf 'off'; }
+
+echo ""
+echo "🧰 mise language runtimes (this machine):"
+echo "   node on   (core — always via mise; bun self-managed via 'bun upgrade')"
+echo "   go $(onoff "$go_sel") · java $(onoff "$java_sel") · python $(onoff "$python_sel")   (opt-in)"
+echo "   Change selection:           chezmoi init --prompt"
+echo "   Ad-hoc machine-only tools:  edit ~/.config/mise/conf.d/local.toml"
+
+# Flag opted-out runtimes that are still installed on disk (candidates to remove).
+installs="${MISE_DATA_DIR:-$HOME/.local/share/mise}/installs"
+orphans=()
+for pair in "go:$go_sel" "java:$java_sel" "python:$python_sel"; do
+    tool="${pair%%:*}"
+    sel="${pair##*:}"
+    if [[ "$sel" == 0 && -d "$installs/$tool" ]] && [[ -n "$(ls -A "$installs/$tool" 2>/dev/null)" ]]; then
+        orphans+=("$tool")
+    fi
+done
+
+if (( ${#orphans[@]} > 0 )); then
+    echo ""
+    echo "🧹 Installed but no longer selected: ${orphans[*]}"
+    echo "   Reclaim disk when ready:  mise uninstall ${orphans[*]}"
+    echo "   (or 'mise prune' to drop every unreferenced tool version)"
+fi
+echo ""

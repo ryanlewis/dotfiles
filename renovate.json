@@ -81,7 +81,8 @@
   "mise": {
     "enabled": true,
     "managerFilePatterns": [
-      "/private_dot_config/mise/config\\.toml\\.tmpl$/"
+      "/private_dot_config/mise/config\\.toml\\.tmpl$/",
+      "/private_dot_config/mise/conf\\.d/runtimes\\.toml\\.tmpl$/"
     ]
   },
   "github-actions": {

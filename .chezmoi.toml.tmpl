@@ -25,12 +25,32 @@
     {{- end -}}
 {{- end -}}
 
+{{- /* Optional language runtimes: opt-in per machine. Prompts default to "no"
+       so a fresh machine / VM / CI stays lean. Re-run `chezmoi init --prompt`
+       to change the selection later. */ -}}
+{{- $runtimeGo := false -}}
+{{- $runtimeJava := false -}}
+{{- $runtimePython := false -}}
+{{- if env "CI" -}}
+    {{- /* CI is always lean */ -}}
+{{- else if env "CHEZMOI_USER_NAME" -}}
+    {{- /* Non-interactive bootstrap; stay lean */ -}}
+{{- else -}}
+    {{- $runtimeGo = promptBoolOnce . "runtimeGo" "Install Go on this machine" false -}}
+    {{- $runtimeJava = promptBoolOnce . "runtimeJava" "Install Java (Temurin) on this machine" false -}}
+    {{- $runtimePython = promptBoolOnce . "runtimePython" "Install Python (Miniconda) on this machine" false -}}
+{{- end -}}
+
 [data]
     name = {{ $name | quote }}
     email = {{ $email | quote }}
     hostname = {{ $hostname | quote }}
     isWork = {{ $isWork }}
     workHostname = {{ $workHostname | quote }}
+    # Opt-in language runtimes (installed via mise conf.d/runtimes.toml)
+    runtimeGo = {{ $runtimeGo }}
+    runtimeJava = {{ $runtimeJava }}
+    runtimePython = {{ $runtimePython }}
     
     # OS-specific settings
     {{- if eq $os "darwin" }}

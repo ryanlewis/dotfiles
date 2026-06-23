@@ -9,7 +9,7 @@ This repository contains my personal dotfiles managed by [chezmoi](https://chezm
 - 🐧 Linux compatibility
 - 🛠️ Useful shell functions and utilities
 - 📦 Template-based configuration for different environments
-- 🔧 mise for language runtimes (Node.js, Python, Go, Bun, Java)
+- 🔧 mise for language runtimes (Node.js always; Go, Java, Python opt-in per machine; bun self-managed)
 - 🌊 mise aqua backend for the modern CLI suite (bat, fd, eza, kubectl, gh, etc.)
 - 🔍 Modern CLI tools: Complete suite of replacements for traditional Unix tools
 - ⭐ Starship cross-shell prompt with git integration
@@ -50,7 +50,7 @@ chezmoi init --apply ryanlewis/dotfiles
 Control installation behavior with these environment variables:
 
 ```bash
-# Skip language runtimes (Node.js, Python, Go)
+# Skip all mise-managed tools (runtimes + CLI suite) for a fast, minimal bootstrap
 QUICK_INSTALL=true curl -fsLS https://raw.githubusercontent.com/ryanlewis/dotfiles/main/install.sh | bash
 
 # Provide git config to avoid prompts
@@ -81,11 +81,13 @@ The installation process automatically sets up:
    - `kubectx` - K8s context switcher
    - `kubens` - K8s namespace switcher
    - And more...
-5. **Language runtimes** (optional):
-   - Node.js (via mise)
-   - Python/Miniconda (via mise)
-   - Go (via mise)
-   - Bun (via mise)
+5. **Language runtimes**:
+   - Node.js — always installed via mise (the dotfiles tooling depends on it)
+   - Bun — installed by its official installer and self-updated via `bun upgrade`
+     (deliberately not pinned in mise)
+   - Go, Java (Temurin), Python/Miniconda — **opt-in per machine**, chosen at
+     `chezmoi init` (default off, so VMs/CI stay lean). See
+     [Per-machine language runtimes](#per-machine-language-runtimes).
 
 ## Usage
 
@@ -248,12 +250,37 @@ This configuration includes a comprehensive suite of modern CLI tools:
 
 This configuration includes [mise](https://mise.jdx.dev/) for managing:
 
-**Language Runtimes** (5 tools):
-- Node.js (LTS)
-- Python (via Miniconda)
-- Go
-- Bun
-- Java (Eclipse Temurin LTS)
+**Language Runtimes**:
+- Node.js (LTS) — always installed (via mise)
+- Go — opt-in per machine
+- Java (Eclipse Temurin LTS) — opt-in per machine
+- Python (via Miniconda) — opt-in per machine
+
+(Bun is installed separately by its official installer and self-updates via
+`bun upgrade` — it is not managed by mise.)
+
+#### Per-machine language runtimes
+
+`node` is always installed via mise because the dotfiles tooling depends on it;
+`bun` is installed by its own official installer and self-updates via `bun
+upgrade` (not mise-managed). The heavier, project-specific runtimes — **Go,
+Java, Python/Miniconda** — are off by default and opted into per machine:
+
+- **Choosing at setup:** `chezmoi init` prompts "Install Go/Java/Python on this
+  machine?" (default *no*). In CI or any non-interactive bootstrap the prompts
+  are skipped and nothing extra is installed, so VMs stay lean.
+- **Changing later:** re-run `chezmoi init --prompt` (or edit
+  `~/.config/chezmoi/chezmoi.toml`), then `chezmoi apply`. mise picks up the new
+  selection from the managed `~/.config/mise/conf.d/runtimes.toml`.
+- **Version pins** for these runtimes live in
+  `private_dot_config/mise/conf.d/runtimes.toml.tmpl` and are still bumped by
+  Renovate.
+- **Removing a runtime:** turn it off and apply; mise leaves the old install in
+  place. Every `chezmoi apply` prints the current selection and flags any
+  runtime that's installed but no longer selected, with the `mise uninstall` /
+  `mise prune` command to reclaim the disk. Nothing is deleted automatically.
+- **Ad-hoc, machine-only tools** that shouldn't be tracked in this repo go in
+  the unmanaged `~/.config/mise/conf.d/local.toml`.
 
 **CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
@@ -447,7 +474,9 @@ Environment variables for CI:
 ### Installation Issues
 
 #### Python/Miniconda fails with "Terms of Service" error
-This is a known issue with Miniconda requiring ToS acceptance. The script will continue without Python. To fix:
+Only relevant if you opted Python in for this machine (see [Per-machine language
+runtimes](#per-machine-language-runtimes)). Miniconda requires ToS acceptance;
+this is a known issue and the install continues without Python. To fix:
 ```bash
 # Accept Conda ToS manually
 ~/.local/share/mise/installs/python/miniconda3-latest/bin/conda init
@@ -485,11 +514,11 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 ### What Renovate Updates
 
-#### 1. **mise Tool Versions** (`private_dot_config/mise/config.toml.tmpl`)
-- Node.js versions
-- Go versions  
-- Bun versions
-- Python/Miniconda versions
+#### 1. **mise Tool Versions** (`private_dot_config/mise/config.toml.tmpl` + `conf.d/runtimes.toml.tmpl`)
+- Node.js version (core, in `config.toml.tmpl`)
+- Go, Java, and Python/Miniconda versions (opt-in runtimes, in `conf.d/runtimes.toml.tmpl`)
+
+(Bun is self-managed via `bun upgrade`, so Renovate does not track it.)
 
 #### 2. **GitHub Actions** (`.github/workflows/*.yml`)
 - Action versions (e.g., `actions/checkout`)
@@ -538,7 +567,7 @@ The authoritative version list is `private_dot_config/mise/config.toml.tmpl`; Re
 - mise: latest
 
 ### Programming Languages (pinned via mise)
-Node.js, Python (miniconda3), Go, Bun, and Java (Eclipse Temurin LTS) — exact pinned versions live in `private_dot_config/mise/config.toml.tmpl`, the source of truth, and are bumped automatically by Renovate.
+Node.js is always installed (pinned in `private_dot_config/mise/config.toml.tmpl`). Go, Java (Eclipse Temurin LTS), and Python (miniconda3) are opt-in per machine (pinned in `private_dot_config/mise/conf.d/runtimes.toml.tmpl`); see [Per-machine language runtimes](#per-machine-language-runtimes). Both files are the source of truth and are bumped automatically by Renovate. Bun is installed by its official installer and self-updates via `bun upgrade` (not mise-managed).
 
 ## License
 
