@@ -28,6 +28,11 @@ LICENSE
 .git
 .gitignore
 
+# nvim: vim.pack writes this lockfile at runtime. Leave it unmanaged so each
+# machine resolves plugins itself (same rationale as dropping mise.lock — avoids
+# machine-local drift). Guards against an accidental whole-dir `chezmoi add`.
+.config/nvim/nvim-pack-lock.json
+
 # Repo-meta files (not meant to be deployed to home dir)
 install.sh
 Dockerfile
