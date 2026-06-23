@@ -3,8 +3,9 @@
 #
 # Hot path — avoid forking where zsh has a built-in: $OSTYPE replaces `uname`
 # (called twice), $HOST replaces `hostname`, and a single `uptime` capture sliced
-# with parameter expansion replaces a second `uptime` plus `sed`/`awk`. Only
-# `sw_vers` and one `uptime` (+ `uptime -p` on Linux) still fork.
+# with parameter expansion replaces a second `uptime` plus `sed`/`awk`. The
+# macOS version (`sw_vers`) is cached (see below), so only one `uptime`
+# (+ `uptime -p` on Linux) still forks per start.
 () {
     [[ -o interactive ]] || return
 
@@ -12,7 +13,17 @@
     local os_name up uptime_str load
 
     if [[ $OSTYPE == darwin* ]]; then
-        os_name="macOS $(sw_vers -productVersion 2>/dev/null)"
+        # sw_vers is a ~5ms fork (endpoint-security scanned) for a value that
+        # only changes on an OS update. Cache it, re-forking only when the system
+        # version plist is newer than the cache (a fork-free `-nt` mtime test).
+        local vfile="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/os-version"
+        local plist=/System/Library/CoreServices/SystemVersion.plist
+        if [[ -s $vfile && ! $plist -nt $vfile ]]; then
+            os_name="macOS $(<$vfile)"
+        else
+            os_name="macOS $(sw_vers -productVersion 2>/dev/null)"
+            print -r -- "${os_name#macOS }" >| $vfile 2>/dev/null
+        fi
     else
         os_name=$(lsb_release -ds 2>/dev/null || echo Linux)
     fi
