@@ -14,6 +14,8 @@
 {{ if dig "runtimeGo" false . -}}
 # renovate: datasource=github-tags depName=golang/go
 go = "1.26.1" # Latest stable
+# renovate: datasource=github-tags depName=golang/tools extractVersion=^gopls/v(?<version>.+)$
+"go:golang.org/x/tools/gopls" = "0.22.0" # Go language server (gopls), used by the nvim LSP
 {{ end -}}
 {{ if dig "runtimeJava" false . -}}
 java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS
