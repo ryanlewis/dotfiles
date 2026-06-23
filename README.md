@@ -368,7 +368,7 @@ Zsh is the login shell (the provisioning script recommends it on fresh machines;
 
 The prompt (starship) and history (atuin) round out the setup.
 
-Plugins (autosuggestions, syntax highlighting) plus `zsh-abbr` are fetched by chezmoi into `~/.config/zsh/plugins` (see `.chezmoiexternal.toml`) — there is no separate plugin manager.
+Plugins (autosuggestions, syntax highlighting) are fetched by chezmoi into `~/.config/zsh/plugins` (see `.chezmoiexternal.toml`) — there is no separate plugin manager. Abbreviations (git shortcuts, `wsc`, `cca`) are a small built-in ZLE widget (`ZABBR` in `.zshrc`), not a plugin — typing one at command position then space/enter expands it inline to the full command.
 
 Try it without switching: just run `zsh`. To make it your login shell when ready: `chsh -s "$(command -v zsh)"`.
 

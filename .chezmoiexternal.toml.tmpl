@@ -1,8 +1,7 @@
 # External files fetched by chezmoi on `apply`.
 #
-# zsh plugins — autosuggestions, syntax highlighting, plus abbreviation
-# support (zsh-abbr). chezmoi clones these into
-# ~/.config/zsh/plugins and `refreshPeriod` re-pulls them on a weekly apply, so
+# zsh plugins — autosuggestions and syntax highlighting. chezmoi clones these
+# into ~/.config/zsh/plugins and `refreshPeriod` re-pulls them on a weekly apply, so
 # there is no separate plugin manager in the startup path. .zshrc sources each
 # defensively, so a missing plugin (e.g. a fresh machine before the first
 # apply, or CI) just degrades gracefully.
@@ -18,14 +17,4 @@
     type = "git-repo"
     url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
     refreshPeriod = "168h"
-
-# zsh-abbr vendors zsh-job-queue as a submodule, so clone/pull recursively.
-[".config/zsh/plugins/zsh-abbr"]
-    type = "git-repo"
-    url = "https://github.com/olets/zsh-abbr.git"
-    refreshPeriod = "168h"
-    [".config/zsh/plugins/zsh-abbr".clone]
-        args = ["--recurse-submodules"]
-    [".config/zsh/plugins/zsh-abbr".pull]
-        args = ["--recurse-submodules"]
 {{ end -}}

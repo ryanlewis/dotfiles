@@ -135,9 +135,6 @@ zstyle ':completion:*' list-colors ''
 
 # ── Plugins (fetched by chezmoi externals; sourced defensively) ───────────
 ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
-# abbr (declare abbreviations further down). Loads after compinit.
-[[ -r $ZSH_PLUGIN_DIR/zsh-abbr/zsh-abbr.zsh ]] \
-    && source $ZSH_PLUGIN_DIR/zsh-abbr/zsh-abbr.zsh
 # Autosuggestions — must be loaded before we bind a key to accept them.
 [[ -r $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
     && source $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -173,13 +170,8 @@ bindkey -M viins '^W' backward-kill-word
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^U' backward-kill-line
 
-# ── Abbreviations (zsh-abbr) ──────────────────────────────────────────────
-if (( $+functions[abbr] )); then
-{{- if lookPath "wt" }}
-    abbr --session --quiet wsc='wt switch --create -x claude' 2>/dev/null
-{{- end }}
-    abbr --session --quiet cca='claude --enable-auto-mode' 2>/dev/null
-fi
+# (Abbreviations — git shortcuts, wsc, cca — are a small ZLE widget defined at
+# the very bottom of this file, after all plugins load. See `ZABBR`.)
 
 # ── Tool initialisation (cached via _evalcache; see top of file) ───────────
 # mise — version manager / shims (also exports JAVA_HOME for the java toolchain).
@@ -267,15 +259,9 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
-# Git aliases
-alias g="git"
-alias gs="git status"
-alias gst="git status"
-alias gc="git commit"
-alias gca="git commit -a"
-alias gp="git push"
-alias gl="git log --oneline --graph"
-alias gd="git diff"
+# Git shortcuts are abbreviations, not aliases (see ZABBR at the bottom of this
+# file) — typing `gs` + space expands to `git status` inline, so history records
+# the real command and you can edit it before running.
 
 # Modern CLI tool aliases
 # (mise aqua provides standard names bat/fd across platforms; the batcat/fdfind
@@ -352,3 +338,50 @@ if command -v wt >/dev/null 2>&1; then _evalcache wt wt config shell init zsh; f
 # ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
 [[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
     && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# ── Abbreviations (lightweight ZLE expansion; replaces zsh-abbr) ───────────
+# Type an abbreviation at command position then SPACE or ENTER and it expands
+# inline to the full command — so history records the real command and you can
+# edit before running. Defined and bound HERE, after every plugin, so nothing
+# re-wraps the widgets (the failure mode that made zsh-abbr silently stop
+# expanding). To add one, drop a key/expansion pair into ZABBR.
+typeset -gA ZABBR=(
+    g    'git'
+    gs   'git status'
+    gst  'git status'
+    gc   'git commit'
+    gca  'git commit -a'
+    gp   'git push'
+    gl   'git log --oneline --graph'
+    gd   'git diff'
+    cca  'claude --enable-auto-mode'
+)
+{{- if lookPath "wt" }}
+ZABBR[wsc]='wt switch --create -x claude'
+{{- end }}
+
+# Expand the word before the cursor, but only in command position (line start,
+# or after a `; | & (` separator) so e.g. `git add gs` leaves the argument alone.
+_zabbr_expand() {
+    emulate -L zsh
+    setopt localoptions extendedglob
+    local word=${LBUFFER##* }
+    local exp=${ZABBR[$word]}
+    [[ -n $exp ]] || return 1
+    local pre=${LBUFFER%$word}              # text before the word …
+    local pt=${pre%%[[:space:]]#}           # … trailing whitespace stripped
+    [[ -z $pt || ${pt[-1]} == [';|&('] ]] || return 1
+    LBUFFER=$pre$exp
+    return 0
+}
+# self-insert / accept-line here are the autosuggestion-wrapped builtins, so
+# suggestions and history keep working after an expansion.
+_zabbr_expand_space()  { _zabbr_expand; zle self-insert }
+_zabbr_expand_accept() { _zabbr_expand; zle accept-line }
+zle -N _zabbr_expand_space
+zle -N _zabbr_expand_accept
+bindkey -M viins ' '  _zabbr_expand_space    # SPACE: expand, then insert the space
+bindkey -M viins '^M' _zabbr_expand_accept   # ENTER: expand, then run
+bindkey -M viins '^J' _zabbr_expand_accept
+bindkey -M vicmd '^M' _zabbr_expand_accept   # enter also expands from command mode
+bindkey -M vicmd '^J' _zabbr_expand_accept

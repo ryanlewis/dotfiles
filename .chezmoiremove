@@ -26,6 +26,11 @@
 .config/zsh/functions/tmux-keys.zsh
 .claude/commands/branch-to-tmux-split.md
 
+# zsh-abbr removed (June 2026): replaced by a tiny built-in ZLE abbreviation
+# widget (ZABBR in .zshrc) — it didn't expand reliably in our plugin stack,
+# errored on every startup, and cost ~16ms. Drop the cloned plugin tree.
+.config/zsh/plugins/zsh-abbr
+
 # NOTE: orphaned repo-meta files (Dockerfile, install.sh, etc.) cannot be
 # purged here — they are listed in .chezmoiignore, and chezmoi never removes
 # ignored targets. They are cleaned up by run_once_before_purge-orphaned-
