@@ -326,6 +326,10 @@ fi
 # ── Worktrunk shell integration ───────────────────────────────────────────
 if command -v wt >/dev/null 2>&1; then _evalcache wt wt config shell init zsh; fi
 
+# ── bun completions (bun is self-managed — see run_once_04-install-bun.sh) ─
+# Owned here so bun's installer appending to ~/.zshrc doesn't show as drift.
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
 # ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
 [[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
     && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
