@@ -113,9 +113,21 @@ autoload -Uz compinit
 () {
     local zcd="${XDG_CACHE_HOME:-$HOME/.cache}/zsh"
     [[ -d $zcd ]] || mkdir -p $zcd
-    # -i: silently ignore insecure (e.g. group-writable brew) dirs rather than
-    # blocking startup on the interactive security prompt.
-    compinit -i -d "$zcd/zcompdump"
+    local dump="$zcd/zcompdump"
+    # compaudit (the fpath security scan) is ~12ms of every start. Run the full
+    # audit + dump rebuild at most once a day — when the dump is missing or is
+    # >24h old — and otherwise trust the existing dump on the fast path (-C, no
+    # audit). New completions are still picked up within a day. Glob-expand the
+    # age test into an array first: [[ … ]] suppresses filename generation, so
+    # the (Nmh+24) qualifier won't fire inside the conditional.
+    # -i still silently ignores insecure (e.g. group-writable brew) dirs on the
+    # full path rather than blocking startup on the interactive security prompt.
+    local -a stale=( $dump(Nmh+24) )
+    if [[ -f $dump && ${#stale} -eq 0 ]]; then
+        compinit -C -d "$dump"
+    else
+        compinit -i -d "$dump"
+    fi
 }
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'   # case-insensitive
