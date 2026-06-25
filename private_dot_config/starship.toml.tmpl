@@ -7,7 +7,7 @@ command_timeout = 1000
 
 # Format of the prompt
 format = """
-${custom.exedev}\
+${env_var.exedev}\
 $username\
 $hostname\
 $directory\
@@ -55,13 +55,18 @@ add_newline = false
 [character]
 success_symbol = "[➜](bold green)"
 error_symbol = "[➜](bold red)"
-
-# Lightning bolt when on an exe.dev host (logged in as exedev)
-[custom.exedev]
-when = 'test "$USER" = "exedev"'
+{{ if eq .chezmoi.username "exedev" }}
+# Lightning bolt — emitted only on exe.dev hosts, where chezmoi renders this
+# config as the exedev user. Implemented as an env_var module (keyed on the
+# always-present $USER) rather than a custom command, so starship shows the
+# bolt natively with no shell fork. On every other machine the block is omitted
+# entirely, so the prompt never forks for it (and never warns about a timed-out
+# custom command).
+[env_var.exedev]
+variable = "USER"
 format = "[⚡]($style) "
 style = "bold yellow"
-
+{{ end }}
 [directory]
 truncation_length = 3
 truncate_to_repo = true
