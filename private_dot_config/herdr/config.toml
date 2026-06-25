@@ -16,6 +16,22 @@ enabled = true
 [keys]
 prefix = "ctrl+a"
 
+# Workspaces own the number row (prefix = ctrl+a):
+#   prefix + 1..9  -> jump straight to workspace N
+#   prefix + [ / ] -> previous / next workspace
+# (Shift+number doesn't survive the terminal layer, so workspaces take the bare
+#  digits; prefix + w still opens the workspace picker.)
+switch_workspace = "prefix+1..9"
+previous_workspace = "prefix+["
+next_workspace = "prefix+]"
+
+# Tabs gave up the number row, so they cycle on the , / . keys (the < / > keys):
+#   prefix + , -> previous tab
+#   prefix + . -> next tab
+switch_tab = ""
+previous_tab = "prefix+,"
+next_tab = "prefix+."
+
 # Open lazygit in a temporary pane (closes when lazygit exits)
 [[keys.command]]
 key = "prefix+alt+g"
