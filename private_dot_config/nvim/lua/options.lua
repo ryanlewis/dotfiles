@@ -36,6 +36,13 @@ vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Indentation: 2 spaces, never literal tabs.
+--  guess-indent.nvim still overrides these per-file when it detects an existing style.
+vim.o.expandtab = true
+vim.o.tabstop = 2
+vim.o.softtabstop = 2
+vim.o.shiftwidth = 2
+
 -- Enable undo/redo changes even after closing and reopening a file
 vim.o.undofile = true
 
