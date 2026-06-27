@@ -17,14 +17,18 @@ enabled = true
 prefix = "ctrl+a"
 
 # Workspaces own the number row (prefix = ctrl+a):
-#   prefix + 1..9       -> jump straight to workspace N
-#   ctrl+shift + k / j  -> previous / next workspace = up / down the vertical
-#                          workspace stack (prefix-free)
+#   prefix + 1..9                  -> jump straight to workspace N
+#   ctrl+shift + k/j  or  up/down  -> previous / next workspace = up / down the
+#                                     vertical workspace stack (prefix-free)
 # (Shift+number doesn't survive the terminal layer, so workspaces take the bare
 #  digits; prefix + w still opens the workspace picker.)
 #
-# Mnemonic: ctrl+hjkl moves between PANES; ctrl+shift+j/k moves between
-# WORKSPACES (down/up the stack). ctrl+shift is the sweet spot -- neither
+# Each action accepts EITHER a single chord string OR a TOML array of chords, so
+# previous/next_workspace bind the vim keys AND the arrows at once (verified live:
+# all four chords switch workspaces).
+#
+# Mnemonic: ctrl+hjkl moves between PANES; ctrl+shift+j/k (or the arrows) moves
+# between WORKSPACES (down/up the stack). ctrl+shift is the sweet spot -- neither
 # modifier is remapped, so it's a clean left-hand chord AND left-Option compose
 # (Opt+3 = #) is preserved, unlike ctrl+alt (which would need
 # macos-option-as-alt = both). ctrl+shift+j stays distinct from the ctrl+j pane
@@ -32,8 +36,8 @@ prefix = "ctrl+a"
 # PushKeyboardEnhancementFlags): ctrl+j already arrives as a CSI-u sequence and
 # the shift modifier rides along. Verified distinct in practice.
 switch_workspace = "prefix+1..9"
-previous_workspace = "ctrl+shift+k"
-next_workspace = "ctrl+shift+j"
+previous_workspace = ["ctrl+shift+k", "ctrl+shift+up"]
+next_workspace = ["ctrl+shift+j", "ctrl+shift+down"]
 
 # Tabs gave up the number row, so they cycle on n / p:
 #   prefix + p -> previous tab
