@@ -25,12 +25,14 @@ switch_workspace = "prefix+1..9"
 previous_workspace = "prefix+["
 next_workspace = "prefix+]"
 
-# Tabs gave up the number row, so they cycle on the , / . keys (the < / > keys):
-#   prefix + , -> previous tab
-#   prefix + . -> next tab
+# Tabs gave up the number row, so they cycle on n / p:
+#   prefix + p -> previous tab
+#   prefix + n -> next tab
+#   prefix + , -> rename tab
 switch_tab = ""
-previous_tab = "prefix+,"
-next_tab = "prefix+."
+previous_tab = "prefix+p"
+next_tab = "prefix+n"
+rename_tab = "prefix+,"
 
 # Open lazygit in a temporary pane (closes when lazygit exits)
 [[keys.command]]
