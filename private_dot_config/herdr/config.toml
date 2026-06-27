@@ -17,13 +17,23 @@ enabled = true
 prefix = "ctrl+a"
 
 # Workspaces own the number row (prefix = ctrl+a):
-#   prefix + 1..9  -> jump straight to workspace N
-#   prefix + [ / ] -> previous / next workspace
+#   prefix + 1..9       -> jump straight to workspace N
+#   ctrl+shift + k / j  -> previous / next workspace = up / down the vertical
+#                          workspace stack (prefix-free)
 # (Shift+number doesn't survive the terminal layer, so workspaces take the bare
 #  digits; prefix + w still opens the workspace picker.)
+#
+# Mnemonic: ctrl+hjkl moves between PANES; ctrl+shift+j/k moves between
+# WORKSPACES (down/up the stack). ctrl+shift is the sweet spot -- neither
+# modifier is remapped, so it's a clean left-hand chord AND left-Option compose
+# (Opt+3 = #) is preserved, unlike ctrl+alt (which would need
+# macos-option-as-alt = both). ctrl+shift+j stays distinct from the ctrl+j pane
+# bind because herdr negotiates the Kitty keyboard protocol (crossterm
+# PushKeyboardEnhancementFlags): ctrl+j already arrives as a CSI-u sequence and
+# the shift modifier rides along. Verified distinct in practice.
 switch_workspace = "prefix+1..9"
-previous_workspace = "prefix+["
-next_workspace = "prefix+]"
+previous_workspace = "ctrl+shift+k"
+next_workspace = "ctrl+shift+j"
 
 # Tabs gave up the number row, so they cycle on n / p:
 #   prefix + p -> previous tab
