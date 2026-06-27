@@ -19,3 +19,11 @@ the source from anywhere.)
   Check the server is up with `herdr status server`.
 - Keybind action names are fixed (`next_tab`, `previous_tab`, `rename_tab`,
   `switch_workspace`, `previous_workspace`, …) — a typo'd key is dropped silently.
+
+## herdr agent guide
+`agent-guide.md` (alongside this file) is herdr's official guide for an agent *helping a
+human* understand / set up / troubleshoot herdr — concept model, install path, diagnosis
+recipes. Read it when the task is about herdr itself, not just this config. It's a verbatim
+mirror of <https://herdr.dev/agent-guide.md> fetched 2026-06-27; re-fetch to refresh (canonical
+docs at <https://herdr.dev/docs/> may be newer). For *operating* herdr from inside a pane
+(`HERDR_ENV=1`), use the `herdr` skill instead — that's the SKILL.md side, this is the teach-a-human side.
