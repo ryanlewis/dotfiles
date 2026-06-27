@@ -34,6 +34,20 @@ previous_tab = "prefix+p"
 next_tab = "prefix+n"
 rename_tab = "prefix+,"
 
+# Direct (prefix-free) vim-style pane focus on ctrl+h/j/k/l. These are global
+# binds, so herdr swallows the chord before the focused app sees it — chosen
+# because the collisions are cheap here:
+#   ctrl+h  backspace  -> real Backspace sends ^? (DEL), so it still works
+#   ctrl+j  LF/newline -> Claude Code newline is Shift+Enter for us, not ctrl+j
+#                         (universal fallback if ever needed: \ + Enter)
+#   ctrl+k  unbound in both Claude Code and our zsh (self-insert) -> free
+#   ctrl+l  clear/redraw -> minor; `clear` / Claude Code redraw is cosmetic
+# (prefix+h/j/k/l no longer focuses panes; the navigate/resize modes still do.)
+focus_pane_left = "ctrl+h"
+focus_pane_down = "ctrl+j"
+focus_pane_up = "ctrl+k"
+focus_pane_right = "ctrl+l"
+
 # Open lazygit in a temporary pane (closes when lazygit exits)
 [[keys.command]]
 key = "prefix+alt+g"
