@@ -1,7 +1,7 @@
 # Ghostty Dotfiles
 
 ## Environment
-- Dotfiles managed with **chezmoi** — use `chezmoi add` after modifying config files
+- Dotfiles managed with **chezmoi** — edit the source (`private_dot_config/ghostty/config`), then `chezmoi apply`; don't hand-edit the live `~/.config/ghostty/config` (it's generated and gets overwritten)
 - Ghostty config: `~/.config/ghostty/config`
 - Ghostty docs: https://ghostty.org/docs/config/reference
 
