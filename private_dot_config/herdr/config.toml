@@ -56,6 +56,9 @@ rename_tab = "prefix+,"
 #                         (universal fallback if ever needed: \ + Enter)
 #   ctrl+k  unbound in both Claude Code and our zsh (self-insert) -> free
 #   ctrl+l  clear/redraw -> minor; `clear` / Claude Code redraw is cosmetic
+# (No ctrl+arrow aliases here: macOS grabs ctrl+left/right for Spaces and
+#  ctrl+up/down for Mission Control / Exposé, so they never reach herdr.
+#  ctrl+shift+arrow survives the OS, which is why workspaces use it.)
 # (prefix+h/j/k/l no longer focuses panes; the navigate/resize modes still do.)
 focus_pane_left = "ctrl+h"
 focus_pane_down = "ctrl+j"
@@ -68,3 +71,22 @@ key = "prefix+alt+g"
 type = "pane"
 command = "lazygit"
 description = "lazygit"
+
+# Layout Tools (io.rlew.layout) — equalize / rotate / picker.
+# equalize/rotate are type="shell": detached, no visible pane; they act on the
+# tab you're focused on. The picker is the plugin's overlay card grid.
+#   prefix + =      -> snap panes to equal area (lossless)
+#   prefix + space  -> overlay card grid of equalise + rotate
+# (prefix + r is deliberately left unbound so it falls through to herdr's
+#  built-in resize mode; rotate now lives only in the prefix+space picker.)
+[[keys.command]]
+key = "prefix+="
+type = "shell"
+command = "~/dev/herdr-layout-tools/bin/layout-tools equalize"
+description = "equalise panes"
+
+[[keys.command]]
+key = "prefix+space"
+type = "shell"
+command = "herdr plugin pane open --plugin io.rlew.layout --entrypoint picker --placement overlay"
+description = "layout picker"
