@@ -175,7 +175,7 @@ fi
 # registry, so grab the prebuilt release binary on both macOS and Linux.
 if ! command -v mdt &> /dev/null; then
     echo "📰 Installing md-tui..."
-    MDTUI_VERSION="0.10.2"
+    MDTUI_VERSION="0.10.3"
     {{ if eq .chezmoi.os "darwin" -}}
     if [[ "$ARCH" == "x86_64" ]]; then
         MDTUI_ARCH="x86_64-apple-darwin"
