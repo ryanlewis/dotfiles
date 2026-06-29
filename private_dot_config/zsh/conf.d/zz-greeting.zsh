@@ -25,7 +25,21 @@
             print -r -- "${os_name#macOS }" >| $vfile 2>/dev/null
         fi
     else
-        os_name=$(lsb_release -ds 2>/dev/null || echo Linux)
+        # lsb_release is a ~10ms subprocess (it shells out repeatedly) for a
+        # value that already lives, fork-free, in /etc/os-release. Read
+        # PRETTY_NAME directly with a builtin read loop; fall back to
+        # lsb_release, then a bare "Linux", on the rare host without it.
+        local osrel=/etc/os-release line
+        os_name=""
+        if [[ -r $osrel ]]; then
+            while IFS= read -r line; do
+                if [[ $line == PRETTY_NAME=* ]]; then
+                    os_name=${${line#PRETTY_NAME=}//\"/}   # strip wrapping quotes
+                    break
+                fi
+            done < $osrel
+        fi
+        [[ -n $os_name ]] || os_name=$(lsb_release -ds 2>/dev/null || echo Linux)
     fi
     print -r -- "${cyan}Welcome to $HOST • ${os_name}${reset}"
 
