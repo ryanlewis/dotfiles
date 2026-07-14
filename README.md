@@ -365,6 +365,7 @@ Zsh is the login shell (the provisioning script recommends it on fresh machines;
 - `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the MOTD/greeting.
 - `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `crpr`, `tools`, …).
 - `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
+- `~/.config/zsh/completions/` — completion functions generated at apply time (currently `_rg` for ripgrep; mise/aqua binaries don't ship completion files the way brew does). On `fpath`, autoloaded by compinit — zero startup cost.
 
 The prompt (starship) and history (atuin) round out the setup.
 

@@ -187,6 +187,12 @@ else
     echo -e "${RED}✗${NC} Zsh config NOT found"
 fi
 
+if [ -f "$HOME/.config/zsh/completions/_rg" ]; then
+    echo -e "${GREEN}✓${NC} Generated completions exist (_rg)"
+else
+    echo -e "${RED}✗${NC} Generated completions NOT found (_rg)"
+fi
+
 if [ -f "$HOME/.config/starship.toml" ]; then
     echo -e "${GREEN}✓${NC} Starship config exists"
 else

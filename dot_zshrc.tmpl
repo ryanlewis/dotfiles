@@ -108,6 +108,12 @@ export HOMEBREW_NO_ENV_HINTS=1
 [[ -d {{ .brewPrefix }}/share/zsh/site-functions ]] \
     && fpath=({{ .brewPrefix }}/share/zsh/site-functions $fpath)
 {{- end }}
+# Generated completions (built at apply time by run_after_07-generate-completions;
+# mise/aqua binaries don't ship completion files the way brew does). Costs nothing
+# at startup: compinit autoloads from fpath, and the generator script invalidates
+# the zcompdump below whenever it regenerates anything.
+[[ -d $HOME/.config/zsh/completions ]] \
+    && fpath=($HOME/.config/zsh/completions $fpath)
 autoload -Uz compinit
 # Cache the dump under XDG to avoid a dotfile in $HOME.
 () {
