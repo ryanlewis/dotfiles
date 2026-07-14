@@ -135,10 +135,11 @@ zstyle ':completion:*' list-colors ''
 
 # ── Plugins (fetched by chezmoi externals; sourced defensively) ───────────
 ZSH_PLUGIN_DIR="$HOME/.config/zsh/plugins"
-# Autosuggestions — must be loaded before we bind a key to accept them.
-[[ -r $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
-    && source $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
-# (zsh-syntax-highlighting is sourced LAST, at the bottom of this file.)
+# Autosuggestions and zsh-syntax-highlighting are DEFERRED, not sourced here:
+# both are loaded at the first idle moment after the prompt is drawn (see
+# `_deferred_run` in the vi-mode section below), keeping ~12ms of plugin
+# sourcing off the time-to-first-prompt path. Behaviour is identical within a
+# few (input-buffered, imperceptible) ms of the prompt becoming interactive.
 
 # ── Vi mode + key bindings ────────────────────────────────────────────────
 bindkey -v
@@ -153,14 +154,39 @@ _zsh_cursor_for_keymap() {
     esac
 }
 zle -N zle-keymap-select _zsh_cursor_for_keymap
-_zsh_cursor_init() { print -n '\e[6 q'; }
+# Deferred interactive init — runs non-essential plugin sourcing synchronously
+# inside zle-line-init: after the first prompt is drawn, before the first
+# keystroke is processed (terminal-buffered, so nothing is lost). This keeps the
+# cost off time-to-first-prompt (~13% faster warm) while everything is live well
+# within a frame of the prompt. Items are sourced in their original file order.
+typeset -g _DEFER_DONE
+_deferred_run() {
+    emulate -L zsh
+    # ── autosuggestions ──
+    [[ -r $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh ]] \
+        && source $ZSH_PLUGIN_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh
+    # Its widgets are normally bound by a precmd hook (_zsh_autosuggest_start),
+    # but the first precmd already fired before this deferral runs — so start it
+    # directly, then (re-)issue the accept bindings that were rc-time-guarded.
+    (( $+functions[_zsh_autosuggest_start] )) && _zsh_autosuggest_start
+    if (( $+widgets[autosuggest-accept] )); then
+        bindkey -M viins '^ ' autosuggest-accept   # Ctrl+Space (some terms)
+        bindkey -M viins '^@' autosuggest-accept   # Ctrl+Space (NUL on most)
+    fi
+    # ── zsh-syntax-highlighting — MUST be sourced last so it wraps every widget ──
+    [[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
+        && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    zle reset-prompt 2>/dev/null
+}
+_zsh_cursor_init() {
+    print -n '\e[6 q'
+    [[ -n $_DEFER_DONE ]] || { _DEFER_DONE=1; _deferred_run; }
+}
 zle -N zle-line-init _zsh_cursor_init
 
-# Ctrl+Space accepts the autosuggestion; Ctrl+P/N search history by prefix.
-if (( $+widgets[autosuggest-accept] )); then
-    bindkey -M viins '^ '  autosuggest-accept   # Ctrl+Space (some terms)
-    bindkey -M viins '^@'  autosuggest-accept   # Ctrl+Space (NUL on most)
-fi
+# Ctrl+P/N search history by prefix. (Ctrl+Space → autosuggest-accept is bound
+# in _deferred_run above, once the autosuggestions plugin — and therefore the
+# autosuggest-accept widget — has been sourced at first idle.)
 bindkey -M viins '^P' up-line-or-search
 bindkey -M viins '^N' down-line-or-search
 # Sensible insert-mode editing keys (zsh vi-insert is otherwise sparse).
@@ -335,9 +361,9 @@ if command -v wt >/dev/null 2>&1; then _evalcache wt wt config shell init zsh; f
 # Owned here so bun's installer appending to ~/.zshrc doesn't show as drift.
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# ── zsh-syntax-highlighting — MUST be sourced last ────────────────────────
-[[ -r $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] \
-    && source $ZSH_PLUGIN_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# ── zsh-syntax-highlighting — DEFERRED (sourced last inside _deferred_run) ─
+# Moved off the rc-time path to the first-idle deferral in the vi-mode section,
+# where it stays the LAST item sourced — preserving the must-wrap-last invariant.
 
 # ── Abbreviations (lightweight ZLE expansion; replaces zsh-abbr) ───────────
 # Type an abbreviation at command position then SPACE or ENTER and it expands

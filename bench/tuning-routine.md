@@ -94,7 +94,26 @@ Starting points, highest self-time first — re-profile every run, don't trust t
 - **`_evalcache` (~21%, 7 tools)** — already cached. Some inits (zoxide, direnv)
   could be lazy-loaded on first use instead of sourced eagerly.
 - **Greeting `zz-greeting.zsh` (~11%)** — could defer or render async.
-- **zsh-abbr job-queue, syntax-highlighting load** — candidates to defer.
+- **Plugin sourcing — DONE (2026-06-24):** zsh-syntax-highlighting +
+  zsh-autosuggestions are now deferred to first-idle (`_deferred_run` in
+  `dot_zshrc.tmpl`), for **−13% time-to-first-prompt**. A multi-round worktree
+  experiment showed deferring atuin/fzf on top gives *no net gain* (autosuggestions
+  must re-wrap their widgets, which costs back the saving) and deferring `compinit`
+  alone is a regression — so the deferral set is closed at SH+AS. (zsh-abbr was
+  removed in an earlier win.)
+
+> **Measuring deferral is different — the existing guards can't see it.**
+> `scripts/bench-startup.sh` (warm `zsh -i -c exit`) and `scripts/shell-snapshot.sh`
+> both run **without a tty**, so `zle` never initialises and deferred plugins never
+> load. They therefore *under-count* a deferred config's real cost and will
+> **false-fail** the snapshot guard (hundreds of "missing" plugin widgets/functions
+> that are actually present at a live prompt). Verify deferral-class changes with a
+> **real-pty time-to-first-prompt** measure (EPOCHREALTIME captured at first precmd)
+> plus a behaviour snapshot taken **~30ms after the prompt is interactive**, and a
+> functional probe (e.g. type `gs ` → expect `git status `). The pty harness used
+> for the 2026-06-24 win (`ttfp/harness.py` + `compare.py` + `bench_all.sh`) lives
+> in the session scratchpad; land it under `scripts/` if the routine is to keep
+> optimising deferred init.
 
 ## Hard guardrails (never violate)
 
