@@ -27,11 +27,14 @@ typeset -g _ZSH_INIT_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/init"
 _evalcache() {
     local name=$1; shift
     local cache="$_ZSH_INIT_CACHE/$name.zsh"
-    local marker="# evalcache: $*"
     local bin=$1
     [[ $bin == /* ]] || bin=${commands[$1]}   # resolve via hash table (no fork)
-    # Reuse the cache when it exists, the invocation is unchanged, and the
-    # binary is no newer than the cache.
+    # The marker embeds the resolved path: mise/aqua install paths change on
+    # upgrade, invalidating the cache even though aqua extracts binaries with
+    # their (old) archive mtimes, which the -nt check below can't see.
+    local marker="# evalcache: ${bin:-$1} $*"
+    # Reuse the cache when it exists, the invocation and resolved binary path
+    # are unchanged, and the binary is no newer than the cache.
     if [[ -s $cache && ( -z $bin || ! $bin -nt $cache ) ]]; then
         local first; IFS= read -r first < $cache
         if [[ $first == "$marker" ]]; then
