@@ -8,7 +8,10 @@ show_agent_labels_on_pane_borders = true
 agent_panel_scope = "all"
 
 [theme]
-name = "catppuccin"
+name = "tokyo-night"
+auto_switch = true
+dark_name = "tokyo-night"
+light_name = "tokyo-night-day"
 
 [ui.sound]
 enabled = true
