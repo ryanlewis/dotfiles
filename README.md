@@ -106,7 +106,7 @@ This configuration includes several useful Zsh functions:
 - `mkcd <dir>` - Create a directory and cd into it
 - `backup <file>` - Create a timestamped backup of a file
 - `extract <archive>` - Extract various archive formats
-- `update` - Update system packages (brew/apt/dnf/pacman)
+- `update` - Update mise tools, system packages (brew/apt/dnf/pacman) and bun, then restart the shell
 - `ports` - Show listening ports
 - `myip` - Display local and public IP addresses
 - `yank` - Copy text to clipboard via OSC 52 (works over SSH)

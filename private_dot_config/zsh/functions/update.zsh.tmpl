@@ -1,5 +1,13 @@
-# Update system packages
+# Update system packages and CLI tools (mise, OS packages, bun), then restart
+# the shell. The restart matters: tool init hooks (starship, direnv) embed
+# absolute versioned binary paths in the running shell, so after mise swaps a
+# version dir the old prompt would point at a deleted binary.
 update() {
+    if command -v mise >/dev/null; then
+        echo "Updating mise tools..."
+        mise upgrade
+    fi
+
     {{- if eq .chezmoi.os "darwin" }}
     echo "Updating Homebrew..."
     brew update
@@ -22,7 +30,14 @@ update() {
     echo "Pacman update complete!"
         {{- else }}
     echo "Unknown package manager"
-    return 1
         {{- end }}
     {{- end }}
+
+    if command -v bun >/dev/null; then
+        echo "Updating bun..."
+        bun upgrade
+    fi
+
+    echo "Restarting shell to pick up new tool paths..."
+    exec zsh
 }
