@@ -89,7 +89,7 @@ copy-on-select = clipboard
 clipboard-paste-protection = true
 
 # ── Scrollback ───────────────────────────────────────────────
-scrollback-limit = 100000
+scrollback-limit = 10000000
 
 # ── Claude Code (Shift+Enter sends ESC+CR for newline) ──────
 keybind = shift+enter=text:\x1b\r
