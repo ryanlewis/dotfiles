@@ -12,6 +12,8 @@ command = "CLAUDECODE= MAX_THINKING_TOKENS=0 claude -p --no-session-persistence 
 # Always show CI status and diffstats
 [list]
 full = true
+# Pin the JSON output schema — a future release flips the default to 2.
+json-schema = 2
 
 # Trust any mise config in a freshly created worktree. pre-start blocks until
 # done, so it completes before any --execute command (e.g. crpr's `claude`).
