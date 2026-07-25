@@ -5,11 +5,10 @@ delivery = "herdr"
 
 [ui]
 show_agent_labels_on_pane_borders = true
-agent_panel_scope = "all"
 
 [theme]
-name = "tokyo-night"
-auto_switch = true
+name = "one-dark"
+auto_switch = false
 dark_name = "tokyo-night"
 light_name = "tokyo-night-day"
 
@@ -77,9 +76,11 @@ description = "lazygit"
 
 # Layout Tools (io.rlew.layout) — equalize / rotate / picker.
 # equalize/rotate are type="shell": detached, no visible pane; they act on the
-# tab you're focused on. The picker is the plugin's overlay card grid.
+# tab you're focused on. The picker is the plugin's popup card grid — no
+# --placement here, so the manifest's popup (sized 80%x70%) wins; passing
+# --placement overlay would override it back to a fullscreen zoomed overlay.
 #   prefix + =      -> snap panes to equal area (lossless)
-#   prefix + space  -> overlay card grid of equalise + rotate
+#   prefix + space  -> popup card grid of equalise + rotate
 # (prefix + r is deliberately left unbound so it falls through to herdr's
 #  built-in resize mode; rotate now lives only in the prefix+space picker.)
 [[keys.command]]
@@ -91,5 +92,5 @@ description = "equalise panes"
 [[keys.command]]
 key = "prefix+space"
 type = "shell"
-command = "herdr plugin pane open --plugin io.rlew.layout --entrypoint picker --placement overlay"
+command = "herdr plugin pane open --plugin io.rlew.layout --entrypoint picker"
 description = "layout picker"
