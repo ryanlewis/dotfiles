@@ -56,6 +56,21 @@ check_command() {
     fi
 }
 
+# Check a command that is opt-in per machine (see the toolXxx / runtimeXxx gates
+# in .chezmoi.toml.tmpl). Asserts the command exists only when the tool is
+# actually declared in the rendered mise config, so a lean machine — CI, a
+# headless VM — passes without it. $1 = command, $2 = mise config key.
+check_optional_command() {
+    local cmd="$1" key="$2"
+    local mise_config="${HOME}/.config/mise/config.toml"
+
+    if grep -q "$key" "$mise_config" 2>/dev/null; then
+        check_command "$cmd"
+    else
+        echo -e "${GREEN}✓${NC} $cmd not selected on this machine (opt-in) — skipped"
+    fi
+}
+
 # Function to check Zsh function (one file per function under ~/.config/zsh/functions)
 check_zsh_function() {
     TOTAL_TESTS=$((TOTAL_TESTS + 1))
@@ -107,7 +122,7 @@ check_command rg
 check_command zoxide
 check_command eza
 check_command delta
-check_command hunk
+check_optional_command hunk "npm:hunkdiff"
 check_command lazygit
 check_command btop
 check_command tldr
