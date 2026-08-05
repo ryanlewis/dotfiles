@@ -1,0 +1,15 @@
+# ~/.bunfig.toml — managed by chezmoi (dot_bunfig.toml).
+# Supply-chain hardening. Verified against bun 1.3.14.
+#
+# bun already refuses to run dependency lifecycle scripts by default, so this
+# changes nothing today. It is here to *pin* that default, so a future bun
+# release cannot silently re-open the primitive the 2026-08-04 npm campaign
+# used. Counterpart to ignore-scripts=true in ~/.npmrc, which npm needs
+# because npm is the one package manager that still runs them by default.
+#
+# Escape hatch for a package that genuinely needs to build:
+#   bun pm untrusted        # see what was skipped
+#   bun pm trust <pkg>      # allow it, recorded in trustedDependencies
+
+[install]
+ignoreScripts = true
