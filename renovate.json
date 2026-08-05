@@ -1,95 +1,44 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "branchPrefix": "renovate/",
-  "labels": [
-    "dependencies",
-    "renovate"
-  ],
-  "commitMessagePrefix": "chore(deps):",
-  "commitMessageAction": "update",
-  "commitMessageTopic": "{{depName}}",
-  "commitMessageExtra": "to {{newVersion}}",
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "🎯 Dependency Dashboard",
-  "dependencyDashboardAutoclose": true,
-  "prConcurrentLimit": 5,
-  "prCreation": "immediate",
-  "automerge": false,
-  "packageRules": [
-    {
-      "description": "Automerge patch and minor updates",
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
-      "automerge": true
-    }
-  ],
+  "extends": ["github>ryanlewis/renovate-config"],
+  "mise": {
+    "managerFilePatterns": [
+      "/private_dot_config/mise/config\\.toml\\.tmpl$/",
+      "/private_dot_config/mise/conf\\.d/runtimes\\.toml\\.tmpl$/"
+    ]
+  },
   "customManagers": [
     {
       "customType": "regex",
       "description": "Update btop version pinned in the chezmoi install-tools script",
-      "managerFilePatterns": [
-        "/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"
-      ],
-      "matchStrings": [
-        "BTOP_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ],
+      "managerFilePatterns": ["/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"],
+      "matchStrings": ["BTOP_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
       "depNameTemplate": "aristocratos/btop",
       "datasourceTemplate": "github-releases"
     },
     {
       "customType": "regex",
       "description": "Update tealdeer (tldr) version pinned in the chezmoi install-tools script",
-      "managerFilePatterns": [
-        "/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"
-      ],
-      "matchStrings": [
-        "TLDR_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ],
+      "managerFilePatterns": ["/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"],
+      "matchStrings": ["TLDR_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
       "depNameTemplate": "dbrgn/tealdeer",
       "datasourceTemplate": "github-releases"
     },
     {
       "customType": "regex",
       "description": "Update broot version pinned in the chezmoi install-tools script",
-      "managerFilePatterns": [
-        "/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"
-      ],
-      "matchStrings": [
-        "BROOT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ],
+      "managerFilePatterns": ["/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"],
+      "matchStrings": ["BROOT_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
       "depNameTemplate": "Canop/broot",
       "datasourceTemplate": "github-releases"
     },
     {
       "customType": "regex",
       "description": "Update md-tui version pinned in the chezmoi install-tools script",
-      "managerFilePatterns": [
-        "/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"
-      ],
-      "matchStrings": [
-        "MDTUI_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""
-      ],
+      "managerFilePatterns": ["/run_onchange_after_05-install-tools\\.sh\\.tmpl$/"],
+      "matchStrings": ["MDTUI_VERSION=\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
       "depNameTemplate": "henriklovhaug/md-tui",
       "datasourceTemplate": "github-releases"
     }
-  ],
-  "mise": {
-    "enabled": true,
-    "managerFilePatterns": [
-      "/private_dot_config/mise/config\\.toml\\.tmpl$/",
-      "/private_dot_config/mise/conf\\.d/runtimes\\.toml\\.tmpl$/"
-    ]
-  },
-  "github-actions": {
-    "enabled": true,
-    "managerFilePatterns": [
-      "/.github/workflows/*.yml/",
-      "/.github/workflows/*.yaml/"
-    ]
-  }
+  ]
 }
