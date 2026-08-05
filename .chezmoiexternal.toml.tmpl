@@ -1,20 +1,25 @@
 # External files fetched by chezmoi on `apply`.
 #
-# zsh plugins — autosuggestions and syntax highlighting. chezmoi clones these
-# into ~/.config/zsh/plugins and `refreshPeriod` re-pulls them on a weekly apply, so
-# there is no separate plugin manager in the startup path. .zshrc sources each
-# defensively, so a missing plugin (e.g. a fresh machine before the first
-# apply, or CI) just degrades gracefully.
+# zsh plugins — autosuggestions and syntax highlighting, pinned to release
+# archives with sha256 checksums (2026-08 supply-chain hardening; previously
+# git-repo clones tracking HEAD with a weekly re-pull). Deliberately NOT wired
+# into Renovate: a URL bump without the matching checksum bricks `apply`, so
+# updates are manual — new tag URL and new sha256 land together. Both projects
+# release rarely, so staleness is cheap; the checksum defeats tag repointing.
+# .zshrc sources each defensively, so a missing plugin (e.g. a fresh machine
+# before the first apply, or CI) just degrades gracefully.
 #
 # Skipped under CI so `chezmoi init --apply` stays hermetic and fast.
 {{ if not (env "CI") -}}
 [".config/zsh/plugins/zsh-autosuggestions"]
-    type = "git-repo"
-    url = "https://github.com/zsh-users/zsh-autosuggestions.git"
-    refreshPeriod = "168h"
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-autosuggestions/archive/refs/tags/v0.7.1.tar.gz"
+    checksum.sha256 = "0df7affff21cd87ed298e6a3970ed08a1dd66a6efa676454ee5b091ad503badf"
+    stripComponents = 1
 
 [".config/zsh/plugins/zsh-syntax-highlighting"]
-    type = "git-repo"
-    url = "https://github.com/zsh-users/zsh-syntax-highlighting.git"
-    refreshPeriod = "168h"
+    type = "archive"
+    url = "https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.8.0.tar.gz"
+    checksum.sha256 = "5981c19ebaab027e356fe1ee5284f7a021b89d4405cc53dc84b476c3aee9cc32"
+    stripComponents = 1
 {{ end -}}
