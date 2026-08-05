@@ -1,0 +1,16 @@
+# ~/.npmrc — managed by chezmoi (private_dot_npmrc), mode 0600.
+# Supply-chain hardening. Verified against npm 11.16.0.
+
+# Never run pre/post/install lifecycle scripts from dependencies.
+# `npm run <script>`, start/test/stop still work — only pre-/post- hooks are skipped.
+# Escape hatch for a package that genuinely needs to build:
+#   npm install --ignore-scripts=false   or   npm rebuild <pkg> --ignore-scripts=false
+ignore-scripts=true
+
+# Only install versions published more than N *days* ago, so a compromised
+# release has time to be pulled before it lands here. Implemented as an
+# implicit `--before`; an explicit `before=` wins over it.
+min-release-age=7
+
+# No funding spam after install.
+fund=false

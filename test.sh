@@ -214,6 +214,17 @@ else
     echo -e "${RED}✗${NC} Starship config NOT found"
 fi
 
+if [ -f "$HOME/.npmrc" ]; then
+    echo -e "${GREEN}✓${NC} npm config exists"
+    if grep -q "^ignore-scripts=true" "$HOME/.npmrc" 2>/dev/null; then
+        echo -e "${GREEN}✓${NC} npm configured to ignore install scripts"
+    else
+        echo -e "${RED}✗${NC} npm ignore-scripts NOT set"
+    fi
+else
+    echo -e "${RED}✗${NC} npm config NOT found"
+fi
+
 if [ -f "$HOME/.gitconfig" ]; then
     echo -e "${GREEN}✓${NC} Git config exists"
     if grep -q "delta" "$HOME/.gitconfig" 2>/dev/null; then
