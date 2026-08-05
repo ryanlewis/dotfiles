@@ -1,6 +1,6 @@
 # Global mise configuration
 # https://mise.jdx.dev/configuration.html
-# Updated: April 2026
+# Updated: August 2026
 
 [tools]
 # Core language runtime — always installed; the dotfiles tooling depends on it
@@ -15,45 +15,45 @@ node = "24.18.1" # LTS (Active LTS until April 2028)
 
 # CLI tools via aqua backend (pre-built cross-platform binaries)
 # https://mise.jdx.dev/dev-tools/backends/aqua.html
-"aqua:junegunn/fzf" = "latest"
-"aqua:sharkdp/bat" = "latest"
-"aqua:sharkdp/fd" = "latest"
+"aqua:junegunn/fzf" = "0.74.2"
+"aqua:sharkdp/bat" = "0.26.1"
+"aqua:sharkdp/fd" = "10.4.2"
 {{ if ne .chezmoi.os "darwin" -}}
-"aqua:eza-community/eza" = "latest" # Linux only; macOS uses Homebrew
+"aqua:eza-community/eza" = "0.23.5" # Linux only; macOS uses Homebrew
 {{ end -}}
-"aqua:BurntSushi/ripgrep" = "latest"
-"aqua:ajeetdsouza/zoxide" = "latest"
-"aqua:muesli/duf" = "latest"
-"aqua:bootandy/dust" = "latest"
-"aqua:starship/starship" = "latest"
-"aqua:atuinsh/atuin" = "latest"
-"aqua:dandavison/delta" = "latest"
-"aqua:jesseduffield/lazygit" = "latest"
-"aqua:cli/cli" = "latest" # GitHub CLI (gh)
-"aqua:casey/just" = "latest"
-"aqua:charmbracelet/gum" = "latest"
-"aqua:direnv/direnv" = "latest"
-"aqua:jqlang/jq" = "latest"
-"aqua:kubernetes/kubernetes/kubectl" = "latest"
-"aqua:ahmetb/kubectx" = "latest"
-"aqua:ahmetb/kubectx/kubens" = "latest"
-"aqua:astral-sh/uv" = "latest"
+"aqua:BurntSushi/ripgrep" = "15.2.0"
+"aqua:ajeetdsouza/zoxide" = "0.10.0"
+"aqua:muesli/duf" = "0.9.1"
+"aqua:bootandy/dust" = "1.2.4"
+"aqua:starship/starship" = "1.26.0"
+"aqua:atuinsh/atuin" = "18.18.1"
+"aqua:dandavison/delta" = "0.19.2"
+"aqua:jesseduffield/lazygit" = "0.63.1"
+"aqua:cli/cli" = "2.97.0" # GitHub CLI (gh)
+"aqua:casey/just" = "1.57.0"
+"aqua:charmbracelet/gum" = "0.17.0"
+"aqua:direnv/direnv" = "2.37.1"
+"aqua:jqlang/jq" = "1.8.2"
+"aqua:kubernetes/kubernetes/kubectl" = "1.36.3"
+"aqua:ahmetb/kubectx" = "0.11.0"
+"aqua:ahmetb/kubectx/kubens" = "0.11.0"
+"aqua:astral-sh/uv" = "0.12.1"
 "aqua:common-fate/granted" = "0.38.0" # pinned: v0.39.0 missing from releases.commonfate.io
-"aqua:neovim/neovim" = "latest" # nvim — modal editor
-"aqua:tree-sitter/tree-sitter" = "latest" # nvim-treesitter (main branch) parser compiler
-television = "latest" # TUI fuzzy finder (tv)
+"aqua:neovim/neovim" = "0.12.4" # nvim — modal editor
+"aqua:tree-sitter/tree-sitter" = "0.26.11" # nvim-treesitter (main branch) parser compiler
+television = "0.15.9" # TUI fuzzy finder (tv)
 
 # CLI tools via npm backend (not in the aqua registry)
 # https://mise.jdx.dev/dev-tools/backends/npm.html
 {{ if dig "toolHunkdiff" false . -}}
-"npm:hunkdiff" = "latest" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
+"npm:hunkdiff" = "0.17.6" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
 {{ end -}}
-"npm:cf" = "latest" # Cloudflare CLI
+"npm:cf" = "0.5.0" # Cloudflare CLI
 
 [settings]
 # No lockfile: mise.lock is shared with machine-local tools (conf.d/local.toml),
 # so a managed/committed lock perpetually drifts against what mise writes here.
-# The versions that matter are pinned above; everything else tracks latest.
+# All tools are pinned (2026-08 supply-chain hardening); Renovate mise manager bumps them.
 lockfile = false
 
 # Opt-in language runtimes (Go/Java/Python) live in the managed
