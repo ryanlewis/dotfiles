@@ -22,3 +22,26 @@ path=($HOME/bin $HOME/.local/bin $HOME/.cargo/bin $HOME/.claude/local $HOME/.bun
 [[ -d $HOME/.local/share/mise/shims ]] && path=($HOME/.local/share/mise/shims $path)
 
 export PATH
+
+{{- if eq .chezmoi.os "darwin" }}
+
+# 1Password SSH agent — the private keys live there (~/.ssh holds only .pub
+# stubs), and git's SSH signing honours SSH_AUTH_SOCK, not ssh_config's
+# IdentityAgent. Replace only Apple's default launchd agent so a forwarded
+# agent from an inbound ssh session still wins.
+_1p_agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+if [[ -S $_1p_agent && ( -z ${SSH_AUTH_SOCK-} || $SSH_AUTH_SOCK == *com.apple.launchd* ) ]]; then
+  export SSH_AUTH_SOCK=$_1p_agent
+fi
+unset _1p_agent
+{{- else }}
+
+# 1Password SSH agent (Linux desktop socket). Only used when no agent is
+# already available — a forwarded agent on a remote server always wins, and
+# headless boxes without 1Password skip this via the socket check.
+_1p_agent="$HOME/.1password/agent.sock"
+if [[ -S $_1p_agent && -z ${SSH_AUTH_SOCK-} ]]; then
+  export SSH_AUTH_SOCK=$_1p_agent
+fi
+unset _1p_agent
+{{- end }}
