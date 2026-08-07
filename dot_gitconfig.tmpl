@@ -10,6 +10,26 @@
 [gpg]
     format = ssh
 
+{{- /* Sign via the 1Password app when it's installed (no agent socket needed);
+       machines without it (remote servers/VMs) fall back to ssh-keygen +
+       SSH_AUTH_SOCK, wired in dot_zshenv.tmpl. */}}
+{{- $opSign := "" }}
+{{- if stat "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
+{{-   $opSign = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
+{{- else if stat "/opt/1Password/op-ssh-sign" }}
+{{-   $opSign = "/opt/1Password/op-ssh-sign" }}
+{{- end }}
+{{- if or $opSign (stat (joinPath .chezmoi.homeDir ".ssh/allowed_signers")) }}
+
+[gpg "ssh"]
+{{- if $opSign }}
+    program = {{ $opSign }}
+{{- end }}
+{{- if stat (joinPath .chezmoi.homeDir ".ssh/allowed_signers") }}
+    allowedSignersFile = {{ joinPath .chezmoi.homeDir ".ssh/allowed_signers" }}
+{{- end }}
+{{- end }}
+
 [commit]
     gpgsign = true
 
