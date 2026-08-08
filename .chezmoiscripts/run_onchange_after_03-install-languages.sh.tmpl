@@ -40,6 +40,18 @@ mise install || echo "⚠️  Some installations failed, continuing..."
 # (mise skips reshim on partial failure, leaving aqua CLI tools unreachable via $PATH).
 mise reshim 2>/dev/null || true
 
+# Name anything that didn't install. The `mise install` above is deliberately
+# non-fatal so one bad tool can't abort the whole apply — but without this the
+# failure scrolls past in the install log and the only surviving evidence is a
+# `mise WARN missing:` on the shell prompt, long after the apply.
+missing="$(mise ls --missing 2>/dev/null)"
+if [[ -n "$missing" ]]; then
+    echo ""
+    echo "⚠️  These tools did NOT install:"
+    printf '%s\n' "$missing" | while IFS= read -r line; do echo "     $line"; done
+    echo "   Retry with: mise install"
+fi
+
 echo ""
 echo "✅ Verifying language runtimes:"
 command -v node >/dev/null 2>&1 && echo "  ✓ Node.js: $(node --version)" || echo "  ⚠️  Node.js not available"
