@@ -1,13 +1,52 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>ryanlewis/renovate-config"],
-  "mise": {
-    "managerFilePatterns": [
-      "/private_dot_config/mise/config\\.toml\\.tmpl$/",
-      "/private_dot_config/mise/conf\\.d/runtimes\\.toml\\.tmpl$/"
-    ]
-  },
+  "packageRules": [
+    {
+      "description": "Deliberately held back: v0.39.0 assets are missing from releases.commonfate.io (see comment in mise config)",
+      "matchPackageNames": ["common-fate/granted"],
+      "enabled": false
+    }
+  ],
   "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump aqua-backend pins in the templated mise config — the built-in mise (TOML) manager cannot parse Go-template files, so these are regex-managed. depName is the first two path segments (aqua:owner/repo[/subtool]).",
+      "managerFilePatterns": ["/private_dot_config/mise/config\\.toml\\.tmpl$/"],
+      "matchStrings": ["\"aqua:(?<depName>[^/\"]+/[^/\"]+)(?:/[^\"]*)?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^(?:v|jq-)?(?<version>\\d.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Bump npm-backend pins in the templated mise config",
+      "managerFilePatterns": ["/private_dot_config/mise/config\\.toml\\.tmpl$/"],
+      "matchStrings": ["\"npm:(?<depName>[^\"]+)\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "description": "Bump the node runtime pin in the templated mise config",
+      "managerFilePatterns": ["/private_dot_config/mise/config\\.toml\\.tmpl$/"],
+      "matchStrings": ["\\nnode\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version"
+    },
+    {
+      "customType": "regex",
+      "description": "Bump the television pin (mise registry shorthand) in the templated mise config",
+      "managerFilePatterns": ["/private_dot_config/mise/config\\.toml\\.tmpl$/"],
+      "matchStrings": ["\\ntelevision\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "alexpasmantier/television",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v?(?<version>\\d.*)$"
+    },
+    {
+      "customType": "regex",
+      "description": "Bump opt-in runtime pins annotated with `# renovate:` comments in the templated runtimes conf",
+      "managerFilePatterns": ["/private_dot_config/mise/conf\\.d/runtimes\\.toml\\.tmpl$/"],
+      "matchStrings": ["# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>\\S+?)(?: extractVersion=(?<extractVersion>\\S+?))?\\n[^=\\n]+=\\s*\"(?<currentValue>[^\"]+)\""]
+    },
     {
       "customType": "regex",
       "description": "Update btop version pinned in the chezmoi install-tools script",

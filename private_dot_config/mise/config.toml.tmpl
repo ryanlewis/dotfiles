@@ -53,7 +53,9 @@ television = "0.15.9" # TUI fuzzy finder (tv)
 [settings]
 # No lockfile: mise.lock is shared with machine-local tools (conf.d/local.toml),
 # so a managed/committed lock perpetually drifts against what mise writes here.
-# All tools are pinned (2026-08 supply-chain hardening); Renovate mise manager bumps them.
+# All tools are pinned (2026-08 supply-chain hardening); Renovate bumps them via
+# the regex customManagers in renovate.json (the mise TOML manager can't parse
+# Go-template files).
 lockfile = false
 
 # Opt-in language runtimes (Go/Java/Python) live in the managed

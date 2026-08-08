@@ -517,7 +517,12 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 
 #### 1. **mise Tool Versions** (`private_dot_config/mise/config.toml.tmpl` + `conf.d/runtimes.toml.tmpl`)
 - Node.js version (core, in `config.toml.tmpl`)
-- Go, Java, and Python/Miniconda versions (opt-in runtimes, in `conf.d/runtimes.toml.tmpl`)
+- All the pinned aqua/npm-backend CLI tools in `config.toml.tmpl` (fzf, ripgrep, atuin, …)
+- Go and gopls versions (opt-in runtimes, in `conf.d/runtimes.toml.tmpl`; Java and Python/Miniconda pins are not tracked)
+
+Both files are Go templates, which the built-in Renovate mise manager cannot
+parse — the pins are matched by regex `customManagers` in `renovate.json`
+instead.
 
 (Bun is self-managed via `bun upgrade`, so Renovate does not track it.)
 
@@ -531,16 +536,16 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 - broot (tree navigation)
 - md-tui (markdown viewer)
 
-These are the only tools with hardcoded version pins; everything else tracks
-`latest` (or a pinned version) via the mise config above. install.sh itself is a
-flagless bootstrap and contains no version pins.
+These are the only tools pinned outside the mise config; everything else is
+pinned in the mise config above. install.sh itself is a flagless bootstrap and
+contains no version pins.
 
 ### How It Works
 
-1. **Automated Runs**: Renovate app runs automatically on its schedule
-2. **Pull Requests**: Creates PRs for each dependency update with conventional commits
-3. **Auto-merge**: Minor and patch updates are auto-merged if tests pass
-4. **Major Updates**: Require manual review and approval
+1. **Automated Runs**: the shared preset (`github>ryanlewis/renovate-config`) batches non-major updates into one PR, opened Monday mornings after a 5-day release soak
+2. **Pull Requests**: conventional commits, one grouped non-major PR plus separate PRs per major
+3. **Auto-merge**: limited to GitHub Actions minor/patch and dev-dependency patches; everything else gets a human
+4. **Major Updates**: parked on the Dependency Dashboard until manually approved
 
 ### Configuration
 
