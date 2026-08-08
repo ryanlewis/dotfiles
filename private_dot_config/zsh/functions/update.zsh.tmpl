@@ -1,5 +1,5 @@
 # Update system packages and CLI tools (mise, OS packages, bun), then restart
-# the shell. The restart matters: tool init hooks (starship, direnv) embed
+# the shell. The restart matters: tool init hooks (starship, zoxide) embed
 # absolute versioned binary paths in the running shell, so after mise swaps a
 # version dir the old prompt would point at a deleted binary.
 update() {

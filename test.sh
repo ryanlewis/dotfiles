@@ -136,7 +136,6 @@ check_command broot
 check_command mdt
 check_command atuin
 check_command starship
-check_command direnv
 check_command just
 check_command gum
 check_command wt

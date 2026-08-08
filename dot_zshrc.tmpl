@@ -239,11 +239,6 @@ if command -v starship >/dev/null && [[ -z $DISABLE_STARSHIP ]]; then
     _evalcache starship starship init zsh
 fi
 
-# direnv — automatic environment loading.
-if command -v direnv >/dev/null; then
-    _evalcache direnv direnv hook zsh
-fi
-
 # broot — `br` launcher. broot's bash launcher is POSIX and works under zsh.
 if [[ -f ~/.config/broot/launcher/bash/br ]]; then
     source ~/.config/broot/launcher/bash/br

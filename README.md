@@ -231,8 +231,6 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - Pre-configured with icons
 - **[atuin](https://github.com/atuinsh/atuin)** - Better shell history
   - Advanced fuzzy search, statistics, intelligent deduplication
-- **[direnv](https://direnv.net/)** - Directory environments
-  - Auto-load .envrc files
 - **[broot](https://github.com/Canop/broot)** - Better `tree`
   - Navigate directories efficiently
 - **[tldr](https://tldr.sh/)** - Simplified man pages
@@ -284,7 +282,7 @@ Java, Python/Miniconda** — are off by default and opted into per machine:
 
 **CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
-- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, direnv, uv
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, uv
 - Editor: neovim (`nvim`), tree-sitter CLI (builds nvim-treesitter parsers)
 - Kubernetes tools: kubectl, kubectx, kubens
 - AWS tools: granted (`assume`)
@@ -362,7 +360,7 @@ Create `~/.config/zsh/config.local.zsh` for machine-specific configuration that 
 Zsh is the login shell (the provisioning script recommends it on fresh machines; `chsh -s $(which zsh)` to switch an existing one). It comprises:
 
 - `~/.zshenv` — PATH/environment for all shells (the non-interactive half).
-- `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, direnv, broot), aliases, and the MOTD/greeting.
+- `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, broot), aliases, and the MOTD/greeting.
 - `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `crpr`, `tools`, …).
 - `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
 - `~/.config/zsh/completions/` — completion functions generated at apply time (currently `_rg` for ripgrep; mise/aqua binaries don't ship completion files the way brew does). On `fpath`, autoloaded by compinit — zero startup cost.

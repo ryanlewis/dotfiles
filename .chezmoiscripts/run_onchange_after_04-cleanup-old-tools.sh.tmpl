@@ -26,7 +26,9 @@ for tool in "${VERIFY_TOOLS[@]}"; do
         echo "⚠️  Tool '$tool' not available, skipping cleanup (mise aqua not ready)"
         exit 0
     fi
-    if ! mise where "$tool" &> /dev/null; then
+    # `mise where` needs the full backend id (aqua:owner/repo); `mise which`
+    # resolves the short binary name, which is what we have here.
+    if ! mise which "$tool" &> /dev/null; then
         echo "⚠️  Tool '$tool' not managed by mise, skipping cleanup"
         exit 0
     fi
@@ -34,10 +36,18 @@ done
 
 echo "✓ Verified mise aqua tools are working, proceeding with cleanup..."
 
-# List of tools now managed by mise aqua
+# direnv was dropped from the suite (2026-08, unused); mise never
+# auto-uninstalls, so remove the orphaned install where one exists.
+if mise ls --installed 2>/dev/null | grep -q "direnv"; then
+    echo "  🗑️  Removing mise-installed direnv (dropped from the tool suite)"
+    mise uninstall "aqua:direnv/direnv" --all 2>/dev/null || true
+fi
+
+# List of tools now managed by mise aqua (eza only on Linux; on macOS it stays
+# Homebrew-installed via 05-install-tools, as does btop)
 AQUA_TOOLS=(
-    "fzf" "bat" "fd" "eza" "ripgrep" "zoxide" "btop" "duf" "dust"
-    "starship" "atuin" "delta" "lazygit" "gh" "just" "gum" "direnv"
+    "fzf" "bat" "fd" "eza" "ripgrep" "zoxide" "duf" "dust"
+    "starship" "atuin" "delta" "lazygit" "gh" "just" "gum"
     "jq" "kubectl" "kubectx" "kubens"
 )
 
@@ -51,11 +61,13 @@ echo "🍺 Removing Homebrew-installed tools..."
 if ! command -v brew &> /dev/null; then
     echo "  ⏭️  Homebrew not found, skipping"
 else
-    # Homebrew package names (some differ from binary names)
+    # Homebrew package names (some differ from binary names).
+    # NOT listed: eza and btop — on macOS those are deliberately Homebrew-
+    # installed by run_onchange_after_05-install-tools, not mise.
     BREW_PACKAGES=(
-        "fzf" "bat" "fd" "eza" "ripgrep" "zoxide" "btop" "duf" "dust"
+        "fzf" "bat" "fd" "ripgrep" "zoxide" "duf" "dust"
         "starship" "atuin" "git-delta" "lazygit" "gh" "just" "gum"
-        "direnv" "jq" "kubernetes-cli" "kubectx"
+        "jq" "kubernetes-cli" "kubectx"
     )
 
     for pkg in "${BREW_PACKAGES[@]}"; do
@@ -90,7 +102,8 @@ if [[ "$PKG_MGR" != "none" ]]; then
     case "$PKG_MGR" in
         apt)
             # Ubuntu/Debian package names
-            APT_PACKAGES=("bat" "fd-find" "ripgrep" "btop" "jq")
+            # btop is not listed: 05-install-tools installs it via apt
+            APT_PACKAGES=("bat" "fd-find" "ripgrep" "jq")
 
             for pkg in "${APT_PACKAGES[@]}"; do
                 if dpkg -l | grep -q "^ii  $pkg "; then
@@ -110,7 +123,7 @@ if [[ "$PKG_MGR" != "none" ]]; then
 
         dnf)
             # Fedora/RHEL package names
-            DNF_PACKAGES=("bat" "ripgrep" "btop" "jq")
+            DNF_PACKAGES=("bat" "ripgrep" "jq")
 
             for pkg in "${DNF_PACKAGES[@]}"; do
                 if dnf list installed "$pkg" &> /dev/null; then
@@ -122,7 +135,7 @@ if [[ "$PKG_MGR" != "none" ]]; then
 
         pacman)
             # Arch package names
-            PACMAN_PACKAGES=("bat" "fd" "eza" "ripgrep" "btop" "jq")
+            PACMAN_PACKAGES=("bat" "fd" "eza" "ripgrep" "jq")
 
             for pkg in "${PACMAN_PACKAGES[@]}"; do
                 if pacman -Q "$pkg" &> /dev/null; then
@@ -145,8 +158,9 @@ fi
 echo "🗑️  Removing manually downloaded binaries from ~/.local/bin..."
 
 # Remove binaries that were manually downloaded (cross-platform)
+# btop is not listed: 05-install-tools' binary fallback owns ~/.local/bin/btop
 BINARY_TOOLS=(
-    "fzf" "btop" "duf" "dust" "gum" "direnv" "just" "delta"
+    "fzf" "duf" "dust" "gum" "just" "delta"
     "lazygit" "jq" "kubectl" "kubectx" "kubens" "atuin"
 )
 
@@ -179,7 +193,7 @@ echo ""
 echo "✅ Verifying mise aqua tools after cleanup:"
 SAMPLE_TOOLS=("bat" "fd" "gh" "kubectl" "fzf")
 for tool in "${SAMPLE_TOOLS[@]}"; do
-    if command -v "$tool" &> /dev/null && mise where "$tool" &> /dev/null; then
+    if command -v "$tool" &> /dev/null && mise which "$tool" &> /dev/null; then
         echo "  ✓ $tool → $(which $tool)"
     else
         echo "  ⚠️  $tool not available"
