@@ -59,12 +59,15 @@ check_command() {
 # Check a command that is opt-in per machine (see the toolXxx / runtimeXxx gates
 # in .chezmoi.toml.tmpl). Asserts the command exists only when the tool is
 # actually declared in the rendered mise config, so a lean machine — CI, a
-# headless VM — passes without it. $1 = command, $2 = mise config key.
+# headless VM — passes without it. Both the base config and the runtime conf.d
+# file are searched, since the runtimeXxx gates render into the latter.
+# $1 = command, $2 = mise config key.
 check_optional_command() {
     local cmd="$1" key="$2"
     local mise_config="${HOME}/.config/mise/config.toml"
+    local mise_runtimes="${HOME}/.config/mise/conf.d/runtimes.toml"
 
-    if grep -q "$key" "$mise_config" 2>/dev/null; then
+    if grep -q "$key" "$mise_config" "$mise_runtimes" 2>/dev/null; then
         check_command "$cmd"
     else
         echo -e "${GREEN}✓${NC} $cmd not selected on this machine (opt-in) — skipped"
@@ -148,6 +151,9 @@ check_command tree-sitter
 check_command hx
 # granted ships the `assume` wrapper
 check_command assume
+# Go dev tooling — only present when the Go runtime was opted into
+check_optional_command golangci-lint "aqua:golangci/golangci-lint"
+check_optional_command goreleaser "aqua:goreleaser/goreleaser"
 # ktlint is macOS-only (Homebrew); skip the check elsewhere
 if [[ "$(uname)" == "Darwin" ]]; then
     check_command ktlint

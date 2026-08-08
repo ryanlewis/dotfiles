@@ -75,6 +75,8 @@ tools() {
         "Dev:📺 tv:Television - fuzzy finder TUI"
         "Dev:🧹 biome:JS/TS formatter and linter"
         "Dev:🅺 ktlint:Kotlin linter/formatter (macOS)"
+        "Dev:🐹 golangci-lint:Go linter aggregator (Go machines)"
+        "Dev:🚢 goreleaser:Go release automation (Go machines)"
         "Dev:☸️  kubectl:Kubernetes CLI"
         "Dev:🔄 kubectx:Switch K8s contexts"
         "Dev:📦 kubens:Switch K8s namespaces"
@@ -213,6 +215,8 @@ tools() {
         print -r -- "${C_bryellow}• tv${C_reset}       - Television fuzzy finder"
         print -r -- "${C_bryellow}• biome${C_reset}    - JS/TS formatter & linter"
         print -r -- "${C_bryellow}• ktlint${C_reset}   - Kotlin linter (macOS)"
+        print -r -- "${C_bryellow}• golangci-lint${C_reset} - Go linter aggregator (Go machines)"
+        print -r -- "${C_bryellow}• goreleaser${C_reset} - Go release automation (Go machines)"
         print
 
         print -r -- "${C_red}━━━ ☸️  Kubernetes Tools ━━━${C_reset}"

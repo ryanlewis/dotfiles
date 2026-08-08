@@ -221,6 +221,10 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter/formatter (macOS only)
 - **[md-tui](https://github.com/henriklovhaug/md-tui)** - Markdown viewer (TUI)
   - Render and browse markdown in the terminal; launched via `mdt`
+- **[golangci-lint](https://golangci-lint.run/)** - Go linter aggregator (Go machines only)
+  - Runs dozens of Go linters in one pass
+- **[goreleaser](https://goreleaser.com/)** - Go release automation (Go machines only)
+  - Builds, packages, and publishes Go project releases
 
 #### Shell Enhancements
 - **[fzf](https://github.com/junegunn/fzf)** - Fuzzy finder
@@ -273,6 +277,11 @@ Java, Python/Miniconda** — are off by default and opted into per machine:
 - **Version pins** for these runtimes live in
   `private_dot_config/mise/conf.d/runtimes.toml.tmpl` and are still bumped by
   Renovate.
+- **Go brings its tooling with it:** selecting Go also installs `gopls`,
+  `golangci-lint`, and `goreleaser` from that same file. They're deliberately
+  mise-owned rather than Homebrew-installed — a brew `go` on `PATH` shadows
+  mise's during `go:`-backend builds and breaks them as soon as the two
+  versions drift apart.
 - **Removing a runtime:** turn it off and apply; mise leaves the old install in
   place. Every `chezmoi apply` prints the current selection and flags any
   runtime that's installed but no longer selected, with the `mise uninstall` /
@@ -516,7 +525,7 @@ This repository uses [Renovate Bot](https://docs.renovatebot.com/) to automatica
 #### 1. **mise Tool Versions** (`private_dot_config/mise/config.toml.tmpl` + `conf.d/runtimes.toml.tmpl`)
 - Node.js version (core, in `config.toml.tmpl`)
 - All the pinned aqua/npm-backend CLI tools in `config.toml.tmpl` (fzf, ripgrep, atuin, …)
-- Go and gopls versions (opt-in runtimes, in `conf.d/runtimes.toml.tmpl`; Java and Python/Miniconda pins are not tracked)
+- Go plus its tooling — gopls, golangci-lint, goreleaser (opt-in runtimes, in `conf.d/runtimes.toml.tmpl`; Java and Python/Miniconda pins are not tracked)
 
 Both files are Go templates, which the built-in Renovate mise manager cannot
 parse — the pins are matched by regex `customManagers` in `renovate.json`
