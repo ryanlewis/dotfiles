@@ -5,7 +5,7 @@
 [tools]
 # Core language runtime — always installed; the dotfiles tooling depends on it
 # (node/npm for biome + the npm-backend tools).
-node = "24.18.1" # LTS (Active LTS until April 2028)
+node = "24.19.0" # LTS (Active LTS until April 2028)
 #
 # bun is intentionally NOT managed here — it's installed by its official
 # installer (run_once_04-install-bun.sh) and self-updates via `bun upgrade`.
@@ -45,7 +45,7 @@ television = "0.15.9" # TUI fuzzy finder (tv)
 # CLI tools via npm backend (not in the aqua registry)
 # https://mise.jdx.dev/dev-tools/backends/npm.html
 {{ if dig "toolHunkdiff" false . -}}
-"npm:hunkdiff" = "0.17.6" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
+"npm:hunkdiff" = "0.17.7" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
 {{ end -}}
 "npm:cf" = "0.5.0" # Cloudflare CLI
 
