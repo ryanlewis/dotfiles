@@ -21,3 +21,29 @@ json-schema = 2
 # run on every worktree, not just PR reviews.
 [pre-start]
 mise-trust = "mise trust -a"
+
+# `wt tidy` — one-shot cleanup of worktrees whose work has landed on main.
+# Fetch first: prune measures against origin/main, so a stale remote ref makes
+# it miss branches that merged since the last fetch.
+[[aliases.tidy]]
+fetch = "git fetch --prune"
+
+[[aliases.tidy]]
+prune = "wt step prune {{ args }}"
+
+# prune silently skips worktrees with uncommitted changes and has no --force,
+# so a merged worktree holding a stray build artefact would otherwise linger
+# unreported. List them with the integration check that matched.
+[[aliases.tidy]]
+report = '''
+skipped=$(wt list --format json | jq -r '
+  .items[]
+  | select(.worktree != null and .worktree.main == false)
+  | select(.default_branch.integration != null)
+  | select(.worktree.changes | (.staged or .modified or .untracked or .renamed or .deleted or .conflicted))
+  | "  \(.branch)  (\(.default_branch.integration.reason))  \(.worktree.path)"
+')
+if [ -n "$skipped" ]; then
+  printf '\n▲ merged but dirty — prune skips these, use: wt remove -f <branch>\n%s\n' "$skipped"
+fi
+'''
