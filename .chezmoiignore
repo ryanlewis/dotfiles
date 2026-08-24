@@ -1,6 +1,17 @@
-# Per-host ignores: managed gitconfig drifts here (gh credential helper writes)
+# Per-host ignores: managed gitconfig drifts here (gh credential helper writes).
+#
+# .npmrc is owned by IT on the work laptop, not by chezmoi. An Intune script
+# appends a delimited "LHV supply-chain hardening" block weekly. Managing the
+# file here as well means the two take turns: `chezmoi apply` strips the block,
+# the next Intune run puts it back. Both set the same values (ignore-scripts,
+# min-release-age, fund), so nothing is unprotected in between — this only stops
+# the churn and the permanent `MM .npmrc` in `chezmoi status`.
+#
+# Keep private_dot_npmrc in the source: the personal laptop has no Intune, so
+# that host still needs chezmoi to write these settings.
 {{ if and .isWork (eq .chezmoi.hostname .workHostname) }}
 .gitconfig
+.npmrc
 {{ end }}
 
 # macOS launcher scripts (Tuna -> ~/Library/Scripts, Raycast -> ~/dev/raycast-scripts).

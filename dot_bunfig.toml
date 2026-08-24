@@ -13,3 +13,14 @@
 
 [install]
 ignoreScripts = true
+
+# Only install versions published more than 7 days ago (bun counts seconds), so
+# a compromised release has time to be pulled before it lands here. Counterpart
+# to min-release-age=7 in ~/.npmrc and minimumReleaseAge in the pnpm config.
+#
+# bun fails the install rather than quietly resolving to an older version, so
+# the error names this setting. Per-package exemptions go in
+# minimumReleaseAgeExcludes and are NOT transitive: exempting a package does not
+# exempt its dependencies, so an exempted install can still fail further down.
+# An existing bun.lock pins versions and is not re-checked against this.
+minimumReleaseAge = 604800
