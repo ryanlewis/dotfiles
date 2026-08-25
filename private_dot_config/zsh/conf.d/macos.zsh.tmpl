@@ -14,7 +14,7 @@
 [[ -e ~/.iterm2_shell_integration.zsh ]] && source ~/.iterm2_shell_integration.zsh
 
 # macOS-specific aliases.
-alias flushdns="sudo dscacheutil -flushcache"
+alias flushdns="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias afk="open -a ScreenSaverEngine"
 alias cleanup="find . -type f -name '*.DS_Store' -ls -delete"
 alias ql="qlmanage -p &>/dev/null"
