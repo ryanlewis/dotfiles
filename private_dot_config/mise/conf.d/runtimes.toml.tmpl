@@ -13,7 +13,7 @@
 [tools]
 {{ if dig "runtimeGo" false . -}}
 # renovate: datasource=golang-version depName=go
-go = "1.26.5" # Latest stable
+go = "1.27.1" # Latest stable
 # renovate: datasource=github-tags depName=golang/tools extractVersion=^gopls/v(?<version>.+)$
 "go:golang.org/x/tools/gopls" = "0.23.0" # Go language server (gopls), used by the nvim LSP
 # Go dev tooling — aqua pre-built binaries, so these need no local toolchain to
@@ -21,9 +21,9 @@ go = "1.26.5" # Latest stable
 # mise owns every Go tool: a brew `go` on PATH shadows mise's during `go:`
 # builds and breaks them whenever the two versions drift apart.
 # renovate: datasource=github-releases depName=golangci/golangci-lint extractVersion=^v?(?<version>\d.*)$
-"aqua:golangci/golangci-lint" = "2.12.2" # Go linter aggregator
+"aqua:golangci/golangci-lint" = "2.13.2" # Go linter aggregator
 # renovate: datasource=github-releases depName=goreleaser/goreleaser extractVersion=^v?(?<version>\d.*)$
-"aqua:goreleaser/goreleaser" = "2.17.1" # Go release automation
+"aqua:goreleaser/goreleaser" = "2.18.0" # Go release automation
 {{ end -}}
 {{ if dig "runtimeJava" false . -}}
 java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS

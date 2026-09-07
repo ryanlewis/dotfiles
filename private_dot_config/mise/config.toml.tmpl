@@ -5,7 +5,7 @@
 [tools]
 # Core language runtime — always installed; the dotfiles tooling depends on it
 # (node/npm for biome + the npm-backend tools).
-node = "24.19.0" # LTS (Active LTS until April 2028)
+node = "24.20.0" # LTS (Active LTS until April 2028)
 #
 # bun is intentionally NOT managed here — it's installed by its official
 # installer (run_once_04-install-bun.sh) and self-updates via `bun upgrade`.
@@ -15,39 +15,39 @@ node = "24.19.0" # LTS (Active LTS until April 2028)
 
 # CLI tools via aqua backend (pre-built cross-platform binaries)
 # https://mise.jdx.dev/dev-tools/backends/aqua.html
-"aqua:junegunn/fzf" = "0.74.2"
+"aqua:junegunn/fzf" = "0.74.3"
 "aqua:sharkdp/bat" = "0.26.1"
-"aqua:sharkdp/fd" = "10.4.2"
+"aqua:sharkdp/fd" = "10.5.0"
 {{ if ne .chezmoi.os "darwin" -}}
 "aqua:eza-community/eza" = "0.23.5" # Linux only; macOS uses Homebrew
 {{ end -}}
 "aqua:BurntSushi/ripgrep" = "15.2.0"
 "aqua:ajeetdsouza/zoxide" = "0.10.0"
 "aqua:muesli/duf" = "0.9.1"
-"aqua:bootandy/dust" = "1.2.4"
+"aqua:bootandy/dust" = "1.2.5"
 "aqua:starship/starship" = "1.26.0"
-"aqua:atuinsh/atuin" = "18.18.1"
+"aqua:atuinsh/atuin" = "18.21.0"
 "aqua:dandavison/delta" = "0.19.2"
-"aqua:jesseduffield/lazygit" = "0.63.1"
-"aqua:cli/cli" = "2.97.0" # GitHub CLI (gh)
-"aqua:casey/just" = "1.57.0"
+"aqua:jesseduffield/lazygit" = "0.64.1"
+"aqua:cli/cli" = "2.99.0" # GitHub CLI (gh)
+"aqua:casey/just" = "1.58.0"
 "aqua:charmbracelet/gum" = "0.17.0"
 "aqua:jqlang/jq" = "1.8.2"
-"aqua:kubernetes/kubernetes/kubectl" = "1.36.3"
+"aqua:kubernetes/kubernetes/kubectl" = "1.37.0"
 "aqua:ahmetb/kubectx" = "0.11.0"
 "aqua:ahmetb/kubectx/kubens" = "0.11.0"
-"aqua:astral-sh/uv" = "0.12.1"
+"aqua:astral-sh/uv" = "0.12.9"
 "aqua:common-fate/granted" = "0.38.0" # pinned: v0.39.0 missing from releases.commonfate.io
-"aqua:neovim/neovim" = "0.12.4" # nvim — modal editor
-"aqua:tree-sitter/tree-sitter" = "0.26.11" # nvim-treesitter (main branch) parser compiler
+"aqua:neovim/neovim" = "0.12.5" # nvim — modal editor
+"aqua:tree-sitter/tree-sitter" = "0.27.0" # nvim-treesitter (main branch) parser compiler
 television = "0.15.9" # TUI fuzzy finder (tv)
 
 # CLI tools via npm backend (not in the aqua registry)
 # https://mise.jdx.dev/dev-tools/backends/npm.html
 {{ if dig "toolHunkdiff" false . -}}
-"npm:hunkdiff" = "0.17.7" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
+"npm:hunkdiff" = "0.20.1" # `hunk` — diff viewer/pager (~600 MB, opt-in per machine)
 {{ end -}}
-"npm:cf" = "0.5.0" # Cloudflare CLI
+"npm:cf" = "0.8.0" # Cloudflare CLI
 
 [settings]
 # No lockfile: mise.lock is shared with machine-local tools (conf.d/local.toml),
