@@ -23,15 +23,20 @@ rows = [
 # omitted: with tab-renamer live, tab labels duplicate the session/workspace
 # name, so the default rendered the same string truncated twice per row.
 # Line 2 is the live terminal title — what the agent is doing right now.
+# Line 4 is the $summary metadata token — set by a herdr-team worker or
+# manager via `herdr pane report-metadata <pane> --source <id> --token summary=…`
+# (progress a worker publishes while its scrollback is unreadable). Rows whose
+# token is unset collapse, so agents without a summary render as before.
 [ui.sidebar.agents]
 rows = [
   ["state_icon", "workspace"],
   ["terminal_title_stripped"],
   ["agent", "state_text"],
+  ["$summary"],
 ]
 
 [theme]
-name = "one-dark"
+name = "catppuccin"
 auto_switch = false
 dark_name = "tokyo-night"
 light_name = "tokyo-night-day"
@@ -118,3 +123,6 @@ key = "prefix+space"
 type = "shell"
 command = "herdr plugin pane open --plugin io.rlew.layout --entrypoint picker"
 description = "layout picker"
+
+[experimental]
+kitty_graphics = true
