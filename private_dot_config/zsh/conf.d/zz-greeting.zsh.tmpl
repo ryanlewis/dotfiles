@@ -1,0 +1,274 @@
+{{- if eq .chezmoi.os "darwin" -}}
+# Greeting on interactive shell start — system info.
+# `zz-` prefix so it runs after the env-setting conf.d files.
+#
+# Hot path — avoid forking where zsh has a built-in: $HOST replaces `hostname`,
+# and a single `uptime` capture sliced with parameter expansion replaces a
+# second `uptime` plus `sed`/`awk`. `sw_vers` is cached (see below), so only one
+# `uptime` still forks per start.
+#
+# Linux hosts get the server dashboard in the other branch of this template.
+() {
+    [[ -o interactive ]] || return
+
+    local cyan=$'\e[36m' yellow=$'\e[33m' reset=$'\e[0m'
+    local os_name up uptime_str load
+
+    # sw_vers is a ~5ms fork (endpoint-security scanned) for a value that
+    # only changes on an OS update. Cache it, re-forking only when the system
+    # version plist is newer than the cache (a fork-free `-nt` mtime test).
+    local vfile="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/os-version"
+    local plist=/System/Library/CoreServices/SystemVersion.plist
+    if [[ -s $vfile && ! $plist -nt $vfile ]]; then
+        os_name="macOS $(<$vfile)"
+    else
+        os_name="macOS $(sw_vers -productVersion 2>/dev/null)"
+        print -r -- "${os_name#macOS }" >| $vfile 2>/dev/null
+    fi
+    print -r -- "${cyan}Welcome to $HOST • ${os_name}${reset}"
+
+    up=$(uptime)
+    load=${up##*: }                          # text after the final ": " = load averages
+    uptime_str=${${up#*up }%%,*}             # between "up " and the first comma
+    print -r -- "${yellow}Uptime: ${uptime_str} • Load: ${load}${reset}"
+    print
+}
+{{- else -}}
+# Greeting on interactive shell start — Linux server dashboard.
+# `zz-` prefix so it runs after the env-setting conf.d files.
+#
+# Static facts (OS, kernel, uptime, load, CPU, temperature, memory) are read
+# fork-free from /etc, /proc and /sys. The live reads — `ip`, `df`, `docker ps`
+# (only when the socket is there), `systemctl --failed` — run in parallel in a
+# subshell into a private runtime dir, so the cost is the slowest one (docker,
+# ~90 ms), not the sum. Two sources are too slow to wait for and are served from
+# ~/.cache/zsh with a detached background refresh: the Pi-hole exporter on
+# :9617 (~200 ms a scrape, refreshed at most every 5 min) and the apt pending
+# count (seconds, refreshed at most every 6 h).
+# Inside tmux only the one-line header prints — a new pane isn't a login.
+# `command` prefixes sidestep the repo's aliases (df→duf, grep→rg, …).
+() {
+    [[ -o interactive ]] || return
+    emulate -L zsh
+    setopt extendedglob numericglobsort
+    zmodload zsh/files 2>/dev/null
+
+    local dim=$'\e[90m' bold=$'\e[1m' reset=$'\e[0m'
+    local cyan=$'\e[36m' green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m'
+    local sep=" ${dim}·${reset} "
+    local line os_name= kernel uptime_s uptime_str load i
+    local -a f attn
+
+    # ── static facts ────────────────────────────────────────────────────
+    if [[ -r /etc/os-release ]]; then
+        while IFS= read -r line; do
+            [[ $line == PRETTY_NAME=* ]] && { os_name=${${line#PRETTY_NAME=}//\"/}; break }
+        done < /etc/os-release
+    fi
+    [[ -n $os_name ]] || os_name=Linux
+    kernel=$(</proc/sys/kernel/osrelease)
+    f=( $(</proc/uptime) ); uptime_s=${f[1]%.*}
+    if (( uptime_s >= 86400 )); then
+        uptime_str="$(( uptime_s / 86400 ))d $(( uptime_s % 86400 / 3600 ))h"
+    else
+        uptime_str="$(( uptime_s / 3600 ))h $(( uptime_s % 3600 / 60 ))m"
+    fi
+    f=( $(</proc/loadavg) ); load="${f[1]} ${f[2]} ${f[3]}"
+
+    if [[ -n $TMUX ]]; then
+        print -r -- "${cyan}${bold}${HOST}${reset}${sep}${os_name}${sep}up ${uptime_str}${sep}load ${load}"
+        return
+    fi
+
+    # ── live reads, in parallel ─────────────────────────────────────────
+    # Inside a subshell so the jobs never enter the interactive shell's job
+    # table (no "[1] done" notices, no job count in the prompt).
+    local tmp=${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/zsh-greeting-$$
+    zf_mkdir -p $tmp 2>/dev/null || tmp=
+    if [[ -n $tmp ]]; then
+        (
+            command ip -4 -o addr show scope global >$tmp/ip 2>/dev/null &
+            command df -B1 --output=target,pcent,avail \
+                -x tmpfs -x devtmpfs -x overlay -x squashfs -x vfat -x efivarfs >$tmp/df 2>/dev/null &
+            [[ -S /var/run/docker.sock ]] && (( $+commands[docker] )) &&
+                command docker ps -a --format '{{"{{"}}.Names{{"}}"}}\t{{"{{"}}.State{{"}}"}}\t{{"{{"}}.Status{{"}}"}}' >$tmp/docker 2>/dev/null &
+            (( $+commands[systemctl] )) &&
+                command systemctl --failed --no-legend --plain >$tmp/failed 2>/dev/null &
+            wait
+        )
+    fi
+
+    # Cached, detached refreshes — never waited on. The subshell wrapper makes
+    # the job a grandchild of this shell, outside its job table.
+    local cache=${XDG_CACHE_HOME:-$HOME/.cache}/zsh
+    zf_mkdir -p $cache 2>/dev/null
+    if (( $+commands[curl] )) && [[ -z $cache/pihole-metrics(#qN.mm-5) ]]; then
+        ( { command curl -sf -m 3 http://127.0.0.1:9617/metrics >| $cache/pihole-metrics.tmp \
+            && command mv -f $cache/pihole-metrics.tmp $cache/pihole-metrics } &>/dev/null & )
+    fi
+    if (( $+commands[apt-get] )) && [[ -z $cache/apt-pending(#qN.mh-6) ]]; then
+        ( { command apt-get -s dist-upgrade 2>/dev/null | command grep -c '^Inst' >| $cache/apt-pending.tmp \
+            && command mv -f $cache/apt-pending.tmp $cache/apt-pending } &>/dev/null & )
+    fi
+
+    # ── more static facts ───────────────────────────────────────────────
+    local cpu= temp= z
+    for z in /sys/class/thermal/thermal_zone*(N); do
+        [[ $(<$z/type) == x86_pkg_temp ]] && { temp=$(( $(<$z/temp) / 1000 )); break }
+    done
+    while IFS= read -r line; do
+        [[ $line == model\ name* ]] && { cpu=${${line#*: }//(\(R\)|\(TM\)| CPU)/}; break }
+    done < /proc/cpuinfo
+    local mem_total=0 mem_avail=0 mem_str=
+    while IFS= read -r line; do
+        case $line in
+            MemTotal:*)     f=( ${=line#*:} ); mem_total=${f[1]} ;;
+            MemAvailable:*) f=( ${=line#*:} ); mem_avail=${f[1]}; break ;;
+        esac
+    done < /proc/meminfo
+    (( mem_total )) && printf -v mem_str '%.1fG / %.1fG' \
+        $(( (mem_total - mem_avail) / 1048576.0 )) $(( mem_total / 1048576.0 ))
+
+    local lan= ts= dev addr
+    if [[ -s $tmp/ip ]]; then
+        for line in ${(f)"$(<$tmp/ip)"}; do
+            f=( ${=line} ); dev=${f[2]}; addr=${f[4]%/*}
+            case $dev in
+                tailscale*)                 ts=$addr ;;
+                docker*|br-*|veth*|virbr*)  ;;
+                *)                          [[ -z $lan ]] && lan=$addr ;;
+            esac
+        done
+    fi
+
+    # ── banner ──────────────────────────────────────────────────────────
+    print
+{{- if eq .chezmoi.hostname "betty" }}
+    local -a banner=(
+        '██████╗ ███████╗████████╗████████╗██╗   ██╗'
+        '██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝╚██╗ ██╔╝'
+        '██████╔╝█████╗     ██║      ██║    ╚████╔╝ '
+        '██╔══██╗██╔══╝     ██║      ██║     ╚██╔╝  '
+        '██████╔╝███████╗   ██║      ██║      ██║   '
+        '╚═════╝ ╚══════╝   ╚═╝      ╚═╝      ╚═╝   '
+    )
+    local -a grad=( $'\e[38;5;39m' $'\e[38;5;45m' $'\e[38;5;51m' $'\e[38;5;87m' $'\e[38;5;123m' $'\e[38;5;159m' )
+    for i in {1..${#banner}}; do
+        print -r -- "  ${grad[i]}${banner[i]}${reset}"
+    done
+{{- else -}}
+    print -r -- "  ${cyan}${bold}${(U)HOST}${reset}"
+{{- end }}
+    print
+    print -r -- "  ${os_name}${sep}${kernel}${sep}up ${uptime_str}${sep}load ${load}"
+    line="  ${cpu:-cpu}"
+    if [[ -n $temp ]]; then
+        local tcol=; (( temp >= 85 )) && tcol=$yellow; (( temp >= 95 )) && tcol=$red
+        line+=" ${tcol}${temp}°C${reset}"
+        (( temp >= 95 )) && attn+=( "cpu package at ${temp}°C" )
+    fi
+    [[ -n $mem_str ]] && line+="${sep}mem ${mem_str}"
+    [[ -n $lan ]]     && line+="${sep}lan ${lan}"
+    [[ -n $ts ]]      && line+="${sep}tailnet ${ts}"
+    print -r -- "$line"
+    print
+
+    # ── disks ───────────────────────────────────────────────────────────
+    local -a targets pcts avails
+    local w=0 pct filled bar col avail_h
+    if [[ -s $tmp/df ]]; then
+        for line in ${(f)"$(<$tmp/df)"}; do
+            f=( ${=line} )
+            [[ ${f[1]} == /* ]] || continue                      # header row
+            [[ ${f[1]} == (/boot|/snap|/var/lib/docker)* ]] && continue
+            targets+=( ${f[1]} ); pcts+=( ${f[2]%\%} ); avails+=( ${f[3]} )
+            (( ${#f[1]} > w )) && w=${#f[1]}
+        done
+    fi
+    for i in {1..${#targets}}; do
+        pct=${pcts[i]}
+        (( filled = (pct * 20 + 50) / 100 ))
+        bar="${(l:filled::█:):-}${(l:$(( 20 - filled ))::░:):-}"
+        col=$green; (( pct >= 75 )) && col=$yellow; (( pct >= 90 )) && col=$red
+        (( pct >= 90 )) && attn+=( "${targets[i]} is ${pct}% full" )
+        if (( avails[i] >= 1099511627776 )); then printf -v avail_h '%.1fT' $(( avails[i] / 1099511627776.0 ))
+        elif (( avails[i] >= 1073741824 )); then printf -v avail_h '%.0fG' $(( avails[i] / 1073741824.0 ))
+        else printf -v avail_h '%.0fM' $(( avails[i] / 1048576.0 )); fi
+        printf -v line '  %s%-7s%s %-*s  %s%s%s %3d%%  %s free' \
+            "$dim" "${${(M)i:#1}:+disk}" "$reset" $w "${targets[i]}" "$col" "$bar" "$reset" $pct "$avail_h"
+        print -r -- "$line"
+    done
+
+    # ── docker ──────────────────────────────────────────────────────────
+    if [[ -s $tmp/docker ]]; then
+        local total=0 running=0
+        local -a issues
+        for line in ${(f)"$(<$tmp/docker)"}; do
+            f=( ${(ps:\t:)line} )
+            (( total++ ))
+            if [[ ${f[2]} == running ]]; then
+                (( running++ ))
+                [[ ${f[3]} == *unhealthy* ]] && issues+=( "${f[1]} unhealthy" )
+            else
+                issues+=( "${f[1]} ${f[2]}" )
+            fi
+        done
+        col=$green; (( ${#issues} )) && col=$yellow
+        line="  ${dim}docker ${reset} ${col}${running}/${total} running${reset}"
+        (( ${#issues} )) && line+="${sep}${(j: · :)issues}"
+        print -r -- "$line"
+    fi
+
+    # ── pi-hole (cached pihole-exporter scrape) ─────────────────────────
+    if [[ -s $cache/pihole-metrics ]]; then
+        local q= blk= dom= st=
+        for line in ${(f)"$(<$cache/pihole-metrics)"}; do
+            case $line in
+                pihole_dns_queries_today*)     q=${line##* } ;;
+                pihole_ads_percentage_today*)  blk=${line##* } ;;
+                pihole_domains_being_blocked*) dom=${line##* } ;;
+                pihole_status*)                st=${line##* } ;;
+            esac
+        done
+        if [[ -n $q ]]; then
+            local q_h dom_h
+            printf -v q_h '%.1fk' $(( q / 1000.0 ))
+            printf -v dom_h '%.1fk' $(( dom / 1000.0 ))
+            printf -v line '  %spihole %s %s queries today%s%.1f%% blocked%s%s domains on the blocklist' \
+                "$dim" "$reset" "$q_h" "$sep" $blk "$sep" "$dom_h"
+            print -r -- "$line"
+            [[ $st == 0* ]] && attn+=( "pi-hole reports itself down" )
+        fi
+    fi
+
+    # ── needs attention ─────────────────────────────────────────────────
+    local -a kern=( /boot/vmlinuz-*(N) )                     # numericglobsort → newest last
+    local newest=${kern[-1]#/boot/vmlinuz-}
+    if [[ -n $newest && $newest != $kernel ]]; then
+        attn+=( "reboot required (${newest} installed, ${kernel} running)" )
+    elif [[ -f /var/run/reboot-required ]]; then
+        attn+=( "reboot required" )
+    fi
+
+    if [[ -s $tmp/failed ]]; then
+        local -a failed
+        for line in ${(f)"$(<$tmp/failed)"}; do
+            f=( ${=line} ); failed+=( ${f[1]} )
+        done
+        (( ${#failed} )) && attn+=( "failed units: ${(j:, :)failed}" )
+    fi
+
+    [[ -s $cache/apt-pending ]] && (( $(<$cache/apt-pending) > 0 )) &&
+        attn+=( "$(<$cache/apt-pending) apt updates pending" )
+
+    print
+    if (( ${#attn} )); then
+        for line in $attn; do print -r -- "  ${yellow}!  ${line}${reset}"; done
+    else
+        print -r -- "  ${dim}✓  nothing needs attention${reset}"
+    fi
+    print
+
+    [[ -n $tmp ]] && zf_rm -rf $tmp 2>/dev/null
+}
+{{- end }}

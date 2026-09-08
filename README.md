@@ -371,7 +371,7 @@ Zsh is the login shell (the provisioning script recommends it on fresh machines;
 - `~/.zshenv` — PATH/environment for all shells (the non-interactive half).
 - `~/.zshrc` — interactive config: vi mode, completions, abbreviations, tool inits (mise, zoxide, fzf, atuin, starship, broot), aliases, and the MOTD/greeting.
 - `~/.config/zsh/functions/*.zsh` — one function per file (`mkcd`, `extract`, `fcd`, `fgit`, `crpr`, `tools`, …).
-- `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD.
+- `~/.config/zsh/conf.d/*.zsh` — fzf options, macOS extras, greeting, and MOTD. The greeting is a template: macOS gets a two-line welcome; Linux hosts get a server dashboard (banner, kernel/uptime/load, CPU temp, memory, LAN + tailnet IPs, disk bars, docker container health, Pi-hole stats, and a needs-attention list: pending reboot, failed units, apt updates). Live reads run in parallel; the slow ones (Pi-hole exporter, apt count) are cached in `~/.cache/zsh` and refreshed in the background. Inside tmux only the one-line header prints.
 - `~/.config/zsh/completions/` — completion functions generated at apply time (currently `_rg` for ripgrep; mise/aqua binaries don't ship completion files the way brew does). On `fpath`, autoloaded by compinit — zero startup cost.
 
 The prompt (starship) and history (atuin) round out the setup.
