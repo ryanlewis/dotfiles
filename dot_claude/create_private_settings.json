@@ -47,7 +47,8 @@
       "Bash(gh workflow view:*)",
       "Bash(gh release list:*)",
       "Bash(gh release view:*)",
-      "Bash(gh api:*)",
+      "Bash(gh api -X GET:*)",
+      "Bash(gh api --method GET:*)",
       "Bash(gh auth status:*)",
       "Bash(gh search:*)",
       "Bash(gh label list:*)",
@@ -97,9 +98,6 @@
       "Bash(type:*)",
       "Bash(echo:*)",
       "Bash(printf:*)",
-      "Bash(node:*)",
-      "Bash(npx:*)",
-      "Bash(npm run:*)",
       "Bash(npm test:*)",
       "Bash(npm run test:*)",
       "Bash(npm run lint:*)",
@@ -123,9 +121,7 @@
       "Bash(yarn:*)",
       "Bash(pnpm:*)",
       "Bash(bun:*)",
-      "Bash(bunx:*)",
       "Bash(tsc:*)",
-      "Bash(tsx:*)",
       "Bash(ts-node:*)",
       "Bash(eslint:*)",
       "Bash(prettier:*)",
@@ -152,8 +148,6 @@
       "Bash(jmap:*)",
       "Bash(jcmd:*)",
       "Bash(jinfo:*)",
-      "Bash(python:*)",
-      "Bash(python3:*)",
       "Bash(pip:*)",
       "Bash(pip3:*)",
       "Bash(pip install:*)",
@@ -231,7 +225,6 @@
       "Bash(helm status:*)",
       "Bash(helm get:*)",
       "Bash(helm show:*)",
-      "Bash(env:*)",
       "Bash(printenv:*)",
       "Bash(date:*)",
       "Bash(cal:*)",
@@ -277,21 +270,27 @@
       "Bash(* | sed:*)",
       "Bash(* | cut:*)",
       "Bash(* | tr:*)",
-      "Bash(* | tee:*)",
-      "Bash(* | xargs:*)",
       "Bash(* | less:*)",
       "Read",
       "Edit",
-      "MultiEdit",
       "Write",
       "Glob",
       "Grep",
-      "LS",
       "WebFetch",
       "WebSearch",
-      "TodoRead",
-      "TodoWrite",
-      "Task"
+      "Bash(go mod:*)",
+      "Bash(go build:*)",
+      "Bash(golangci-lint version:*)",
+      "Bash(golangci-lint config:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(make lint:*)",
+      "Bash(make build:*)",
+      "Bash(gofmt -w internal/model/model_test.go)",
+      "Bash(go test *)",
+      "Bash(gofmt *)",
+      "Bash(go tool *)",
+      "Bash(make clean *)",
+      "Bash(hunk session:*)"
     ],
     "deny": [
       "Bash(rm -rf /*)",
@@ -299,8 +298,34 @@
       "Bash(rm -rf ./*)",
       "Bash(rm -r /*)",
       "Bash(rm -r ~/*)",
-      "Bash(rm -f /*)",
       "Bash(rm -f ~/*)",
+      "Bash(rm ~/*)",
+      "Bash(rm -* /etc*)",
+      "Bash(rm /etc*)",
+      "Bash(rm -* /usr*)",
+      "Bash(rm /usr*)",
+      "Bash(rm -* /bin*)",
+      "Bash(rm /bin*)",
+      "Bash(rm -* /sbin*)",
+      "Bash(rm /sbin*)",
+      "Bash(rm -* /lib*)",
+      "Bash(rm /lib*)",
+      "Bash(rm -* /boot*)",
+      "Bash(rm /boot*)",
+      "Bash(rm -* /var*)",
+      "Bash(rm /var*)",
+      "Bash(rm -* /dev*)",
+      "Bash(rm /dev*)",
+      "Bash(rm -* /sys*)",
+      "Bash(rm /sys*)",
+      "Bash(rm -* /proc*)",
+      "Bash(rm /proc*)",
+      "Bash(rm -* /System*)",
+      "Bash(rm /System*)",
+      "Bash(rm -* /Library*)",
+      "Bash(rm /Library*)",
+      "Bash(rm -* /Users*)",
+      "Bash(rm /Users*)",
       "Bash(shred:*)",
       "Bash(find * -delete)",
       "Bash(find * -exec rm:*)",
@@ -350,7 +375,6 @@
       "Bash(git clean -f:*)",
       "Bash(git clean -fd:*)",
       "Bash(git clean -fdx:*)",
-      "Bash(git branch -D:*)",
       "Bash(git reflog expire:*)",
       "Bash(npm publish:*)",
       "Bash(yarn publish:*)",
@@ -373,15 +397,85 @@
       "Read(**/.kube/config)",
       "Read(**/.docker/config.json)",
       "Read(**/.gnupg/**)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "fable",
+  "skillOverrides": {
+    "supacode-cli": "off",
+    "vct-autoresearch": "off"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/ryan/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/gh-merge-guard.sh",
+            "timeout": 10
+          }
+        ]
+      }
     ]
+  },
+  "worktree": {
+    "baseRef": "fresh"
   },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh",
     "padding": 0
   },
-  "enabledPlugins": {},
-  "extraKnownMarketplaces": {},
+  "enabledPlugins": {
+    "agent-sdk-dev@claude-plugins-official": false,
+    "claude-code-setup@claude-plugins-official": false,
+    "claude-md-management@claude-plugins-official": false,
+    "context7@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "kotlin-lsp@claude-plugins-official": false,
+    "last30days@last30days-skill": true,
+    "plugin-dev@claude-plugins-official": false,
+    "pr-review-toolkit@claude-plugins-official": false,
+    "rust-analyzer-lsp@claude-plugins-official": false,
+    "skill-creator@claude-plugins-official": false,
+    "swift-lsp@claude-plugins-official": false,
+    "typescript-lsp@claude-plugins-official": false,
+    "codex@openai-codex": true,
+    "worktrunk@worktrunk": true
+  },
+  "extraKnownMarketplaces": {
+    "last30days-skill": {
+      "source": {
+        "source": "github",
+        "repo": "mvanhorn/last30days-skill"
+      }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    },
+    "worktrunk": {
+      "source": {
+        "source": "github",
+        "repo": "max-sixty/worktrunk"
+      }
+    }
+  },
   "sandbox": {
     "enabled": false,
     "filesystem": {
@@ -407,9 +501,24 @@
     "excludedCommands": [
       "docker"
     ],
-    "autoAllow": true
+    "autoAllowBashIfSandboxed": true
   },
-  "alwaysThinkingEnabled": true,
+  "syntaxHighlightingDisabled": false,
   "effortLevel": "high",
+  "tui": "fullscreen",
+  "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "editorMode": "vim",
+  "verbose": false,
+  "preferredNotifChannel": "auto",
+  "autoCompactEnabled": true,
+  "terminalProgressBarEnabled": true,
+  "teammateMode": "auto",
+  "remoteControlAtStartup": true,
+  "inputNeededNotifEnabled": true,
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "useAutoModeDuringPlan": true,
   "voiceEnabled": true
 }
