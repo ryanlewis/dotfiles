@@ -29,5 +29,6 @@ go = "1.26.8" # Latest stable
 java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS
 {{ end -}}
 {{ if dig "runtimePython" false . -}}
-python = "miniconda3-latest" # Pre-compiled Python via Miniconda
+# renovate: datasource=python-version depName=python
+python = "3.14" # Pre-compiled CPython; explicit pin, not a floating latest
 {{ end -}}
