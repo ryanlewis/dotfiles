@@ -54,6 +54,8 @@ Tools come from two places — keep both in sync when adding/removing a tool:
 
 Machine-local-only tools (e.g. `codex`, `sf`) live in the **unmanaged** `~/.config/mise/conf.d/local.toml`, deliberately kept out of this repo.
 
+**Always pass `--path` when adding a tool with mise.** A bare `mise use -g <tool>` writes into `~/.config/mise/config.toml`, which chezmoi manages, so mise and chezmoi then take turns overwriting each other: `mise upgrade` bumps a pin, the next `chezmoi apply` silently rolls it back, and anything mise added that the template lacks is deleted outright. Add machine-local tools with `mise use --path ~/.config/mise/conf.d/local.toml <tool>@<version>`. Version bumps to the managed pins belong in the template (or to Renovate), never to `mise upgrade`.
+
 ### Shell layout (Zsh)
 Zsh is the only managed shell. When adding a tool alias, shell function, or `tools` cheat-sheet entry, keep the install source, `test.sh`, README, and the `tools` cheat-sheet in sync. The repo-local `extend-dotfiles` skill encodes the full checklist — use it.
 
