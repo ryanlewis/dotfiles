@@ -184,6 +184,7 @@ check_zsh_function yank
 check_zsh_function cn
 check_zsh_function crpr
 check_zsh_function slugify
+check_zsh_function ask
 check_zsh_function tools
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then

@@ -113,6 +113,7 @@ This configuration includes several useful Zsh functions:
 - `mise-setup` - Show configured mise tools and install hints
 - `mise-install-latest` - Install latest stable versions of all tools
 - `mise-update` - Update mise and all plugins
+- `ask <question>` - One-shot question to Claude, answer straight to stdout (`askh` for Haiku, `asko` for Opus, `-w` to allow web search)
 
 #### Clipboard Function: yank
 
