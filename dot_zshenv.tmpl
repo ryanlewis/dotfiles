@@ -25,15 +25,22 @@ export PATH
 
 {{- if eq .chezmoi.os "darwin" }}
 
-# 1Password SSH agent — the private keys live there (~/.ssh holds only .pub
-# stubs), and git's SSH signing honours SSH_AUTH_SOCK, not ssh_config's
-# IdentityAgent. Replace only Apple's default launchd agent so a forwarded
+# SSH agent — private keys never live in ~/.ssh (only .pub stubs). Prefer
+# Secretive (Secure Enclave key, no auth prompt, no lock state — migrated
+# 2026-09-17), fall back to the 1Password agent. git's SSH signing honours
+# SSH_AUTH_SOCK, not ssh_config's IdentityAgent, so this is what makes
+# signing work. Replace only Apple's default launchd agent so a forwarded
 # agent from an inbound ssh session still wins.
+_se_agent="$HOME/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"
 _1p_agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-if [[ -S $_1p_agent && ( -z ${SSH_AUTH_SOCK-} || $SSH_AUTH_SOCK == *com.apple.launchd* ) ]]; then
-  export SSH_AUTH_SOCK=$_1p_agent
+if [[ -z ${SSH_AUTH_SOCK-} || $SSH_AUTH_SOCK == *com.apple.launchd* ]]; then
+  if [[ -S $_se_agent ]]; then
+    export SSH_AUTH_SOCK=$_se_agent
+  elif [[ -S $_1p_agent ]]; then
+    export SSH_AUTH_SOCK=$_1p_agent
+  fi
 fi
-unset _1p_agent
+unset _se_agent _1p_agent
 {{- else }}
 
 # 1Password SSH agent (Linux desktop socket). Only used when no agent is

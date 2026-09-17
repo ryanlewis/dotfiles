@@ -1,20 +1,33 @@
 [user]
     name = {{ .name | default (env "CHEZMOI_USER_NAME") | default "Your Name" }}
     email = {{ .email | default (env "CHEZMOI_USER_EMAIL") | default "your.email@example.com" }}
-{{- if stat (joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub") }}
-    signingkey = {{ joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub" }}
+{{- /* Signing key: prefer a Secretive (Secure Enclave) key when the machine
+       has one — ~/.ssh/secretive.pub is the exported public half — otherwise
+       the 1Password-held ed25519 key. */}}
+{{- $sePub := joinPath .chezmoi.homeDir ".ssh/secretive.pub" }}
+{{- $opPub := joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub" }}
+{{- $signKey := "" }}
+{{- if stat $sePub }}
+{{-   $signKey = $sePub }}
+{{- else if stat $opPub }}
+{{-   $signKey = $opPub }}
+{{- end }}
+{{- if $signKey }}
+    signingkey = {{ $signKey }}
 {{- end }}
 
-{{- if stat (joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub") }}
+{{- if $signKey }}
 
 [gpg]
     format = ssh
 
-{{- /* Sign via the 1Password app when it's installed (no agent socket needed);
-       machines without it (remote servers/VMs) fall back to ssh-keygen +
-       SSH_AUTH_SOCK, wired in dot_zshenv.tmpl. */}}
+{{- /* With a Secretive key, sign with plain ssh-keygen over SSH_AUTH_SOCK
+       (wired in dot_zshenv.tmpl). Otherwise sign via the 1Password app when
+       it's installed (no agent socket needed); machines without it (remote
+       servers/VMs) fall back to ssh-keygen + SSH_AUTH_SOCK. */}}
 {{- $opSign := "" }}
-{{- if stat "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
+{{- if stat $sePub }}
+{{- else if stat "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
 {{-   $opSign = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign" }}
 {{- else if stat "/opt/1Password/op-ssh-sign" }}
 {{-   $opSign = "/opt/1Password/op-ssh-sign" }}
