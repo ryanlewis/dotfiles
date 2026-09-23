@@ -37,7 +37,7 @@ rows = [
 ]
 
 [theme]
-name = "catppuccin"
+name = "nord"
 auto_switch = false
 dark_name = "tokyo-night"
 light_name = "tokyo-night-day"
