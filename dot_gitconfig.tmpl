@@ -51,7 +51,7 @@
 {{- end }}
 
 [core]
-    editor = {{ if lookPath "hx" }}hx{{ else if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
+    editor = {{ if lookPath "nvim" }}nvim{{ else if lookPath "vim" }}vim{{ else }}vi{{ end }}
 {{- if lookPath "delta" }}
     pager = delta
 {{- end }}

@@ -31,6 +31,9 @@
 # errored on every startup, and cost ~16ms. Drop the cloned plugin tree.
 .config/zsh/plugins/zsh-abbr
 
+# helix dropped (September 2026): no longer used; nvim is the editor.
+.config/helix
+
 # NOTE: orphaned repo-meta files (Dockerfile, install.sh, etc.) cannot be
 # purged here — they are listed in .chezmoiignore, and chezmoi never removes
 # ignored targets. They are cleaned up by run_once_before_purge-orphaned-

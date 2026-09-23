@@ -7,7 +7,6 @@
 #   - broot (not in aqua registry)
 #   - tldr/tealdeer (tlrc available but different implementation)
 #   - pinentry (passphrase prompt for gpg-agent)
-#   - helix (modal editor; from the OS package manager)
 #   - md-tui (markdown viewer TUI; not in aqua registry)
 #   - worktrunk, biome, eza (macOS), ktlint (macOS)
 #
@@ -224,28 +223,6 @@ if ! command -v pinentry &> /dev/null; then
     fi
 fi
 {{ end -}}
-
-# Install helix (modal editor; $EDITOR resolves to hx when present)
-if ! command -v hx &> /dev/null; then
-    echo "✏️  Installing helix..."
-    {{ if eq .chezmoi.os "darwin" -}}
-    brew install helix
-    {{ else if eq .chezmoi.os "linux" -}}
-    if command -v apt &> /dev/null; then
-        # helix is absent from older Ubuntu base repos (e.g. 24.04); pull in the
-        # maintained PPA when the package isn't already available, then install.
-        if ! apt-cache show helix &> /dev/null; then
-            sudo add-apt-repository -y ppa:maveonair/helix-editor 2>/dev/null || true
-            sudo apt-get update -qq || true
-        fi
-        sudo apt-get install -y -qq helix || echo "⚠️  helix unavailable via apt, skipping"
-    elif command -v dnf &> /dev/null; then
-        sudo dnf install -y helix
-    elif command -v pacman &> /dev/null; then
-        sudo pacman -S --noconfirm helix
-    fi
-    {{ end -}}
-fi
 
 # Install worktrunk (git worktree manager)
 # macOS: Homebrew. Linux: cargo (no upstream Homebrew bottle we want to rely on;

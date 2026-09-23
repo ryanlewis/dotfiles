@@ -85,7 +85,7 @@
     {{- end }}
 
 [edit]
-    command = {{ if lookPath "hx" }}"hx"{{ else if lookPath "nvim" }}"nvim"{{ else if lookPath "vim" }}"vim"{{ else }}"vi"{{ end }}
+    command = {{ if lookPath "nvim" }}"nvim"{{ else if lookPath "vim" }}"vim"{{ else }}"vi"{{ end }}
 
 [git]
     autoCommit = false

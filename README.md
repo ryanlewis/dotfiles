@@ -217,8 +217,6 @@ This configuration includes a comprehensive suite of modern CLI tools:
 - **[uv](https://github.com/astral-sh/uv)** - Fast Python package/project manager
 - **[Neovim](https://neovim.io/)** - Hyperextensible modal editor; resolved as `$EDITOR`
   - Launched via `nvim` (also aliased to `vim`); personal config lives in `~/.config/nvim`
-- **[helix](https://helix-editor.com/)** - Modal editor with LSP built in
-  - Launched via `hx`; kept as a fallback editor
 - **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter/formatter (macOS only)
 - **[md-tui](https://github.com/henriklovhaug/md-tui)** - Markdown viewer (TUI)
   - Render and browse markdown in the terminal; launched via `mdt`
@@ -298,8 +296,8 @@ Java, Python/Miniconda** — are off by default and opted into per machine:
 - AWS tools: granted (`assume`)
 - Fuzzy finder TUI: television (`tv`, via a mise plugin)
 
-Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, helix,
-md-tui, worktrunk, biome, and macOS-only eza/ktlint) are installed by
+Tools outside the aqua registry (btop, httpie, broot, tldr, pinentry, md-tui,
+worktrunk, biome, and macOS-only eza/ktlint) are installed by
 `.chezmoiscripts/run_onchange_after_05-install-tools.sh.tmpl`.
 
 > The exact tool list and versions track `private_dot_config/mise/config.toml.tmpl`, which is the source of truth.
@@ -410,7 +408,7 @@ chezmoi source/
 ├── private_dot_config/
 │   ├── zsh/                        # functions/, conf.d/
 │   ├── mise/                       # mise config (tool + runtime source of truth)
-│   ├── ghostty/ helix/ lazygit/    # per-tool configs
+│   ├── ghostty/ lazygit/           # per-tool configs
 │   ├── starship.toml.tmpl          # shared prompt
 │   └── herdr/ worktrunk/           # herdr (multiplexer) and worktrunk configs
 ├── private_dot_gnupg/              # gpg-agent config
