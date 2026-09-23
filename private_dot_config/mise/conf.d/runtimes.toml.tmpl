@@ -32,3 +32,10 @@ java = "temurin-21.0.10+7.0.LTS" # Eclipse Temurin 21 LTS
 # renovate: datasource=python-version depName=python
 python = "3.14" # Pre-compiled CPython; explicit pin, not a floating latest
 {{ end -}}
+{{ if dig "runtimeGo" false . }}
+[env]
+# mise points GOBIN at the versioned install dir, so `go install` binaries
+# vanish on a Go upgrade and anything that recorded their path (a launchd
+# agent, say) breaks. Keep them in one fixed dir that is on PATH.
+GOBIN = "{{ "{{" }}env.HOME{{ "}}" }}/.local/bin"
+{{ end -}}
