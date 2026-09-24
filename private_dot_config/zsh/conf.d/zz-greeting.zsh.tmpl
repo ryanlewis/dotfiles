@@ -44,7 +44,7 @@
 # ~90 ms), not the sum. Two sources are too slow to wait for and are served from
 # ~/.cache/zsh with a detached background refresh: the Pi-hole exporter on
 # :9617 (~200 ms a scrape, refreshed at most every 5 min) and the apt pending
-# count (seconds, refreshed at most every 6 h).
+# count (seconds, refreshed every 6 h or after any dpkg change).
 # Inside tmux only the one-line header prints — a new pane isn't a login.
 # `command` prefixes sidestep the repo's aliases (df→duf, grep→rg, …).
 () {
@@ -106,9 +106,13 @@
         ( { command curl -sf -m 3 http://127.0.0.1:9617/metrics >| $cache/pihole-metrics.tmp \
             && command mv -f $cache/pihole-metrics.tmp $cache/pihole-metrics } &>/dev/null & )
     fi
-    if (( $+commands[apt-get] )) && [[ -z $cache/apt-pending(#qN.mh-6) ]]; then
-        ( { command apt-get -s dist-upgrade 2>/dev/null | command grep -c '^Inst' >| $cache/apt-pending.tmp \
-            && command mv -f $cache/apt-pending.tmp $cache/apt-pending } &>/dev/null & )
+    # Also refresh when dpkg's status is newer than the cache, so an upgrade
+    # clears the count at the next login instead of up to 6 h later. `grep -c`
+    # exits 1 on zero matches, hence `;` not `&&` before the mv.
+    if (( $+commands[apt-get] )) && { [[ -z $cache/apt-pending(#qN.mh-6) ]] ||
+            [[ /var/lib/dpkg/status -nt $cache/apt-pending ]] }; then
+        ( { command apt-get -s dist-upgrade 2>/dev/null | command grep -c '^Inst' >| $cache/apt-pending.tmp
+            command mv -f $cache/apt-pending.tmp $cache/apt-pending } &>/dev/null & )
     fi
 
     # ── more static facts ───────────────────────────────────────────────
