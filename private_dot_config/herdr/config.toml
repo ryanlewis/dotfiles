@@ -10,18 +10,21 @@ status_indicators = "symbols"
 # Workspace rows: line 2 is $dir — the root pane's directory, reported by the
 # Workspace Renamer plugin (io.rlew.workspace-renamer) for workspaces it has
 # renamed, since a session-named label no longer says where you are. Line 3
-# keeps the git info from the default layout. Workspaces without the token
-# collapse the $dir line and render as before.
+# is $session — the agent's session name, reported by the same plugin for
+# workspaces you named yourself. A workspace shows at most one of the two.
+# Line 4 keeps the git info from the default layout. Workspaces without
+# either token collapse those lines and render as before.
 [ui.sidebar.spaces]
 rows = [
   ["state_icon", "workspace"],
   ["$dir"],
+  ["$session"],
   ["branch", "git_status"],
 ]
 
 # Agent rows: one fact per line, replacing the cramped default
 # ([state_icon, workspace, tab] / [agent]). The tab token is deliberately
-# omitted: with tab-renamer live, tab labels duplicate the session/workspace
+# omitted: with herdr-auto-title live, tab labels duplicate the session/workspace
 # name, so the default rendered the same string truncated twice per row.
 # Line 2 is the live terminal title — what the agent is doing right now.
 # Line 4 is the $summary metadata token — set by a herdr-team worker or
