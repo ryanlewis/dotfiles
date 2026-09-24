@@ -10,7 +10,7 @@
     IFS= read -r current_dir
     IFS= read -r used_pct
     IFS= read -r worktree_name
-    IFS= read -r worktree_branch
+    IFS= read -r git_worktree
     IFS= read -r effort_level
     IFS= read -r fast_mode
     IFS= read -r week_pct
@@ -21,13 +21,14 @@
     IFS= read -r pr_state
     IFS= read -r cache_observed
     IFS= read -r cache_expires
+    IFS= read -r now
 } < <(
     jq -r '
         .model.display_name,
         .workspace.current_dir,
         (.context_window.used_percentage // ""),
         (.worktree.name // ""),
-        (.worktree.branch // ""),
+        (.workspace.git_worktree // ""),
         (.effort.level // ""),
         (.fast_mode // false),
         (.rate_limits.seven_day.used_percentage // ""),
@@ -37,20 +38,22 @@
         (.pr.number // ""),
         (.pr.review_state // ""),
         (.prompt_cache.caching_observed // false),
-        (.prompt_cache.expires_at // "")
+        (.prompt_cache.expires_at // ""),
+        (now | floor)
     ' </dev/stdin
 )
 
 # Shorten model name: "Opus 4.6 (1M context)" → "Opus 4.6 (1M)"
 model_name="${model_name/ context)/)}"
 
-# Path truncation using bash builtins
+# Path truncation using bash builtins. Sets REPLY rather than printing, so
+# callers don't pay for a subshell.
 truncate_path() {
     local p="$1"
     local dev_prefix="$HOME/dev/"
     if [[ "$p" == "$dev_prefix"* ]]; then
         # Under ~/dev → strip the prefix
-        printf '%s' "${p#$dev_prefix}"
+        REPLY="${p#$dev_prefix}"
     else
         # Not under ~/dev — replace $HOME with ~ and truncate
         p="${p/#$HOME/~}"
@@ -62,52 +65,56 @@ truncate_path() {
             local head="${p##*/}"
             p="…/${head}/${mid}/${tail}"
         fi
-        printf '%s' "$p"
+        REPLY="$p"
     fi
 }
 
-truncated_dir=$(truncate_path "$current_dir")
+truncate_path "$current_dir"
+truncated_dir="$REPLY"
 
-# Git information (branch + status), skipping optional locks
+# Git information. One `status --porcelain=v2 --branch` call gives the branch,
+# ahead/behind and file states; it fails outside a repo, leaving all empty.
 git_branch=""
 git_status_str=""
 git_worktree_label=""
-if git -C "$current_dir" -c core.checkStat=minimal rev-parse --is-inside-work-tree --no-optional-locks >/dev/null 2>&1; then
-    git_branch=$(git -C "$current_dir" --no-optional-locks branch --show-current 2>/dev/null)
+staged="" unstaged="" untracked="" deleted="" conflicted="" ahead=0 behind=0
+while IFS= read -r line; do
+    case "$line" in
+        "# branch.head "*) git_branch="${line#\# branch.head }" ;;
+        "# branch.ab "*)
+            read -r _ _ ahead behind <<< "$line"
+            ahead="${ahead#+}" behind="${behind#-}" ;;
+        "#"*) ;;
+        "? "*) untracked="?" ;;
+        "u "*) conflicted="=" ;;
+        [12]" "*)
+            xy="${line:2:2}"
+            [[ "${xy:0:1}" != "." ]] && staged="+"
+            [[ "${xy:1:1}" == [MD] ]] && unstaged="!"
+            [[ "$xy" == *D* ]] && deleted="✘" ;;
+    esac
+done < <(git -C "$current_dir" --no-optional-locks status --porcelain=v2 --branch 2>/dev/null)
 
-    # Detect linked worktree — single rev-parse call for both values
-    read -r git_dir git_common_dir < <(
-        git -C "$current_dir" --no-optional-locks rev-parse --git-dir --git-common-dir 2>/dev/null | tr '\n' ' '
-    )
-    if [[ -n "$git_dir" && -n "$git_common_dir" && "$git_dir" != "$git_common_dir" ]]; then
-        if [[ -n "$worktree_name" ]]; then
-            git_worktree_label="$worktree_name"
-        else
-            worktree_path=$(git -C "$current_dir" --no-optional-locks rev-parse --show-toplevel 2>/dev/null)
-            git_worktree_label="${worktree_path##*/}"
-        fi
+# Detached HEAD reports "(detached)"; show nothing, as before
+[[ "$git_branch" == "(detached)" ]] && git_branch=""
 
-        # Show the main project directory instead of the worktree path
-        truncated_dir=$(truncate_path "${git_common_dir%/.git}")
-    fi
-
-    # Build compact status flags using bash pattern matching (no grep forks)
-    status_flags=""
-    git_status_output=$(git -C "$current_dir" --no-optional-locks status --porcelain 2>/dev/null)
-    if [[ -n "$git_status_output" ]]; then
-        [[ "$git_status_output" =~ ^[MARCDT] ]] && status_flags+="+"
-        [[ "$git_status_output" =~ $'\n'.[MD] || "$git_status_output" =~ ^.[MD] ]] && status_flags+="!"
-        [[ "$git_status_output" =~ ^\?\? || "$git_status_output" =~ $'\n'\?\? ]] && status_flags+="?"
-        [[ "$git_status_output" =~ ^.D || "$git_status_output" =~ ^D || "$git_status_output" =~ $'\n'.D || "$git_status_output" =~ $'\n'D ]] && status_flags+="✘"
-    fi
-
-    # Ahead/behind upstream — parse with bash read instead of awk
-    if read -r behind ahead < <(git -C "$current_dir" --no-optional-locks rev-list --left-right --count "@{upstream}...HEAD" 2>/dev/null); then
-        (( ahead > 0 )) && status_flags+="⇡${ahead}"
-        (( behind > 0 )) && status_flags+="⇣${behind}"
-    fi
-
+if [[ -n "$git_branch" ]]; then
+    status_flags="${conflicted}${staged}${unstaged}${untracked}${deleted}"
+    (( ahead > 0 )) && status_flags+="⇡${ahead}"
+    (( behind > 0 )) && status_flags+="⇣${behind}"
     [[ -n "$status_flags" ]] && git_status_str="[${status_flags}]"
+
+    # Linked worktree — Claude Code names it in the payload, so git is only
+    # asked for the main checkout's path when we're actually in one
+    if [[ -n "$git_worktree" ]]; then
+        git_worktree_label="${worktree_name:-$git_worktree}"
+        git_common_dir=$(git -C "$current_dir" --no-optional-locks rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+        # Show the main project directory instead of the worktree path
+        if [[ -n "$git_common_dir" ]]; then
+            truncate_path "${git_common_dir%/.git}"
+            truncated_dir="$REPLY"
+        fi
+    fi
 fi
 
 # Context window usage indicator
@@ -120,8 +127,9 @@ fi
 # Build the status line with colours matching Starship theme. Rendered over two
 # rows (Claude Code shows one terminal line per output line):
 #   line 1 — directory (bold cyan), branch (bold purple), worktree (bold
-#            yellow), git status (bold red)
-#   line 2 — model (normal white), effort, context + weekly usage (bold yellow)
+#            yellow), git status (bold red), open PR
+#   line 2 — model (normal white), fast mode, effort, context, usage limits,
+#            session cost, prompt cache
 
 line1="\033[1;36m ${truncated_dir}\033[0m"
 
@@ -189,24 +197,22 @@ fi
 #   none                — enterprise/API with no limits exposed
 # All are absent before the first API response of a session, and each window
 # is dropped once its reset time passes.
-limit_colour() {
-    if   (( $1 < 50 )); then printf '1;32'        # green
-    elif (( $1 < 75 )); then printf '1;33'        # yellow
-    elif (( $1 < 90 )); then printf '1;38;5;208'  # orange
-    else                     printf '1;31'        # red
-    fi
-}
 
-# limit_segment <icon> <pct>
+# limit_segment <icon> <pct> — appends a pill to line2
 limit_segment() {
-    local pct
+    local pct colour
     printf -v pct "%.0f" "$2"
-    printf '  \\033[%sm%s %s%%\\033[0m' "$(limit_colour "$pct")" "$1" "$pct"
+    if   (( pct < 50 )); then colour="1;32"        # green
+    elif (( pct < 75 )); then colour="1;33"        # yellow
+    elif (( pct < 90 )); then colour="1;38;5;208"  # orange
+    else                      colour="1;31"        # red
+    fi
+    line2+="  \033[${colour}m$1 ${pct}%\033[0m"
 }
 
-[[ -n "$five_pct" ]]  && line2+=$(limit_segment "󰔟" "$five_pct")
-[[ -n "$week_pct" ]]  && line2+=$(limit_segment "" "$week_pct")
-[[ -n "$spend_pct" ]] && line2+=$(limit_segment "󰄔" "$spend_pct")
+[[ -n "$five_pct" ]]  && limit_segment "󰔟" "$five_pct"
+[[ -n "$week_pct" ]]  && limit_segment "" "$week_pct"
+[[ -n "$spend_pct" ]] && limit_segment "󰄔" "$spend_pct"
 
 # Session cost — client-side list-price estimate, same figure as /usage; resets
 # on /clear.
@@ -219,7 +225,6 @@ fi
 # clock rather than .warm, which goes stale while the session is idle; needs
 # refreshInterval in settings.json to tick down between events.
 if [[ "$cache_observed" == "true" ]]; then
-    now=$(date +%s)
     if [[ -n "$cache_expires" ]] && (( ${cache_expires%.*} > now )); then
         cache_min=$(( (${cache_expires%.*} - now + 59) / 60 ))
         (( cache_min <= 5 )) && cache_colour="1;33" || cache_colour="0;36"
