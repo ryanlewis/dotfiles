@@ -40,7 +40,7 @@
         (.prompt_cache.caching_observed // false),
         (.prompt_cache.expires_at // ""),
         (now | floor)
-    ' </dev/stdin
+    '
 )
 
 # Shorten model name: "Opus 4.6 (1M context)" → "Opus 4.6 (1M)"
