@@ -1,13 +1,16 @@
 [user]
     name = {{ .name | default (env "CHEZMOI_USER_NAME") | default "Your Name" }}
     email = {{ .email | default (env "CHEZMOI_USER_EMAIL") | default "your.email@example.com" }}
-{{- /* Signing key: prefer a Secretive (Secure Enclave) key when the machine
-       has one — ~/.ssh/secretive.pub is the exported public half — otherwise
-       the 1Password-held ed25519 key. */}}
+{{- /* Signing key: prefer the keychain-loaded file key (m5p since
+       2026-09-27), then a Secretive (Secure Enclave) key, then the
+       1Password-held ed25519 key. */}}
+{{- $localPub := joinPath .chezmoi.homeDir ".ssh/id_ed25519_local.pub" }}
 {{- $sePub := joinPath .chezmoi.homeDir ".ssh/secretive.pub" }}
 {{- $opPub := joinPath .chezmoi.homeDir ".ssh/id_ed25519.pub" }}
 {{- $signKey := "" }}
-{{- if stat $sePub }}
+{{- if stat $localPub }}
+{{-   $signKey = $localPub }}
+{{- else if stat $sePub }}
 {{-   $signKey = $sePub }}
 {{- else if stat $opPub }}
 {{-   $signKey = $opPub }}

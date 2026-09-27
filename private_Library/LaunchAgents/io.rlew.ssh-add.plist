@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Load passphrase-protected ~/.ssh keys into Apple's ssh-agent at login,
+	     using the passphrases stored in the login keychain by
+	     `ssh-add --apple-use-keychain`. Headless sessions then sign and push
+	     without anyone at the Mac. -->
+	<key>Label</key>
+	<string>io.rlew.ssh-add</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/ssh-add</string>
+		<string>--apple-load-keychain</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/io.rlew.ssh-add.log</string>
+</dict>
+</plist>

@@ -25,22 +25,21 @@ export PATH
 
 {{- if eq .chezmoi.os "darwin" }}
 
-# SSH agent — private keys never live in ~/.ssh (only .pub stubs). Prefer
-# Secretive (Secure Enclave key, no auth prompt, no lock state — migrated
-# 2026-09-17), fall back to the 1Password agent. git's SSH signing honours
-# SSH_AUTH_SOCK, not ssh_config's IdentityAgent, so this is what makes
-# signing work. Replace only Apple's default launchd agent so a forwarded
-# agent from an inbound ssh session still wins.
-_se_agent="$HOME/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"
-_1p_agent="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
-if [[ -z ${SSH_AUTH_SOCK-} || $SSH_AUTH_SOCK == *com.apple.launchd* ]]; then
-  if [[ -S $_se_agent ]]; then
-    export SSH_AUTH_SOCK=$_se_agent
-  elif [[ -S $_1p_agent ]]; then
-    export SSH_AUTH_SOCK=$_1p_agent
-  fi
+# SSH agent: Apple's launchd ssh-agent (SSH_AUTH_SOCK is set by launchd).
+# Keys are passphrase-protected files in ~/.ssh whose passphrases live in the
+# login keychain; io.rlew.ssh-add loads them at login with
+# `ssh-add --apple-load-keychain`, so signing and push keep working while the
+# screen is locked (switched from Secretive 2026-09-27). Secretive stays
+# installed as a fallback: SSH_AUTH_SOCK=<its socket> ssh ...
+# A process started before the switch may still hand down the Secretive
+# socket; point it back at launchd's agent. A forwarded agent is left alone.
+if [[ ${SSH_AUTH_SOCK-} == *com.maxgoedjen.Secretive* ]]; then
+  for _launchd_agent in /private/var/run/com.apple.launchd.*/Listeners(N=); do
+    export SSH_AUTH_SOCK=$_launchd_agent
+    break
+  done
+  unset _launchd_agent
 fi
-unset _se_agent _1p_agent
 {{- else }}
 
 # 1Password SSH agent (Linux desktop socket). Only used when no agent is
