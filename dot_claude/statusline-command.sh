@@ -56,7 +56,7 @@ truncate_path() {
         REPLY="${p#$dev_prefix}"
     else
         # Not under ~/dev — replace $HOME with ~ and truncate
-        p="${p/#$HOME/~}"
+        [[ $p == "$HOME"* ]] && p="~${p#"$HOME"}"
         local stripped="${p//[!\/]/}"
         local depth=${#stripped}
         if (( depth >= 3 )); then
