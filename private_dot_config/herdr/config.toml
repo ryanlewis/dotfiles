@@ -22,25 +22,29 @@ rows = [
   ["branch", "git_status"],
 ]
 
-# Agent rows: one fact per line, replacing the cramped default
-# ([state_icon, workspace, tab] / [agent]). The tab token is deliberately
-# omitted: with herdr-auto-title live, tab labels duplicate the session/workspace
-# name, so the default rendered the same string truncated twice per row.
-# Line 2 is the live terminal title — what the agent is doing right now.
-# Line 4 is the $summary metadata token — set by a herdr-team worker or
-# manager via `herdr pane report-metadata <pane> --source <id> --token summary=…`
-# (progress a worker publishes while its scrollback is unreadable). Rows whose
-# token is unset collapse, so agents without a summary render as before.
+# Agent rows come from the io.rlew.agent-rows plugin (~/dev/herdr-agent-rows),
+# which reports these $ar_* pane tokens on every agent state change:
+#   $ar_name   workspace name (leads and solo agents)
+#   $ar_git    branch or PR (#42, #42 merged), only off the default branch
+#   $ar_state  "done 14:02" / "blocked 14:05" (empty while working);
+#              on a team lead, the roll-up ("lead · 3 workers, 1 blocked")
+#   $ar_title  live terminal title, solo agents only, when it differs from
+#              the workspace name
+#   $ar_wname / $ar_wgit / $ar_wstate  the same for a team worker, under
+#              their own names so the whole worker row can be dimmed; the
+#              name is indented with two U+2800 blanks (herdr trims spaces)
+# Workers are one line and sit under their lead (agent_panel_sort "spaces"
+# keeps workspace → tab → pane order). Roles come from the team-lead skill
+# (role/lead pane tokens). Without the plugin the rows show only the icon.
 [ui.sidebar.agents]
 rows = [
-  ["state_icon", "workspace"],
-  ["terminal_title_stripped"],
-  ["agent", "state_text"],
-  ["$summary"],
+  ["state_icon", { token = "$ar_name", bold = true }, "$ar_git", "$ar_state",
+   { token = "$ar_wname", dim = true }, { token = "$ar_wgit", dim = true }, { token = "$ar_wstate", dim = true }],
+  ["$ar_title"],
 ]
 
 [theme]
-name = "nord"
+name = "catppuccin"
 auto_switch = false
 dark_name = "tokyo-night"
 light_name = "tokyo-night-day"
