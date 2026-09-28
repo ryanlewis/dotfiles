@@ -17,11 +17,11 @@
 # Refuses to guess when the directory has more than one remote (forks).
 
 set -uf  # -f: no glob expansion of command segments in the loop below
-ALLOWED_OWNERS="ryanlewis"
-# Single repos allowed beyond the owners above. cases-sh/cli has CI and a
-# project hook that refuses a merge until it is green (cli#79); cases-sh/hosted
-# is left out until it has CI too (case NErzX).
-ALLOWED_REPOS="cases-sh/cli"
+# cases-sh is Ryan's own org: its repos have CI, and GitHub rulesets on main
+# refuse a merge that isn't green (from 28 Sep 2026).
+ALLOWED_OWNERS="ryanlewis cases-sh"
+# Single repos allowed beyond the owners above.
+ALLOWED_REPOS=""
 
 input=$(cat)
 cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
