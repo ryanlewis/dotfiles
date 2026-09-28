@@ -36,11 +36,36 @@ rows = [
 # Workers are one line and sit under their lead (agent_panel_sort "spaces"
 # keeps workspace → tab → pane order). Roles come from the team-lead skill
 # (role/lead pane tokens). Without the plugin the rows show only the icon.
+# Colours ("full tint", catppuccin mocha hex, so they don't follow a theme
+# switch): teal branch, blue open PR, mauve merged, red closed; green done,
+# red+bold blocked, grey idle; lead roll-up mauve, peach with a blocked
+# worker; lavender titles and worker names. Rules match the token's own text.
 [ui.sidebar.agents]
 rows = [
-  ["state_icon", { token = "$ar_name", bold = true }, "$ar_git", "$ar_state",
-   { token = "$ar_wname", dim = true }, { token = "$ar_wgit", dim = true }, { token = "$ar_wstate", dim = true }],
-  ["$ar_title"],
+  ["state_icon",
+   { token = "$ar_name", bold = true },
+   { token = "$ar_git", fg = "#94e2d5", rules = [
+     { contains = "merged", fg = "#cba6f7" },
+     { contains = "closed", fg = "#f38ba8" },
+     { starts_with = "#", fg = "#89b4fa" },
+   ] },
+   { token = "$ar_state", fg = "#7f849c", rules = [
+     { starts_with = "blocked", fg = "#f38ba8", bold = true },
+     { starts_with = "done", fg = "#a6e3a1" },
+     { contains = "blocked", fg = "#fab387" },
+     { starts_with = "lead", fg = "#cba6f7" },
+   ] },
+   { token = "$ar_wname", dim = true, fg = "#b4befe" },
+   { token = "$ar_wgit", dim = true, fg = "#94e2d5", rules = [
+     { contains = "merged", fg = "#cba6f7" },
+     { contains = "closed", fg = "#f38ba8" },
+     { starts_with = "#", fg = "#89b4fa" },
+   ] },
+   { token = "$ar_wstate", dim = true, fg = "#7f849c", rules = [
+     { starts_with = "blocked", fg = "#f38ba8", bold = true },
+     { starts_with = "done", fg = "#a6e3a1" },
+   ] }],
+  [{ token = "$ar_title", fg = "#b4befe" }],
 ]
 
 [theme]
