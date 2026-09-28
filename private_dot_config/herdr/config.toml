@@ -39,11 +39,12 @@ rows = [
 # Colours ("full tint", catppuccin mocha hex, so they don't follow a theme
 # switch): teal branch, blue open PR, mauve merged, red closed; green done,
 # red+bold blocked, grey idle; lead roll-up mauve, peach with a blocked
-# worker; lavender titles and worker names. Rules match the token's own text.
+# worker; names in text colour, titles subtext0, worker names lavender. Rules
+# match the token's own text.
 [ui.sidebar.agents]
 rows = [
   ["state_icon",
-   { token = "$ar_name", bold = true },
+   { token = "$ar_name", bold = true, fg = "#cdd6f4" },
    { token = "$ar_git", fg = "#94e2d5", rules = [
      { contains = "merged", fg = "#cba6f7" },
      { contains = "closed", fg = "#f38ba8" },
@@ -65,7 +66,7 @@ rows = [
      { starts_with = "blocked", fg = "#f38ba8", bold = true },
      { starts_with = "done", fg = "#a6e3a1" },
    ] }],
-  [{ token = "$ar_title", fg = "#b4befe" }],
+  [{ token = "$ar_title", fg = "#a6adc8" }],
 ]
 
 [theme]
@@ -75,7 +76,7 @@ dark_name = "tokyo-night"
 light_name = "tokyo-night-day"
 
 [ui.sound]
-enabled = true
+enabled = false
 
 [keys]
 prefix = "ctrl+a"
