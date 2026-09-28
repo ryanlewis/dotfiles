@@ -18,6 +18,10 @@
 
 set -uf  # -f: no glob expansion of command segments in the loop below
 ALLOWED_OWNERS="ryanlewis"
+# Single repos allowed beyond the owners above. cases-sh/cli has CI and a
+# project hook that refuses a merge until it is green (cli#79); cases-sh/hosted
+# is left out until it has CI too (case NErzX).
+ALLOWED_REPOS="cases-sh/cli"
 
 input=$(cat)
 cmd=$(printf '%s' "$input" | jq -r '.tool_input.command // empty')
@@ -75,6 +79,13 @@ fi
 for a in $ALLOWED_OWNERS; do
   if [ "$owner" = "$a" ]; then
     emit allow "gh pr merge in $repo (owner $owner is allowed)"
+    exit 0
+  fi
+done
+
+for a in $ALLOWED_REPOS; do
+  if [ "$repo" = "$a" ]; then
+    emit allow "gh pr merge in $repo (repo is allowed)"
     exit 0
   fi
 done
