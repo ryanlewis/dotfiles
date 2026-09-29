@@ -38,3 +38,6 @@
 # purged here — they are listed in .chezmoiignore, and chezmoi never removes
 # ignored targets. They are cleaned up by run_once_before_purge-orphaned-
 # repo-meta.sh instead.
+
+# Retired /review-outstanding-prs slash command (September 2026)
+.claude/commands/review-outstanding-prs.md
