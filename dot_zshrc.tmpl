@@ -407,7 +407,11 @@ _zabbr_expand() {
 # self-insert / accept-line here are the autosuggestion-wrapped builtins, so
 # suggestions and history keep working after an expansion.
 _zabbr_expand_space()  { _zabbr_expand; zle self-insert }
-_zabbr_expand_accept() { _zabbr_expand; zle accept-line }
+_zabbr_expand_accept() {
+    _zabbr_expand
+    (( $+functions[_claude_quote_prompt] )) && _claude_quote_prompt   # opus.zsh
+    zle accept-line
+}
 zle -N _zabbr_expand_space
 zle -N _zabbr_expand_accept
 bindkey -M viins ' '  _zabbr_expand_space    # SPACE: expand, then insert the space

@@ -49,6 +49,7 @@ tools() {
         "Custom:🔗 crpr:Review a GitHub PR in cmux"
         "Custom:🏷️  slugify:AI kebab-case slug from text"
         "Custom:❓ ask:One-shot question to Claude (askh/asko)"
+        "Custom:🤖 opus:Claude session on Opus, medium effort (sonnet)"
         "FZF:📂 fcd:Fuzzy change directory"
         "FZF:📄 fopen:Fuzzy open files in editor"
         "FZF:💀 fkill:Fuzzy kill processes"
@@ -183,6 +184,7 @@ tools() {
         print -r -- "${C_brmagenta}• crpr${C_reset}    - Review a GitHub PR in cmux"
         print -r -- "${C_brmagenta}• slugify${C_reset} - AI kebab-case slug from text"
         print -r -- "${C_brmagenta}• ask${C_reset}     - One-shot question to Claude ${C_yellow}(askh/asko)${C_reset}"
+        print -r -- "${C_brmagenta}• opus${C_reset}    - Claude session on Opus, medium effort ${C_yellow}(sonnet)${C_reset}"
         print
 
         print -r -- "${C_cyan}━━━ 🔍 FZF-Powered (fuzzy search) ━━━${C_reset}"
