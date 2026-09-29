@@ -55,19 +55,16 @@ Found X PRs awaiting review:
 - #456: Title (author) +adds/-dels, N files
 ```
 
-### Step 4: Create a Team and Review PRs in Parallel
+### Step 4: Review PRs in Parallel
 
-Create an agent team so each PR gets its own teammate. Teammates are full agents that can spawn their own subagents, which means each one can invoke `/pr-review-toolkit:review-pr` (which itself spawns parallel review subagents).
+Give each PR its own subagent. Subagents can spawn their own subagents, so each one can invoke `/pr-review-toolkit:review-pr` (which itself spawns parallel review subagents).
 
-1. Create the team using TeamCreate with `team_name: "pr-reviews"`.
-
-2. For each PR, spawn a teammate using the Agent tool with:
-   - `team_name: "pr-reviews"`
+1. For each PR, spawn a subagent using the Agent tool with:
    - `name: "pr-<number>"` (e.g. `pr-123`)
-   - `isolation: "worktree"` — each teammate gets its own git worktree so they don't conflict on checkout
-   - Launch ALL teammates in parallel in a single message
+   - `isolation: "worktree"` — each subagent gets its own git worktree so they don't conflict on checkout
+   - Launch all of them in parallel in a single message
 
-   Each teammate's prompt should be:
+   Each subagent's prompt should be:
    ```
    You are reviewing PR #<number> in <repo>.
 
@@ -81,11 +78,11 @@ Create an agent team so each PR gets its own teammate. Teammates are full agents
    1. Check out the PR branch: `gh pr checkout <number>`
    2. Run the review by invoking the Skill tool with `skill: "pr-review-toolkit:review-pr"` and `args: "all parallel"`.
       This will spawn specialised subagents (code-reviewer, silent-failure-hunter, etc.) to review the PR thoroughly.
-   3. Once the review completes, send the full aggregated findings back to the team lead via SendMessage.
+   3. Once the review completes, return the full aggregated findings as your final report.
       Include all severity-rated findings with file references, and the overall summary.
    ```
 
-3. Wait for all teammates to report back with their findings.
+2. Wait for every subagent to report back with its findings.
 
 ### Step 5: Compile Summary Report
 
