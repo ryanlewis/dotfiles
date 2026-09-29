@@ -381,9 +381,16 @@ typeset -gA ZABBR=(
     gst  'git status'
     gc   'git commit'
     gca  'git commit -a'
+    gco  'git checkout'
+    gcb  'git checkout -b'
+    ga   'git add'
+    gf   'git fetch'
     gp   'git push'
+    gpf  'git push --force-with-lease'
+    gpl  'git pull'
     gl   'git log --oneline --graph'
     gd   'git diff'
+    gds  'git diff --staged'
     cca  'claude --enable-auto-mode'
 )
 {{- if lookPath "wt" }}
