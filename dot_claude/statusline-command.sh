@@ -124,25 +124,28 @@ if [[ -n "$used_pct" ]]; then
     context_str="${used_int}%"
 fi
 
-# Build the status line with colours matching Starship theme. Rendered over two
-# rows (Claude Code shows one terminal line per output line):
-#   line 1 — directory (bold cyan), branch (bold purple), worktree (bold
-#            yellow), git status (bold red), open PR
-#   line 2 — model (normal white), fast mode, effort, context, usage limits,
-#            session cost, prompt cache
+# Build the status line with colours matching Starship theme. Two groups of
+# segments, each starting a new row (Claude Code shows one terminal line per
+# output line):
+#   group 1 — directory (bold cyan), branch (bold purple), worktree (bold
+#             yellow), git status (bold red), open PR
+#   group 2 — model (normal white), fast mode, effort, context, usage limits,
+#             session cost, prompt cache
+# A group wraps onto extra rows when it is wider than the terminal, which
+# Claude Code would otherwise cut off with "…".
 
-line1="\033[1;36m ${truncated_dir}\033[0m"
+seg1=("\033[1;36m ${truncated_dir}\033[0m")
 
 if [[ -n "$git_branch" ]]; then
-    line1+="  \033[1;35m ${git_branch}\033[0m"
+    seg1+=("\033[1;35m ${git_branch}\033[0m")
     if [[ -n "$git_worktree_label" ]]; then
         if [[ "$git_worktree_label" == "$git_branch" || "$git_worktree_label" == "${git_branch//\//-}" ]]; then
-            line1+="  \033[1;33m󰙅\033[0m"
+            seg1+=("\033[1;33m󰙅\033[0m")
         else
-            line1+="  \033[1;33m󰙅 ${git_worktree_label}\033[0m"
+            seg1+=("\033[1;33m󰙅 ${git_worktree_label}\033[0m")
         fi
     fi
-    [[ -n "$git_status_str" ]] && line1+="  \033[1;31m${git_status_str}\033[0m"
+    [[ -n "$git_status_str" ]] && seg1+=("\033[1;31m${git_status_str}\033[0m")
 fi
 
 # Open PR (or GitLab MR) for the branch, coloured by review state. Absent until
@@ -155,13 +158,13 @@ if [[ -n "$pr_number" ]]; then
         draft)             pr_colour="2;37" ;; # dim
         *)                 pr_colour="1;34" ;; # blue — state unknown
     esac
-    line1+="  \033[${pr_colour}m #${pr_number}\033[0m"
+    seg1+=("\033[${pr_colour}m #${pr_number}\033[0m")
 fi
 
-line2="\033[0;37m󰚩 ${model_name}\033[0m"
+seg2=("\033[0;37m󰚩 ${model_name}\033[0m")
 
 # Fast mode (/fast toggle) — bolt indicator next to the model
-[[ "$fast_mode" == "true" ]] && line2+="  \033[1;33m󱐋\033[0m"
+[[ "$fast_mode" == "true" ]] && seg2+=("\033[1;33m󱐋\033[0m")
 
 # Model effort (reasoning level) — only present when the model supports it
 if [[ -n "$effort_level" ]]; then
@@ -175,7 +178,7 @@ if [[ -n "$effort_level" ]]; then
         max)    eff_colour="1;31"       ;; # red
         *)      eff_colour="0;37"       ;; # fallback
     esac
-    line2+="  \033[${eff_colour}m󰧑 ${effort_level}\033[0m"
+    seg2+=("\033[${eff_colour}m󰧑 ${effort_level}\033[0m")
 fi
 
 if [[ -n "$context_str" ]]; then
@@ -188,7 +191,7 @@ if [[ -n "$context_str" ]]; then
     else
         ctx_colour="1;31"        # red
     fi
-    line2+="  \033[${ctx_colour}m󰍛 ${context_str}\033[0m"
+    seg2+=("\033[${ctx_colour}m󰍛 ${context_str}\033[0m")
 fi
 
 # Usage limits. Which windows arrive tells us the plan, so no config is needed:
@@ -198,7 +201,7 @@ fi
 # All are absent before the first API response of a session, and each window
 # is dropped once its reset time passes.
 
-# limit_segment <icon> <pct> — appends a pill to line2
+# limit_segment <icon> <pct> — appends a pill to group 2
 limit_segment() {
     local pct colour
     printf -v pct "%.0f" "$2"
@@ -207,7 +210,7 @@ limit_segment() {
     elif (( pct < 90 )); then colour="1;38;5;208"  # orange
     else                      colour="1;31"        # red
     fi
-    line2+="  \033[${colour}m$1 ${pct}%\033[0m"
+    seg2+=("\033[${colour}m$1 ${pct}%\033[0m")
 }
 
 [[ -n "$five_pct" ]]  && limit_segment "󰔟" "$five_pct"
@@ -218,7 +221,7 @@ limit_segment() {
 # on /clear.
 if [[ -n "$session_cost" ]]; then
     printf -v cost_fmt '%.2f' "$session_cost"
-    line2+="  \033[2;37m󰇁 ${cost_fmt}\033[0m"
+    seg2+=("\033[2;37m󰇁 ${cost_fmt}\033[0m")
 fi
 
 # Prompt cache — minutes until the cached prefix goes cold. Judged against the
@@ -228,10 +231,39 @@ if [[ "$cache_observed" == "true" ]]; then
     if [[ -n "$cache_expires" ]] && (( ${cache_expires%.*} > now )); then
         cache_min=$(( (${cache_expires%.*} - now + 59) / 60 ))
         (( cache_min <= 5 )) && cache_colour="1;33" || cache_colour="0;36"
-        line2+="  \033[${cache_colour}m󰆼 ${cache_min}m\033[0m"
+        seg2+=("\033[${cache_colour}m󰆼 ${cache_min}m\033[0m")
     else
-        line2+="  \033[2;37m󰆼 cold\033[0m"
+        seg2+=("\033[2;37m󰆼 cold\033[0m")
     fi
 fi
 
-printf '%b' "${line1}\n${line2}"
+# Pack segments into rows no wider than the terminal. Claude Code sets COLUMNS
+# for the script (tput can't see the terminal); a few cells are held back for
+# the row's indent. Without a usable COLUMNS, as when run by hand, nothing wraps.
+shopt -s extglob
+LC_ALL=en_US.UTF-8
+max_width=1000
+[[ "$COLUMNS" =~ ^[0-9]+$ ]] && (( COLUMNS > 20 )) && max_width=$(( COLUMNS - 4 ))
+
+# pack_segments <segment>... — sets REPLY to the segments joined by two spaces,
+# starting a new row whenever the next one would not fit
+pack_segments() {
+    local seg plain width row="" row_width=0 out=""
+    for seg in "$@"; do
+        plain="${seg//\\033\[*([0-9;])m/}"
+        width=${#plain}
+        if [[ -z "$row" ]]; then
+            row="$seg" row_width=$width
+        elif (( row_width + 2 + width <= max_width )); then
+            row+="  $seg" row_width=$(( row_width + 2 + width ))
+        else
+            out+="${row}\n" row="$seg" row_width=$width
+        fi
+    done
+    REPLY="${out}${row}"
+}
+
+pack_segments "${seg1[@]}"
+rows="$REPLY"
+pack_segments "${seg2[@]}"
+printf '%b' "${rows}\n${REPLY}"
