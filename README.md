@@ -114,7 +114,7 @@ This configuration includes several useful Zsh functions:
 - `mise-install-latest` - Install latest stable versions of all tools
 - `mise-update` - Update mise and all plugins
 - `ask <question>` - One-shot question to Claude, answer straight to stdout (`askh` for Haiku, `asko` for Opus, `-w` to allow web search)
-- `opus [prompt]` - Interactive Claude session on Opus at medium effort, with the rest of the line as the first prompt — no quoting needed, slash commands work (`opus review pr #123`, `opus /code-review 123`); `sonnet` for Sonnet; a leading flag passes through (`opus -c`)
+- `opus [prompt]` - Interactive Claude session on Opus at medium effort, with the rest of the line as the first prompt — no quoting needed, slash commands work (`opus review pr #123`, `opus /code-review 123`); `sonnet` for Sonnet; leading `-n <name>` sets the session name and `-e <effort>` the effort (`l`/`m`/`h`/`x`, or a full level like `max`): `opus -n triage -e h why is ci red?`; any other leading flag passes through (`opus -c`)
 
 #### Clipboard Function: yank
 

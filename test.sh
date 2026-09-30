@@ -185,6 +185,22 @@ check_zsh_function crpr
 check_zsh_function slugify
 check_zsh_function ask
 check_zsh_function opus
+# opus: leading -n/-e flags are parsed; the ENTER widget quotes only the prompt
+TOTAL_TESTS=$((TOTAL_TESTS + 1))
+opus_out=$(zsh -f -c '
+    source "$HOME/.config/zsh/functions/opus.zsh"
+    claude() { print -r -- "${(j:|:)@}" }
+    opus -n heh -e m "the prompt -e x"
+    BUFFER="opus -n heh -e h review pr #123"; _claude_quote_prompt; print -r -- "$BUFFER"
+' 2>&1)
+opus_want="--model|opus|--effort|medium|--name|heh|--|the prompt -e x
+opus -n heh -e h 'review pr #123'"
+if [[ "$opus_out" == "$opus_want" ]]; then
+    echo -e "${GREEN}✓${NC} opus parses -n/-e and quotes the prompt"
+else
+    echo -e "${RED}✗${NC} opus flag parsing: got '$opus_out'"
+    FAILED_TESTS=$((FAILED_TESTS + 1))
+fi
 check_zsh_function tools
 
 if [[ "$MINIMAL_MODE" == "false" ]]; then
