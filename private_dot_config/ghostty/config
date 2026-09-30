@@ -88,6 +88,10 @@ keybind = cmd+g=unbind
 keybind = cmd+n=unbind
 keybind = cmd+p=unbind
 keybind = cmd+shift+enter=unbind
+# cmd+h/j/k/l focus herdr panes (Hide Ghostty is moved to ctrl+alt+cmd+h in
+# System Settings > Keyboard > App Shortcuts, which frees cmd+h).
+keybind = cmd+j=unbind
+keybind = cmd+k=unbind
 keybind = cmd+1=unbind
 keybind = cmd+digit_1=unbind
 keybind = cmd+2=unbind

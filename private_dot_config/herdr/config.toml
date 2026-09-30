@@ -92,7 +92,7 @@ prefix = "ctrl+a"
 # previous/next_workspace bind the vim keys AND the arrows at once (verified live:
 # all four chords switch workspaces).
 #
-# Mnemonic: ctrl+hjkl moves between PANES; ctrl+shift+j/k (or the arrows) moves
+# Mnemonic: cmd+hjkl (or ctrl+hjkl) moves between PANES; ctrl+shift+j/k (or the arrows) moves
 # between WORKSPACES (down/up the stack). ctrl+shift is the sweet spot -- neither
 # modifier is remapped, so it's a clean left-hand chord AND left-Option compose
 # (Opt+3 = #) is preserved, unlike ctrl+alt (which would need
@@ -137,7 +137,10 @@ toggle_sidebar = ["prefix+b", "cmd+shift+b"]
 resize_mode = ["prefix+r", "cmd+ctrl+r"]
 zoom = ["prefix+z", "cmd+shift+enter"]
 
-# Direct (prefix-free) vim-style pane focus on ctrl+h/j/k/l. These are global
+# Direct (prefix-free) vim-style pane focus on cmd+h/j/k/l and ctrl+h/j/k/l.
+# cmd+hjkl never reaches apps in a pane anyway, so it costs nothing (Ghostty's
+# cmd+j/k binds are unbound, and Hide Ghostty is moved off cmd+h in macOS App
+# Shortcuts). These are global
 # binds, so herdr swallows the chord before the focused app sees it — chosen
 # because the collisions are cheap here:
 #   ctrl+h  backspace  -> real Backspace sends ^? (DEL), so it still works
@@ -149,10 +152,10 @@ zoom = ["prefix+z", "cmd+shift+enter"]
 #  ctrl+up/down for Mission Control / Exposé, so they never reach herdr.
 #  ctrl+shift+arrow survives the OS, which is why workspaces use it.)
 # (prefix+h/j/k/l no longer focuses panes; the navigate/resize modes still do.)
-focus_pane_left = "ctrl+h"
-focus_pane_down = "ctrl+j"
-focus_pane_up = "ctrl+k"
-focus_pane_right = "ctrl+l"
+focus_pane_left = ["cmd+h", "ctrl+h"]
+focus_pane_down = ["cmd+j", "ctrl+j"]
+focus_pane_up = ["cmd+k", "ctrl+k"]
+focus_pane_right = ["cmd+l", "ctrl+l"]
 
 # Open lazygit in a temporary pane (closes when lazygit exits)
 [[keys.command]]
