@@ -47,3 +47,28 @@ if [ -n "$skipped" ]; then
   printf '\n▲ merged but dirty — prune skips these, use: wt remove -f <branch>\n%s\n' "$skipped"
 fi
 '''
+
+# Stop dev servers running from the worktree before it goes. Anything started
+# outside `wt step tether` (e.g. `wrangler dev` launched by an agent) otherwise
+# outlives the worktree.
+# Matches listeners whose cwd is inside the worktree and kills their whole
+# process group (wrangler's node parents share it), TERM then KILL.
+[pre-remove]
+stop-servers = '''
+wt={{ worktree_path }}
+self=$(ps -o pgid= -p $$ | tr -d ' ')
+parent=$(ps -o pgid= -p $PPID | tr -d ' ')
+groups=
+for pid in $(lsof -nP -iTCP -sTCP:LISTEN -u "$(id -u)" -a -t 2>/dev/null | sort -u); do
+  cwd=$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p')
+  case "$cwd/" in "$wt"/*) ;; *) continue ;; esac
+  pg=$(ps -o pgid= -p "$pid" | tr -d ' ')
+  case " $self $parent $groups " in *" $pg "*) continue ;; esac
+  groups="$groups $pg"
+  echo "stopping $(basename "$(ps -o comm= -p "$pid")") (pid $pid) in $cwd"
+done
+for pg in $groups; do kill -TERM -"$pg" 2>/dev/null; done
+[ -n "$groups" ] && sleep 2
+for pg in $groups; do kill -KILL -"$pg" 2>/dev/null; done
+exit 0
+'''
