@@ -53,8 +53,6 @@ quick-terminal-animation-duration = 0.15
 quick-terminal-autohide = true
 
 # ── Split Panes ─────────────────────────────────────────────
-keybind = cmd+d=new_split:right
-keybind = cmd+shift+d=new_split:down
 
 # Navigate splits
 keybind = cmd+alt+left=goto_split:left
@@ -69,7 +67,6 @@ keybind = cmd+ctrl+up=resize_split:up,20
 keybind = cmd+ctrl+down=resize_split:down,20
 
 # Zoom/unzoom current split
-keybind = cmd+shift+enter=toggle_split_zoom
 
 # Equalise splits
 keybind = cmd+shift+e=equalize_splits
@@ -79,8 +76,36 @@ keybind = cmd+up=jump_to_prompt:-1
 keybind = cmd+down=jump_to_prompt:1
 
 # ── Tabs ─────────────────────────────────────────────────────
-keybind = cmd+t=new_tab
-keybind = cmd+w=close_surface
+# Tabs, splits and close go to herdr (see herdr's config.toml), so Ghostty lets
+# these chords through instead of acting on them itself.
+keybind = cmd+t=unbind
+keybind = cmd+w=unbind
+keybind = cmd+d=unbind
+keybind = cmd+shift+d=unbind
+keybind = cmd+shift+[=unbind
+keybind = cmd+shift+]=unbind
+keybind = cmd+g=unbind
+keybind = cmd+n=unbind
+keybind = cmd+p=unbind
+keybind = cmd+shift+enter=unbind
+keybind = cmd+1=unbind
+keybind = cmd+digit_1=unbind
+keybind = cmd+2=unbind
+keybind = cmd+digit_2=unbind
+keybind = cmd+3=unbind
+keybind = cmd+digit_3=unbind
+keybind = cmd+4=unbind
+keybind = cmd+digit_4=unbind
+keybind = cmd+5=unbind
+keybind = cmd+digit_5=unbind
+keybind = cmd+6=unbind
+keybind = cmd+digit_6=unbind
+keybind = cmd+7=unbind
+keybind = cmd+digit_7=unbind
+keybind = cmd+8=unbind
+keybind = cmd+digit_8=unbind
+keybind = cmd+9=unbind
+keybind = cmd+digit_9=unbind
 keybind = cmd+shift+left=previous_tab
 keybind = cmd+shift+right=next_tab
 

@@ -82,11 +82,11 @@ enabled = false
 prefix = "ctrl+a"
 
 # Workspaces own the number row (prefix = ctrl+a):
-#   prefix + 1..9                  -> jump straight to workspace N
+#   prefix + 1..9  or  cmd + 1..9  -> jump straight to workspace N
 #   ctrl+shift + k/j  or  up/down  -> previous / next workspace = up / down the
 #                                     vertical workspace stack (prefix-free)
-# (Shift+number doesn't survive the terminal layer, so workspaces take the bare
-#  digits; prefix + w still opens the workspace picker.)
+# (Tabs get the shifted digits, cmd+shift+1..9, which Ghostty passes through;
+#  prefix + w still opens the workspace picker.)
 #
 # Each action accepts EITHER a single chord string OR a TOML array of chords, so
 # previous/next_workspace bind the vim keys AND the arrows at once (verified live:
@@ -100,18 +100,42 @@ prefix = "ctrl+a"
 # bind because herdr negotiates the Kitty keyboard protocol (crossterm
 # PushKeyboardEnhancementFlags): ctrl+j already arrives as a CSI-u sequence and
 # the shift modifier rides along. Verified distinct in practice.
-switch_workspace = "prefix+1..9"
+switch_workspace = ["prefix+1..9", "cmd+1..9"]
 previous_workspace = ["ctrl+shift+k", "ctrl+shift+up"]
 next_workspace = ["ctrl+shift+j", "ctrl+shift+down"]
 
-# Tabs gave up the number row, so they cycle on n / p:
-#   prefix + p -> previous tab
-#   prefix + n -> next tab
+# Tabs gave the prefix number row to workspaces, so they cycle on n / p
+# (and jump directly with cmd+shift+1..9, below):
+#   prefix + p  or  cmd+shift+[ -> previous tab
+#   prefix + n  or  cmd+shift+] -> next tab
 #   prefix + , -> rename tab
-switch_tab = ""
-previous_tab = "prefix+p"
-next_tab = "prefix+n"
+previous_tab = ["prefix+p", "cmd+shift+["]
+next_tab = ["prefix+n", "cmd+shift+]"]
 rename_tab = "prefix+,"
+
+# macOS-style cmd keys for the everyday actions (Ghostty's own tab/split/close
+# binds for these are unbound so the chords reach herdr). Tabs and splits stay on
+# the prefix too.
+#   cmd+t            -> new tab
+#   cmd+shift+1..9   -> jump straight to tab N
+#   cmd+d            -> split right (side by side)
+#   cmd+shift+d      -> split down (stacked)
+#   cmd+w            -> close the focused pane
+#   cmd+g            -> session navigator (goto)
+#   cmd+n            -> new workspace
+#   cmd+shift+b      -> toggle the sidebar
+#   cmd+ctrl+r       -> resize mode (arrows / hjkl, esc to leave)
+#   cmd+shift+enter  -> zoom the focused pane (toggle)
+new_tab = ["prefix+c", "cmd+t"]
+switch_tab = "cmd+shift+1..9"
+split_vertical = ["prefix+v", "cmd+d"]
+split_horizontal = ["prefix+minus", "cmd+shift+d"]
+close_pane = ["prefix+x", "cmd+w"]
+goto = ["prefix+g", "cmd+g"]
+new_workspace = ["prefix+shift+n", "cmd+n"]
+toggle_sidebar = ["prefix+b", "cmd+shift+b"]
+resize_mode = ["prefix+r", "cmd+ctrl+r"]
+zoom = ["prefix+z", "cmd+shift+enter"]
 
 # Direct (prefix-free) vim-style pane focus on ctrl+h/j/k/l. These are global
 # binds, so herdr swallows the chord before the focused app sees it — chosen
@@ -160,3 +184,13 @@ description = "layout picker"
 
 [experimental]
 kitty_graphics = true
+
+# Command palette (vjeantet.palette, installed with `herdr plugin install
+# vjeantet/herdr-palette`): fuzzy picker over herdr's built-in operations,
+# every installed plugin's action, and the palette's own user commands.
+#   cmd+p -> open the palette
+[[keys.command]]
+key = "cmd+p"
+type = "plugin_action"
+command = "vjeantet.palette.open"
+description = "Command palette"
