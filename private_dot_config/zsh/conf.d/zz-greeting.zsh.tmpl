@@ -25,7 +25,13 @@
         os_name="macOS $(sw_vers -productVersion 2>/dev/null)"
         print -r -- "${os_name#macOS }" >| $vfile 2>/dev/null
     fi
-    print -r -- "${cyan}Welcome to $HOST • ${os_name}${reset}"
+{{- if .isWork }}
+    # The work hostname is an asset tag, so show a friendly name instead.
+    local name="your LHV Mac"
+{{- else }}
+    local name=${HOST%.local}
+{{- end }}
+    print -r -- "${cyan}Welcome to ${name} • ${os_name}${reset}"
 
     up=$(uptime)
     load=${up##*: }                          # text after the final ": " = load averages
