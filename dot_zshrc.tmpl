@@ -329,6 +329,9 @@ alias du="dust"
 {{- if lookPath "httpie" }}
 alias https="http --default-scheme=https"
 {{- end }}
+{{- if .isWork }}
+alias workday='(cd ~/dev/notes && claude --name workday-lead --model=opus --effort medium --autocompact 200k -- "/workday")'
+{{- end }}
 
 # Platform-specific aliases
 {{- if eq .chezmoi.os "darwin" }}
