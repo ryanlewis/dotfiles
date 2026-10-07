@@ -3,11 +3,27 @@ local function gh(repo) return 'https://github.com/' .. repo end
 vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
 local parsers = {
-  'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+  'bash',
+  'c',
+  'diff',
+  'html',
+  'lua',
+  'luadoc',
+  'markdown',
+  'markdown_inline',
+  'query',
+  'vim',
+  'vimdoc',
   -- web — css/javascript also inject into HTML <style> / <script> blocks
-  'css', 'javascript', 'typescript', 'tsx', 'json', 'yaml',
+  'css',
+  'javascript',
+  'typescript',
+  'tsx',
+  'json',
+  'yaml',
   -- languages I work in
-  'go', 'python',
+  'go',
+  'python',
 }
 require('nvim-treesitter').install(parsers)
 

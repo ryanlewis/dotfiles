@@ -1,6 +1,6 @@
 -- [[ vim.pack build hooks ]]
 --  Inspect pending updates: :lua vim.pack.update(nil, { offline = true })
---  Update plugins:          :lua vim.pack.update()
+--  Update plugins:          :PackUpdate
 
 local function run_build(name, cmd, cwd)
   local result = vim.system(cmd, { cwd = cwd }):wait()
@@ -32,5 +32,7 @@ vim.api.nvim_create_autocmd('PackChanged', {
     end
   end,
 })
+
+vim.api.nvim_create_user_command('PackUpdate', function() vim.pack.update() end, { desc = 'Review and apply plugin updates' })
 
 -- vim: ts=2 sts=2 sw=2 et
