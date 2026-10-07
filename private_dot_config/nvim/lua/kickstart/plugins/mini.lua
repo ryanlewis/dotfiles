@@ -41,6 +41,16 @@ hipatterns.setup {
 require('mini.bufremove').setup()
 vim.keymap.set('n', '<leader>bd', function() require('mini.bufremove').delete() end, { desc = '[B]uffer [D]elete (keep layout)' })
 
+-- File explorer: column view in a float. Edit the listing like a buffer, then = to apply.
+require('mini.files').setup()
+vim.keymap.set('n', '\\', function()
+  local file = vim.api.nvim_buf_get_name(0)
+  MiniFiles.open(file ~= '' and file or nil)
+end, { desc = 'Explorer at current file' })
+vim.keymap.set('n', '<leader>e', function()
+  if not MiniFiles.close() then MiniFiles.open() end
+end, { desc = '[E]xplorer' })
+
 -- Statusline (mini.statusline). The default sections already include mode, git,
 -- diff, diagnostics, active LSP, filename, fileinfo, search count and location.
 -- We override `content.active` only to keep cursor location as LINE:COLUMN and to

@@ -13,7 +13,7 @@ starter.setup {
     starter.sections.recent_files(5, false),
     { section = 'Actions', name = 'Find file', action = 'Telescope find_files' },
     { section = 'Actions', name = 'Live grep', action = 'Telescope live_grep' },
-    { section = 'Actions', name = 'File tree', action = 'Neotree toggle' },
+    { section = 'Actions', name = 'File explorer', action = 'lua MiniFiles.open()' },
     { section = 'Actions', name = 'New file', action = 'enew' },
     { section = 'Actions', name = 'Config', action = 'edit ' .. vim.fn.stdpath 'config' .. '/init.lua' },
     { section = 'Actions', name = 'Quit', action = 'qall' },

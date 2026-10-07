@@ -108,7 +108,7 @@ end
 
 -- On-demand language servers: rather than eager-installing these on startup, the
 -- server is Mason-installed and enabled the first time you open a matching file.
-local on_demand_servers = { go = 'gopls', python = 'pyright' }
+local on_demand_servers = { go = 'gopls', python = 'pyright', rust = 'rust_analyzer' }
 vim.api.nvim_create_autocmd('FileType', {
   group = vim.api.nvim_create_augroup('kickstart-lazy-lsp', { clear = true }),
   callback = function(args)
@@ -116,13 +116,15 @@ vim.api.nvim_create_autocmd('FileType', {
     if not server then return end
     -- Prefer a binary already on PATH (e.g. mise-managed gopls) over a Mason copy,
     -- so the version your dotfiles pin stays the one that's actually used.
-    if vim.fn.executable(server) == 1 then
+    local cmd = vim.lsp.config[server] and vim.lsp.config[server].cmd
+    if type(cmd) == 'table' and vim.fn.executable(cmd[1]) == 1 then
       vim.lsp.enable(server)
       return
     end
     local ok, registry = pcall(require, 'mason-registry')
-    if not ok or not registry.has_package(server) then return end
-    local pkg = registry.get_package(server)
+    local pkg_name = require('mason-lspconfig').get_mappings().lspconfig_to_package[server]
+    if not ok or not pkg_name or not registry.has_package(pkg_name) then return end
+    local pkg = registry.get_package(pkg_name)
     if pkg:is_installed() then
       vim.lsp.enable(server)
     else

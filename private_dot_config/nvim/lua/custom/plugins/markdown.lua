@@ -7,6 +7,7 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.wrap = true
     vim.opt_local.linebreak = true
     vim.opt_local.spell = true
+    vim.opt_local.spelllang = 'en_gb'
     -- The built-in markdown ftplugin omits r/o, so bullets don't continue on
     -- <CR> or o. Add them back (numbered auto-increment still needs a plugin).
     vim.opt_local.formatoptions:append 'ro'

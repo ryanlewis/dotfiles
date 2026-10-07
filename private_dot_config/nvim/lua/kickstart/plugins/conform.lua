@@ -17,6 +17,7 @@ require('conform').setup {
     jsonc = { 'biome' },
     go = { 'gofmt' },
     python = { 'ruff_format' },
+    rust = { 'rustfmt' },
   },
 }
 

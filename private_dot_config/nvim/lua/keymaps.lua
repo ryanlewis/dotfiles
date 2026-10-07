@@ -24,13 +24,6 @@ vim.diagnostic.config {
 
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- System clipboard (the `+` register; macOS uses pbcopy/pbpaste automatically).
---  In visual mode <leader>y copies the selection; in normal mode it's an operator
---  (e.g. <leader>yap copies a paragraph).
-vim.keymap.set({ 'n', 'x' }, '<leader>y', '"+y', { desc = '[Y]ank to system clipboard' })
-vim.keymap.set('n', '<leader>Y', '"+Y', { desc = '[Y]ank line to system clipboard' })
-vim.keymap.set({ 'n', 'x' }, '<leader>p', '"+p', { desc = '[P]aste from system clipboard' })
-
 -- Toggle soft-wrap. Handy for wide markdown tables: turn wrap off so each row
 -- stays on one line and render-markdown's grid stays intact (scroll right to read);
 -- turn it back on for comfortable prose.
