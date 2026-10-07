@@ -49,7 +49,8 @@ vim.api.nvim_create_autocmd({ 'BufReadPre', 'BufNewFile' }, {
   group = vim.api.nvim_create_augroup('custom-obsidian-load', { clear = true }),
   pattern = '*.md',
   callback = function(args)
-    if in_vault(args.file) then load() end
+    -- CLAUDE.md files in the vault are agent instructions, not notes
+    if in_vault(args.file) and vim.fs.basename(args.file) ~= 'CLAUDE.md' then load() end
   end,
 })
 
