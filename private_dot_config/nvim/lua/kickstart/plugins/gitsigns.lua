@@ -1,10 +1,4 @@
-local function gh(repo) return 'https://github.com/' .. repo end
-
--- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
---
--- See `:help gitsigns` to understand what each configuration key does.
--- Adds git related signs to the gutter, as well as utilities for managing changes
-vim.pack.add { gh 'lewis6991/gitsigns.nvim' }
+vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
 require('gitsigns').setup {
   signs = {
     add = { text = '+' }, ---@diagnostic disable-line: missing-fields
@@ -22,7 +16,7 @@ require('gitsigns').setup {
       vim.keymap.set(mode, l, r, opts)
     end
 
-    -- Navigation
+    -- Navigation (falls back to the built-in ]c/[c in diff mode)
     map('n', ']c', function()
       if vim.wo.diff then
         vim.cmd.normal { ']c', bang = true }
@@ -40,10 +34,8 @@ require('gitsigns').setup {
     end, { desc = 'Jump to previous git [c]hange' })
 
     -- Actions
-    -- visual mode
     map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line '.', vim.fn.line 'v' } end, { desc = 'git [s]tage hunk' })
     map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line '.', vim.fn.line 'v' } end, { desc = 'git [r]eset hunk' })
-    -- normal mode
     map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'git [s]tage hunk' })
     map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'git [r]eset hunk' })
     map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'git [S]tage buffer' })
