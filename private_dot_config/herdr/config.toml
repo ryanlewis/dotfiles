@@ -123,7 +123,7 @@ rename_tab = "prefix+,"
 #   cmd+w            -> close the focused pane
 #   cmd+g            -> session navigator (goto)
 #   cmd+n            -> new workspace
-#   cmd+shift+b      -> toggle the sidebar
+#   cmd+/ or cmd+shift+b -> toggle the sidebar
 #   cmd+ctrl+r       -> resize mode (arrows / hjkl, esc to leave)
 #   cmd+shift+enter  -> zoom the focused pane (toggle)
 new_tab = ["prefix+c", "cmd+t"]
@@ -133,7 +133,7 @@ split_horizontal = ["prefix+minus", "cmd+shift+d"]
 close_pane = ["prefix+x", "cmd+w"]
 goto = ["prefix+g", "cmd+g"]
 new_workspace = ["prefix+shift+n", "cmd+n"]
-toggle_sidebar = ["prefix+b", "cmd+shift+b"]
+toggle_sidebar = ["prefix+b", "cmd+shift+b", "cmd+/"]
 resize_mode = ["prefix+r", "cmd+ctrl+r"]
 zoom = ["prefix+z", "cmd+shift+enter"]
 
