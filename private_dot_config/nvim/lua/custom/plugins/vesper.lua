@@ -2,7 +2,7 @@
 vim.pack.add { { src = 'https://github.com/datsfilipe/vesper.nvim' } }
 
 require('vesper').setup {
-  transparent = false,
+  transparent = true,
   italics = {
     comments = true,
     keywords = false,

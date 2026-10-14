@@ -9,24 +9,35 @@ theme = light:Catppuccin Latte,dark:Ayu
 # ── Font ─────────────────────────────────────────────────────
 #font-family = IosevkaNerdFont
 #font-family = "IoskeleyMono Nerd Font"
-font-family = "Maple Mono NF"
+#font-family = "Maple Mono NF"
+font-family = "CommitMono Nerd Font Mono"
 font-size = 14
-# Faux-bold the strokes a touch (macOS); helps text read heavier on light backgrounds.
-font-thicken = true
-font-feature = +liga
+# Linear blending keeps glyph edges crisp; faux-bold off so strokes stay thin.
+alpha-blending = linear-corrected
+font-thicken = false
+adjust-cell-height = 10%
 font-feature = +calt
+font-feature = +ss01
+font-feature = +ss02
+font-feature = +ss03
+font-feature = +ss04
+font-feature = +ss05
 
 # ── Window & Appearance ──────────────────────────────────────
 macos-titlebar-style = transparent
 macos-window-buttons = hidden
-window-padding-x = 0
-window-padding-y = 0
+window-padding-x = 8
+window-padding-y = 6
 window-padding-balance = true
-# Both modes run fully opaque (no background-opacity set). background-blur-radius
-# only takes effect if you reintroduce transparency.
-background-blur-radius = 10
+background-opacity = 0.85
+background-blur-radius = 20
+# Apply opacity to cells with their own background too (e.g. nvim), not just the default.
+background-opacity-cells = true
+minimum-contrast = 1.1
+window-colorspace = display-p3
 window-save-state = always
 macos-window-shadow = true
+macos-non-native-fullscreen = true
 # Dim unfocused splits so the active pane pops. The fill defaults to the
 # theme background, so dimming adapts to light/dark mode automatically.
 unfocused-split-opacity = 0.75
