@@ -19,6 +19,7 @@
     IFS= read -r session_cost
     IFS= read -r pr_number
     IFS= read -r pr_state
+    IFS= read -r pr_url
     IFS= read -r cache_observed
     IFS= read -r cache_expires
     IFS= read -r now
@@ -37,6 +38,7 @@
         (.cost.total_cost_usd // ""),
         (.pr.number // ""),
         (.pr.review_state // ""),
+        (.pr.url // ""),
         (.prompt_cache.caching_observed // false),
         (.prompt_cache.expires_at // ""),
         (now | floor)
@@ -137,7 +139,13 @@ fi
 seg1=("\033[1;36m ${truncated_dir}\033[0m")
 
 if [[ -n "$git_branch" ]]; then
-    seg1+=("\033[1;35m ${git_branch}\033[0m")
+    branch_label=" ${git_branch}"
+    # Link the branch to its Jira ticket when the name carries a key, e.g. RET-1234-foo
+    jira_key_re='(^|/)([A-Z][A-Z0-9]+-[0-9]+)'
+    if [[ "$git_branch" =~ $jira_key_re ]]; then
+        branch_label="\033]8;;https://lhv-uk.atlassian.net/browse/${BASH_REMATCH[2]}\a${branch_label}\033]8;;\a"
+    fi
+    seg1+=("\033[1;35m${branch_label}\033[0m")
     if [[ -n "$git_worktree_label" ]]; then
         if [[ "$git_worktree_label" == "$git_branch" || "$git_worktree_label" == "${git_branch//\//-}" ]]; then
             seg1+=("\033[1;33m󰙅\033[0m")
@@ -158,7 +166,10 @@ if [[ -n "$pr_number" ]]; then
         draft)             pr_colour="2;37" ;; # dim
         *)                 pr_colour="1;34" ;; # blue — state unknown
     esac
-    seg1+=("\033[${pr_colour}m #${pr_number}\033[0m")
+    pr_label=" #${pr_number}"
+    # OSC 8 hyperlink, BEL-terminated so pack_segments can strip it for width
+    [[ -n "$pr_url" ]] && pr_label="\033]8;;${pr_url}\a${pr_label}\033]8;;\a"
+    seg1+=("\033[${pr_colour}m${pr_label}\033[0m")
 fi
 
 seg2=("\033[0;37m󰚩 ${model_name}\033[0m")
@@ -251,6 +262,7 @@ pack_segments() {
     local seg plain width row="" row_width=0 out=""
     for seg in "$@"; do
         plain="${seg//\\033\[*([0-9;])m/}"
+        plain="${plain//\\033]8;;*([^\\])\\a/}"
         width=${#plain}
         if [[ -z "$row" ]]; then
             row="$seg" row_width=$width
