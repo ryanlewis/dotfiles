@@ -26,10 +26,13 @@ rows = [
 # which reports these $ar_* pane tokens on every agent state change:
 #   $ar_name   workspace name (leads and solo agents)
 #   $ar_git    branch or PR (#42, #42 merged), only off the default branch
-#   $ar_state  "done 14:02" / "blocked 14:05" (empty while working);
-#              on a team lead, the roll-up ("lead · 3 workers, 1 blocked")
+#   $ar_state  "done 5m ago" / "blocked just now" (empty while working);
+#              a startup-hook ticker re-sweeps every 30s so it keeps moving
 #   $ar_title  live terminal title, solo agents only, when it differs from
 #              the workspace name
+#   $ar_lgit / $ar_lstate  a team lead's branch and roll-up ("lead · 3
+#              workers, 1 blocked"), on line 2 so a long lead name gets
+#              line 1 to itself
 #   $ar_wname / $ar_wgit / $ar_wstate  the same for a team worker, under
 #              their own names so the whole worker row can be dimmed; the
 #              name is indented with two U+2800 blanks (herdr trims spaces)
@@ -53,8 +56,6 @@ rows = [
    { token = "$ar_state", fg = "#7f849c", rules = [
      { starts_with = "blocked", fg = "#f38ba8", bold = true },
      { starts_with = "done", fg = "#a6e3a1" },
-     { contains = "blocked", fg = "#fab387" },
-     { starts_with = "lead", fg = "#cba6f7" },
    ] },
    { token = "$ar_wname", dim = true, fg = "#b4befe" },
    { token = "$ar_wgit", dim = true, fg = "#94e2d5", rules = [
@@ -66,7 +67,15 @@ rows = [
      { starts_with = "blocked", fg = "#f38ba8", bold = true },
      { starts_with = "done", fg = "#a6e3a1" },
    ] }],
-  [{ token = "$ar_title", fg = "#a6adc8" }],
+  [{ token = "$ar_title", fg = "#a6adc8" },
+   { token = "$ar_lgit", fg = "#94e2d5", rules = [
+     { contains = "merged", fg = "#cba6f7" },
+     { contains = "closed", fg = "#f38ba8" },
+     { starts_with = "#", fg = "#89b4fa" },
+   ] },
+   { token = "$ar_lstate", fg = "#cba6f7", rules = [
+     { contains = "blocked", fg = "#fab387" },
+   ] }],
 ]
 
 [theme]
