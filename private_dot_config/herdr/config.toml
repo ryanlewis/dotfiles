@@ -26,7 +26,7 @@ rows = [
 # which reports these $ar_* pane tokens on every agent state change:
 #   $ar_name   workspace name (leads and solo agents)
 #   $ar_git    branch or PR (#42, #42 merged), only off the default branch
-#   $ar_state  "done 5m ago" / "blocked just now" (empty while working);
+#   $ar_state  "done 5m" / "blocked now" (empty while working);
 #              a startup-hook ticker re-sweeps every 30s so it keeps moving
 #   $ar_title  live terminal title, solo agents only, when it differs from
 #              the workspace name
