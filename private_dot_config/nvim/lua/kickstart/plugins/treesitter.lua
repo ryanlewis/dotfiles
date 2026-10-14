@@ -23,6 +23,7 @@ local parsers = {
   'yaml',
   -- languages I work in
   'go',
+  'kotlin',
   'python',
 }
 require('nvim-treesitter').install(parsers)
