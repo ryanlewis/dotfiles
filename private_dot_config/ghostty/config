@@ -57,7 +57,7 @@ cursor-style-blink = false
 adjust-cursor-thickness = 2
 
 # ── Quick Terminal (hotkey window) ───────────────────────────
-# keybind = global:§=toggle_quick_terminal
+keybind = global:§=toggle_visibility
 quick-terminal-position = top
 quick-terminal-screen = main
 quick-terminal-animation-duration = 0.15
