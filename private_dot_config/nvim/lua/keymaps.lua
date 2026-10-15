@@ -32,6 +32,10 @@ vim.keymap.set('n', '<leader>tW', function()
   vim.notify('wrap ' .. (vim.wo.wrap and 'on' or 'off'))
 end, { desc = '[T]oggle soft-[W]rap' })
 
+-- Toggle comments via Neovim's built-in gc operator (remap so it reaches gc/gcc)
+vim.keymap.set('x', '<leader>c', 'gc', { remap = true, desc = 'Toggle [C]omment on selection' })
+vim.keymap.set('n', '<leader>c', 'gcc', { remap = true, desc = 'Toggle [C]omment on line' })
+
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
