@@ -5,7 +5,12 @@ delivery = "terminal"
 
 [ui]
 show_agent_labels_on_pane_borders = true
+# Close a workspace's last pane or tab without a confirmation prompt (0.9.4+)
+confirm_close = false
 status_indicators = "symbols"
+# Tab row at the bottom, clear of the MacBook notch in full screen.
+tab_bar_position = "bottom"
+hide_tab_bar_when_single_tab = true
 
 # Workspace rows: line 2 is $dir — the root pane's directory, reported by the
 # Workspace Renamer plugin (io.rlew.workspace-renamer) for workspaces it has
@@ -39,50 +44,76 @@ rows = [
 # Workers are one line and sit under their lead (agent_panel_sort "spaces"
 # keeps workspace → tab → pane order). Roles come from the team-lead skill
 # (role/lead pane tokens). Without the plugin the rows show only the icon.
-# Colours ("full tint", catppuccin mocha hex, so they don't follow a theme
-# switch): teal branch, blue open PR, mauve merged, red closed; green done,
-# red+bold blocked, grey idle; lead roll-up mauve, peach with a blocked
-# worker; names in text colour, titles subtext0, worker names lavender. Rules
-# match the token's own text.
+# Colours: sidebar token styles take fixed hex only (no theme tokens, no
+# light/dark variants), so names and titles carry no fg and follow the theme's
+# text colour, and the meaning colours are mid shades that read on both Ayu
+# dark and Catppuccin Latte: teal branch, blue open PR, mauve merged, red
+# closed; green done, red+bold blocked, grey idle; lead roll-up mauve, peach
+# with a blocked worker. Titles and worker rows are dimmed. Rules match the
+# token's own text.
 [ui.sidebar.agents]
 rows = [
   ["state_icon",
-   { token = "$ar_name", bold = true, fg = "#cdd6f4" },
-   { token = "$ar_git", fg = "#94e2d5", rules = [
-     { contains = "merged", fg = "#cba6f7" },
-     { contains = "closed", fg = "#f38ba8" },
-     { starts_with = "#", fg = "#89b4fa" },
+   { token = "$ar_name", bold = true },
+   { token = "$ar_git", fg = "#1a8f86", rules = [
+     { contains = "merged", fg = "#8f5fd0" },
+     { contains = "closed", fg = "#d43a50" },
+     { starts_with = "#", fg = "#3a80c8" },
    ] },
-   { token = "$ar_state", fg = "#7f849c", rules = [
-     { starts_with = "blocked", fg = "#f38ba8", bold = true },
-     { starts_with = "done", fg = "#a6e3a1" },
+   { token = "$ar_state", fg = "#7a7f8c", rules = [
+     { starts_with = "blocked", fg = "#d43a50", bold = true },
+     { starts_with = "done", fg = "#3f9634" },
    ] },
-   { token = "$ar_wname", dim = true, fg = "#b4befe" },
-   { token = "$ar_wgit", dim = true, fg = "#94e2d5", rules = [
-     { contains = "merged", fg = "#cba6f7" },
-     { contains = "closed", fg = "#f38ba8" },
-     { starts_with = "#", fg = "#89b4fa" },
+   { token = "$ar_wname", dim = true },
+   { token = "$ar_wgit", dim = true, fg = "#1a8f86", rules = [
+     { contains = "merged", fg = "#8f5fd0" },
+     { contains = "closed", fg = "#d43a50" },
+     { starts_with = "#", fg = "#3a80c8" },
    ] },
-   { token = "$ar_wstate", dim = true, fg = "#7f849c", rules = [
-     { starts_with = "blocked", fg = "#f38ba8", bold = true },
-     { starts_with = "done", fg = "#a6e3a1" },
+   { token = "$ar_wstate", dim = true, fg = "#7a7f8c", rules = [
+     { starts_with = "blocked", fg = "#d43a50", bold = true },
+     { starts_with = "done", fg = "#3f9634" },
    ] }],
-  [{ token = "$ar_title", fg = "#a6adc8" },
-   { token = "$ar_lgit", fg = "#94e2d5", rules = [
-     { contains = "merged", fg = "#cba6f7" },
-     { contains = "closed", fg = "#f38ba8" },
-     { starts_with = "#", fg = "#89b4fa" },
+  [{ token = "$ar_title", dim = true },
+   { token = "$ar_lgit", fg = "#1a8f86", rules = [
+     { contains = "merged", fg = "#8f5fd0" },
+     { contains = "closed", fg = "#d43a50" },
+     { starts_with = "#", fg = "#3a80c8" },
    ] },
-   { token = "$ar_lstate", fg = "#cba6f7", rules = [
-     { contains = "blocked", fg = "#fab387" },
+   { token = "$ar_lstate", fg = "#8f5fd0", rules = [
+     { contains = "blocked", fg = "#c96c25" },
    ] }],
 ]
 
+# Matches Ghostty: Ayu when macOS is dark, Catppuccin Latte when light.
+# Ayu is built from the catppuccin base with every token overridden below.
 [theme]
 name = "catppuccin"
-auto_switch = false
-dark_name = "tokyo-night"
-light_name = "tokyo-night-day"
+auto_switch = true
+dark_name = "catppuccin"
+light_name = "catppuccin-latte"
+
+# Ayu Dark. Palette colours from Ghostty's Ayu theme; surfaces, overlays,
+# subtext and selection from Ayu's editor palette.
+[theme.custom.dark]
+panel_bg      = "reset"          # keep Ghostty's translucent, blurred background
+active_row_bg = "#131721"
+selection_bg  = "#1c2633"
+surface0      = "#131721"
+surface1      = "#1c212b"
+surface_dim   = "#0f131a"
+overlay0      = "#565b66"
+overlay1      = "#6c7380"
+text          = "#bfbdb6"
+subtext0      = "#8a8986"
+accent        = "#3a8fc4"          # dimmed Ayu blue; also fills the active tab
+mauve         = "#d2a6ff"
+green         = "#aad94c"
+yellow        = "#ffb454"
+red           = "#f07178"
+blue          = "#59c2ff"
+teal          = "#95e6cb"
+peach         = "#ff8f40"
 
 [ui.sound]
 enabled = false
@@ -206,3 +237,12 @@ key = "cmd+p"
 type = "plugin_action"
 command = "vjeantet.palette.open"
 description = "Command palette"
+
+# Fingers (nathan-poncet.herdr-fingers): hint every URL, path or SHA in the
+# pane. Type a hint to open, Shift+hint to paste, Ctrl+hint to copy (swapped
+# in the plugin config).
+[[keys.command]]
+key = ["prefix+f", "cmd+o"]
+type = "plugin_action"
+command = "nathan-poncet.herdr-fingers.start"
+description = "open with hints"
