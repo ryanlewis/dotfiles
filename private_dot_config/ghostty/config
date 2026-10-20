@@ -29,7 +29,7 @@ macos-window-buttons = hidden
 window-padding-x = 8
 window-padding-y = 6
 window-padding-balance = true
-background-opacity = 0.85
+background-opacity = 0.93
 background-blur-radius = 20
 # Apply opacity to cells with their own background too (e.g. nvim), not just the default.
 background-opacity-cells = true
