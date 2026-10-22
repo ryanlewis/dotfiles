@@ -3,7 +3,17 @@
 # Claude Code statusLine command
 # Mirrors the user's Starship prompt configuration
 
-# Read JSON input from stdin — single jq call emits one field per line.
+input=$(cat)
+
+# Snapshot the subscription rate limits for scripts that cannot see this JSON
+# (boil-the-ocean's usage-gate.sh). Written atomically; skipped when absent.
+if rl=$(jq -ce 'select(.rate_limits.seven_day) | .rate_limits + {captured_at: (now | floor)}' <<<"$input" 2>/dev/null); then
+    mkdir -p ~/.claude/state
+    printf '%s\n' "$rl" > ~/.claude/state/rate-limits.json.$$ &&
+        mv ~/.claude/state/rate-limits.json.$$ ~/.claude/state/rate-limits.json
+fi
+
+# Read JSON input — single jq call emits one field per line.
 # Line-based (not tab-joined) so empty optional fields aren't collapsed by read.
 {
     IFS= read -r model_name
@@ -42,7 +52,7 @@
         (.prompt_cache.caching_observed // false),
         (.prompt_cache.expires_at // ""),
         (now | floor)
-    '
+    ' <<<"$input"
 )
 
 # Shorten model name: "Opus 4.6 (1M context)" → "Opus 4.6 (1M)"
