@@ -85,35 +85,36 @@ rows = [
    ] }],
 ]
 
-# Matches Ghostty: Ayu when macOS is dark, Catppuccin Latte when light.
-# Ayu is built from the catppuccin base with every token overridden below.
+# Nord, fixed. To go back to matching Ghostty (Ayu when macOS is dark,
+# Catppuccin Latte when light), set name = "catppuccin", auto_switch = true
+# and uncomment the Ayu overrides below.
 [theme]
-name = "catppuccin"
-auto_switch = true
+name = "nord"
+auto_switch = false
 dark_name = "catppuccin"
 light_name = "catppuccin-latte"
 
 # Ayu Dark. Palette colours from Ghostty's Ayu theme; surfaces, overlays,
 # subtext and selection from Ayu's editor palette.
-[theme.custom.dark]
-panel_bg      = "reset"          # keep Ghostty's translucent, blurred background
-active_row_bg = "#131721"
-selection_bg  = "#1c2633"
-surface0      = "#131721"
-surface1      = "#1c212b"
-surface_dim   = "#0f131a"
-overlay0      = "#565b66"
-overlay1      = "#6c7380"
-text          = "#bfbdb6"
-subtext0      = "#8a8986"
-accent        = "#3a8fc4"          # dimmed Ayu blue; also fills the active tab
-mauve         = "#d2a6ff"
-green         = "#aad94c"
-yellow        = "#ffb454"
-red           = "#f07178"
-blue          = "#59c2ff"
-teal          = "#95e6cb"
-peach         = "#ff8f40"
+# [theme.custom.dark]
+# panel_bg      = "reset"          # keep Ghostty's translucent, blurred background
+# active_row_bg = "#131721"
+# selection_bg  = "#1c2633"
+# surface0      = "#131721"
+# surface1      = "#1c212b"
+# surface_dim   = "#0f131a"
+# overlay0      = "#565b66"
+# overlay1      = "#6c7380"
+# text          = "#bfbdb6"
+# subtext0      = "#8a8986"
+# accent        = "#3a8fc4"          # dimmed Ayu blue; also fills the active tab
+# mauve         = "#d2a6ff"
+# green         = "#aad94c"
+# yellow        = "#ffb454"
+# red           = "#f07178"
+# blue          = "#59c2ff"
+# teal          = "#95e6cb"
+# peach         = "#ff8f40"
 
 [ui.sound]
 enabled = false
@@ -238,11 +239,19 @@ type = "plugin_action"
 command = "vjeantet.palette.open"
 description = "Command palette"
 
-# Fingers (nathan-poncet.herdr-fingers): hint every URL, path or SHA in the
+# Fingers (io.rlew.fingers): hint every URL, path or SHA in the
 # pane. Type a hint to open, Shift+hint to paste, Ctrl+hint to copy (swapped
 # in the plugin config).
 [[keys.command]]
 key = ["prefix+f", "cmd+o"]
 type = "plugin_action"
-command = "nathan-poncet.herdr-fingers.start"
+command = "io.rlew.fingers.start"
 description = "open with hints"
+
+# Fingers link mode: hint only labelled (OSC 8) links, such as "PR #42" or a
+# file name, by asking Herdr for the address under coloured or underlined text.
+[[keys.command]]
+key = "cmd+shift+o"
+type = "plugin_action"
+command = "io.rlew.fingers.links"
+description = "open labelled links"
