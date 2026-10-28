@@ -45,7 +45,7 @@
 #
 # Static facts (OS, kernel, uptime, load, CPU, temperature, memory) are read
 # fork-free from /etc, /proc and /sys. The live reads — `ip`, `df`, `docker ps`
-# (only when the socket is there), `systemctl --failed` — run in parallel in a
+# (only when the socket is there), `virsh list`, `systemctl --failed` — run in parallel in a
 # subshell into a private runtime dir, so the cost is the slowest one (docker,
 # ~90 ms), not the sum. Two sources are too slow to wait for and are served from
 # ~/.cache/zsh with a detached background refresh: the Pi-hole exporter on
@@ -98,6 +98,8 @@
                 -x tmpfs -x devtmpfs -x overlay -x squashfs -x vfat -x efivarfs >$tmp/df 2>/dev/null &
             [[ -S /var/run/docker.sock ]] && (( $+commands[docker] )) &&
                 command docker ps -a --format '{{"{{"}}.Names{{"}}"}}\t{{"{{"}}.State{{"}}"}}\t{{"{{"}}.Status{{"}}"}}' >$tmp/docker 2>/dev/null &
+            (( $+commands[virsh] )) &&
+                command virsh -c qemu:///system -q list --all >$tmp/vms 2>/dev/null &
             (( $+commands[systemctl] )) &&
                 command systemctl --failed --no-legend --plain >$tmp/failed 2>/dev/null &
             wait
@@ -152,9 +154,10 @@
     fi
 
     # ── banner ──────────────────────────────────────────────────────────
-    print
+    # Block letters for named hosts, the plain uppercase hostname elsewhere.
+    local -a banner grad
 {{- if eq .chezmoi.hostname "betty" }}
-    local -a banner=(
+    banner=(
         '██████╗ ███████╗████████╗████████╗██╗   ██╗'
         '██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝╚██╗ ██╔╝'
         '██████╔╝█████╗     ██║      ██║    ╚████╔╝ '
@@ -162,13 +165,26 @@
         '██████╔╝███████╗   ██║      ██║      ██║   '
         '╚═════╝ ╚══════╝   ╚═╝      ╚═╝      ╚═╝   '
     )
-    local -a grad=( $'\e[38;5;39m' $'\e[38;5;45m' $'\e[38;5;51m' $'\e[38;5;87m' $'\e[38;5;123m' $'\e[38;5;159m' )
-    for i in {1..${#banner}}; do
-        print -r -- "  ${grad[i]}${banner[i]}${reset}"
-    done
-{{- else -}}
-    print -r -- "  ${cyan}${bold}${(U)HOST}${reset}"
+    grad=( $'\e[38;5;39m' $'\e[38;5;45m' $'\e[38;5;51m' $'\e[38;5;87m' $'\e[38;5;123m' $'\e[38;5;159m' )
+{{- else if eq .chezmoi.hostname "bert" }}
+    banner=(
+        '██████╗ ███████╗██████╗ ████████╗'
+        '██╔══██╗██╔════╝██╔══██╗╚══██╔══╝'
+        '██████╔╝█████╗  ██████╔╝   ██║   '
+        '██╔══██╗██╔══╝  ██╔══██╗   ██║   '
+        '██████╔╝███████╗██║  ██║   ██║   '
+        '╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝   '
+    )
+    grad=( $'\e[38;5;202m' $'\e[38;5;208m' $'\e[38;5;214m' $'\e[38;5;220m' $'\e[38;5;221m' $'\e[38;5;223m' )
 {{- end }}
+    print
+    if (( ${#banner} )); then
+        for i in {1..${#banner}}; do
+            print -r -- "  ${grad[i]}${banner[i]}${reset}"
+        done
+    else
+        print -r -- "  ${cyan}${bold}${(U)HOST}${reset}"
+    fi
     print
     print -r -- "  ${os_name}${sep}${kernel}${sep}up ${uptime_str}${sep}load ${load}"
     line="  ${cpu:-cpu}"
@@ -227,6 +243,25 @@
         line="  ${dim}docker ${reset} ${col}${running}/${total} running${reset}"
         (( ${#issues} )) && line+="${sep}${(j: · :)issues}"
         print -r -- "$line"
+    fi
+
+    # ── libvirt VMs ─────────────────────────────────────────────────────
+    # Rows are "Id Name State"; a stopped VM has Id "-". Stopped isn't a fault
+    # (VMs can be off by design), so only running names are listed.
+    if [[ -s $tmp/vms ]]; then
+        local -a vrun
+        local vtotal=0
+        for line in ${(f)"$(<$tmp/vms)"}; do
+            f=( ${=line} )
+            (( ${#f} >= 3 )) || continue
+            (( vtotal++ ))
+            [[ ${f[3]} == running ]] && vrun+=( ${f[2]} )
+        done
+        if (( vtotal )); then
+            line="  ${dim}vms    ${reset} ${green}${#vrun}/${vtotal} running${reset}"
+            (( ${#vrun} )) && line+="${sep}${(j: · :)vrun}"
+            print -r -- "$line"
+        fi
     fi
 
     # ── pi-hole (cached pihole-exporter scrape) ─────────────────────────
