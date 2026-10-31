@@ -341,7 +341,8 @@
       "Bash(* > /proc/*)",
       "Bash(* > /boot/*)",
       "Bash(* >> /etc/*)",
-      "Bash(git push --force:*)",
+      "Bash(git push --force)",
+      "Bash(git push --force *)",
       "Bash(git push -f:*)",
       "Bash(git reset --hard:*)",
       "Bash(git clean -f:*)",
@@ -481,6 +482,11 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/gh-merge-guard.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/git-push-guard.sh",
             "timeout": 10
           }
         ]
