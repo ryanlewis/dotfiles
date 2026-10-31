@@ -146,7 +146,15 @@ fi
 # A group wraps onto extra rows when it is wider than the terminal, which
 # Claude Code would otherwise cut off with "…".
 
-seg1=("\033[1;36m ${truncated_dir}\033[0m")
+seg1=()
+
+# Host badge, for machines worth telling apart at a glance. The script is
+# shared across machines via chezmoi, so unlisted hosts show nothing.
+case "${HOSTNAME%%.*}" in
+    bert) seg1+=("\033[1;38;5;161m Bert\033[0m") ;; # Debian swirl, Debian red
+esac
+
+seg1+=("\033[1;36m ${truncated_dir}\033[0m")
 
 if [[ -n "$git_branch" ]]; then
     branch_label=" ${git_branch}"
