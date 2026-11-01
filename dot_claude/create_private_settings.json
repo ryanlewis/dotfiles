@@ -437,14 +437,14 @@
       "Bash(rm -* /Users/ryan/dev/notes *)",
       "Bash(rm -* /Users/ryan/dev/notes/ *)"
     ],
-    "defaultMode": "auto",
     "ask": [
       "Bash(git worktree remove* -f*)",
       "Bash(git worktree remove*--force*)",
       "Bash(wt remove* -f*)",
       "Bash(wt remove* -D*)",
       "Bash(wt remove*--force*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus",
   "skillOverrides": {
@@ -473,6 +473,24 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Applications/Floor.app/Contents/MacOS/floor hook session-start",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'rex __internal session-start --agent claude 2>/dev/null || true'",
+            "timeout": 5
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -497,6 +515,28 @@
             "onFailure": "block"
           }
         ]
+      },
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Applications/Floor.app/Contents/MacOS/floor hook send-message",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Applications/Floor.app/Contents/MacOS/floor hook send-message",
+            "timeout": 5
+          }
+        ]
       }
     ]
   },
@@ -512,20 +552,21 @@
   "enabledPlugins": {
     "agent-sdk-dev@claude-plugins-official": false,
     "claude-code-setup@claude-plugins-official": false,
-    "claude-md-management@claude-plugins-official": false,
-    "context7@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "kotlin-lsp@claude-plugins-official": false,
     "last30days@last30days-skill": true,
     "plugin-dev@claude-plugins-official": false,
     "pr-review-toolkit@claude-plugins-official": false,
     "rust-analyzer-lsp@claude-plugins-official": false,
-    "skill-creator@claude-plugins-official": false,
     "swift-lsp@claude-plugins-official": false,
     "typescript-lsp@claude-plugins-official": false,
     "codex@openai-codex": true,
     "worktrunk@worktrunk": true,
-    "cowork-plugin-management@synced": false
+    "cowork-plugin-management@synced": false,
+    "cases@cases": false,
+    "next-steps@claude-community": false,
+    "checkpoint@ryanlewis-plugins": false,
+    "stall-resume@claude-mods": true
   },
   "extraKnownMarketplaces": {
     "last30days-skill": {
@@ -544,6 +585,25 @@
       "source": {
         "source": "github",
         "repo": "max-sixty/worktrunk"
+      }
+    },
+    "cases": {
+      "source": {
+        "source": "github",
+        "repo": "ryanlewis/cases",
+        "ref": "claude-plugins"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "claude-mods": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/ryan/dev/claude-mods"
       }
     }
   },
@@ -577,10 +637,29 @@
   "feedbackDrafts": "notify",
   "syntaxHighlightingDisabled": false,
   "maxProseWidth": 100,
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "modelSettings": {
     "claude-opus-5-5": {
+      "effortLevel": "medium"
+    },
+    "claude-sonnet-5-5": {
+      "effortLevel": "medium"
+    },
+    "claude-fable-5-1": {
       "effortLevel": "high"
+    }
+  },
+  "pluginConfigs": {
+    "cases@inline": {
+      "options": {
+        "sidebar": "request"
+      }
+    },
+    "next-steps@claude-community": {
+      "options": {
+        "minAnswerChars": 80,
+        "suggestSkills": true
+      }
     }
   },
   "tui": "fullscreen",
@@ -594,9 +673,50 @@
   "terminalProgressBarEnabled": true,
   "teammateMode": "auto",
   "remoteControlAtStartup": true,
+  "crossSessionInbound": "accept",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "useAutoModeDuringPlan": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Git branch removal: It is fine to force remove a branch which is not main or master, and the branch has been merged as a result of squashing a PR on GitHub.",
+      "Merging GitHub PRs: `gh pr merge` (with --rebase, --squash or --merge, optionally --delete-branch) is fine on pull requests in the user's own personal repos (owner ryanlewis) once their required checks pass. Not for LHV-UK or any other owner, and never with --admin or anything else that bypasses checks or branch protection."
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Encrypted-note handling in ~/dev/notes: block reading, grepping, editing, or decrypting GPG-armored notes (gpgCrypt, content-sniffed `-----BEGIN PGP MESSAGE-----` files) unless explicitly requested, and block leaving decrypted plaintext on disk afterwards",
+      "Sync-exclusion changes affecting personal/cv/ or other hidden/excluded vault paths in ~/dev/notes (the work-laptop exclusion is the only thing keeping personal/cv/ off that device; mis-ordering add-exclusion vs delete-local propagates deletion to every synced device)"
+    ],
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Primary use of Claude Code**: software development",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: unknown — this repo (~/dev/notes, the Obsidian vault) has no git remote configured, so visibility cannot be inferred from a remote host; treat as private working copy on this machine until a remote exists",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: unknown — no remotes configured for this repo, and gh lookup was not queryable (no origin remote to derive owner/repo from)",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine (personal laptop, per ~/.claude/CLAUDE.md) with open internet",
+      "**Source control**: The trusted repo (~/dev/notes, an Obsidian vault with no git remote) only — no additional orgs configured",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: tools.exe.xyz (headless Obsidian Sync replica, obsidian-sync.service / ob CLI) — per repo CLAUDE.md",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: personal/cv/ (CV/recruitment notes, decrypted on 2026-07-27, excluded from GitHub backup and from the tools.exe.xyz replica; off-device backup only via nightly iCloud encrypted archive on m5p, passphrase in 1Password as notes-icloud-backup); GPG-encrypted notes (gpgCrypt, encrypted to ryan@rlew.io) — treat as opaque, never decrypt or leave plaintext on disk unless explicitly asked; work/Retail/AFC/ (Anti-Financial Crime work notes) — work-confidential, share only with cleared work audiences; personal finance, recruitment, and credentials-adjacent notes generally — should be GPG-encrypted at rest",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: personal knowledge management (Obsidian vault) and software development, on a personal laptop",
+      "**Trusted repo**: ~/dev/notes (this Obsidian vault) — no git remote configured; treat as local-only, not yet pushed anywhere",
+      "**Org-specific CLIs**: things-cli (Things 3 task management), herdr, cases, ob (Obsidian Sync replica control on tools.exe.xyz)",
+      "Routine under ~/dev/ prefix: this vault and sibling personal project checkouts (e.g. ~/dev/floor, ~/dev/hubbub, ~/dev/job-scout) are the user's own repos, but per Q2 scope only ~/dev/notes itself is in-scope for this proposal"
+    ]
+  },
   "voiceEnabled": true
 }
