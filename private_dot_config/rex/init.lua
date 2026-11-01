@@ -62,3 +62,42 @@ rex.bind("cmd+g", "session.switch")
 rex.bind("cmd+shift+b", "client.sidebar.toggle")
 rex.bind("cmd+/", "client.sidebar.toggle")
 rex.bind("cmd+p", "client.palette.toggle")
+
+-- rex-lead roster: cmd+alt+r jumps focus between a lead and its roster, the
+-- floating pane labelled roster-<last 6 of the lead's block id>, in the
+-- active tab. From the lead (or any pane with no roster of its own) it goes to
+-- the roster; from a roster it goes back to that roster's lead. [KeyR] binds
+-- the physical key, since alt changes the character on a Mac layout.
+rex.action{
+  name = "roster_toggle",
+  title = "Toggle Roster and Lead",
+  run = function(ctx)
+    local view, err = rex.session.view{ session_id = ctx.session_id }
+    if not view then error(err, 0) end
+    local win
+    for _, w in ipairs(view.windows or {}) do
+      if w.window_id == view.active_window_id then win = w end
+    end
+    if not win or not win.focused_block_id then return end
+    local here, labels, rosters, count = win.focused_block_id, {}, {}, 0
+    for _, layer in ipairs(win.layers or {}) do
+      for _, b in ipairs(layer.blocks or {}) do
+        labels[b.block_id] = b.label or ""
+        local s = labels[b.block_id]:match("^roster%-(%x%x%x%x%x%x)$")
+        if s then rosters[s], count = b.block_id, count + 1 end
+      end
+    end
+    local target
+    local lead = (labels[here] or ""):match("^roster%-(%x%x%x%x%x%x)$")
+    if lead then
+      for id in pairs(labels) do
+        if id ~= here and id:sub(-6) == lead then target = id end
+      end
+    else
+      target = rosters[here:sub(-6)]
+      if not target and count == 1 then target = select(2, next(rosters)) end
+    end
+    if target then rex.session.focus_block{ session_id = ctx.session_id, block_id = target } end
+  end,
+}
+rex.bind("cmd+alt+[KeyR]", "roster_toggle")
