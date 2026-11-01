@@ -482,12 +482,19 @@
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/gh-merge-guard.sh",
-            "timeout": 10
+            "timeout": 10,
+            "onFailure": "block"
           },
           {
             "type": "command",
             "command": "bash ~/.claude/hooks/git-push-guard.sh",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree-force-guard.sh",
+            "timeout": 10,
+            "onFailure": "block"
           }
         ]
       }
