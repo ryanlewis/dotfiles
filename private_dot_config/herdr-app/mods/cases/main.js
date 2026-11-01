@@ -180,6 +180,9 @@ export default class Cases extends View {
         this.refresh(cx);
       }
     });
+    // A forwarded store (config `forward`, e.g. ssh://bert) changes on another
+    // machine, where the folder watch can't see it: poll as well.
+    cx.timer.every(15e3, (cx) => this.refresh(cx));
     cx.spawn(async (cx) => {
       for (;;) {
         const c = await nextCommand();
@@ -215,6 +218,8 @@ export default class Cases extends View {
       cx.notify();
       return;
     }
+    if (this.fetching) return;
+    this.fetching = true;
     cx.spawn(async (cx) => {
       try {
         const r = await exec("cases", ["list", "--state", STATES, "--json"]);
@@ -226,6 +231,7 @@ export default class Cases extends View {
       } catch (e) {
         this.error = String(e.message ?? e);
       }
+      this.fetching = false;
       cx.notify();
     });
   }
@@ -421,7 +427,8 @@ export default class Cases extends View {
     cx.notify();
   }
 
-  // Runs one human write on the case; the store watch then refreshes the list.
+  // Runs one human write on the case, then refreshes the list (the store watch
+  // only sees a local store).
   act(c, args, cx) {
     if (this.busy || c.id.startsWith("demo")) return;
     this.busy = true;
@@ -431,6 +438,7 @@ export default class Cases extends View {
       const r = await exec("cases", [...args, c.id, "--revision", String(c.revision), "--json"]);
       this.busy = false;
       if (r.code === 0) {
+        this.refresh(cx);
         this.reply.set_value("");
         this.choice = null;
         this.verdicts = {};
