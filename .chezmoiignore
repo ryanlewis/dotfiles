@@ -55,3 +55,18 @@ renovate.json
 test-chezmoi-data.yaml
 scripts
 bench
+# Herdr app: only keys, settings and our own themes, layouts and mods are config.
+# The app rewrites gpui-kit.d.ts (and seeds jsconfig.json) in every mod folder on
+# start, and owns everything else below. Guards against a whole-dir `chezmoi add`.
+.config/herdr-app/**/gpui-kit.d.ts
+.config/herdr-app/**/jsconfig.json
+.config/herdr-app/**/*.bak-*
+.config/herdr-app/AGENTS.md
+.config/herdr-app/herdr.d.ts
+.config/herdr-app/icons
+.config/herdr-app/frame
+.config/herdr-app/data
+.config/herdr-app/telemetry
+.config/herdr-app/layouts/.state
+.config/herdr-app/mods/cases-images
+.config/herdr-app/update-notes*

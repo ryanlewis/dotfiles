@@ -1,0 +1,9 @@
+{
+  "zoom": 1,
+  "sounds": {
+    "enabled": true
+  },
+  "minimum_contrast": 1,
+  "theme": "graphite-black",
+  "font_size": 13
+}
