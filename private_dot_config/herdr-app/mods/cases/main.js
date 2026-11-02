@@ -545,8 +545,12 @@ export default class Cases extends View {
               .bg(this.verdicts[r.id] === v ? t.accent : t.raised).text_color(this.verdicts[r.id] === v ? t.accent_foreground : t.foreground)
               .on_click((_e, cx) => { this.verdicts[r.id] = v; this.rowAt = i; cx.notify(); })
               .child(r.by === "human" && v === "approve" ? "Done" : v[0].toUpperCase() + v.slice(1)))))
-          .child(div().text_size(11.5).text_color(t.muted).child(r.script))
-          .when(Boolean(r.note), (el) => el.child(div().text_size(11.5).text_color(t.dim).child(r.note))))));
+          .child(h_flex().gap(6).items_start()
+            .child(div().flex_1().min_w(0).child(TextView.markdown(`script-${c.id}-${r.id}`, "```\n" + r.script + "\n```").selectable(true).text_size(11.5).text_color(t.muted)))
+            .child(h_flex().id(`copy-${r.id}`).px(8).h(22).items_center().rounded(5).text_size(11.5).cursor_pointer().bg(t.raised).text_color(t.foreground)
+              .on_click((_e, cx) => { cx.write_to_clipboard(r.script); this.copiedRow = r.id; cx.notify(); })
+              .child(this.copiedRow === r.id ? "Copied" : "Copy")))
+          .when(Boolean(r.note), (el) => el.child(TextView.markdown(`note-${c.id}-${r.id}`, r.note).selectable(true).text_size(11.5).text_color(t.dim))))));
     }
     const label = c.state === "parked" ? "Note to the agent" : c.kind === "briefing" && this.choice === "send_back" ? "Reason: what to fix" : free ? (c.kind === "stuck" ? "Guidance" : "Reply") : "Note to the agent";
     parts.push(v_flex().gap(4)
