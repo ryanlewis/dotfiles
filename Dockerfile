@@ -1,5 +1,5 @@
 # Minimal Dockerfile for testing dotfiles installation
-FROM ubuntu:26.04
+FROM ubuntu:26.04@sha256:6a06111c3b0a8600feadb270aec771dc239bf407b25625f93f44ab00e11f4d3c
 
 # Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive

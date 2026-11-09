@@ -49,7 +49,7 @@ if ! command -v btop &> /dev/null; then
         sudo pacman -S --noconfirm btop
     else
         # Binary installation fallback
-        BTOP_VERSION="1.4.7"
+        BTOP_VERSION="1.4.8"
         if [[ "$ARCH" == "x86_64" ]]; then
             BTOP_ARCH="x86_64-linux-musl"
         elif [[ "$ARCH" == "arm64" ]]; then
@@ -124,7 +124,7 @@ if ! command -v broot &> /dev/null; then
     {{ if eq .chezmoi.os "darwin" -}}
     brew install broot
     {{ else if eq .chezmoi.os "linux" -}}
-    BROOT_VERSION="1.58.0"
+    BROOT_VERSION="1.62.0"
     if [[ "$ARCH" == "x86_64" ]]; then
         BROOT_ARCH="x86_64-unknown-linux-musl"
     elif [[ "$ARCH" == "arm64" ]]; then
@@ -174,7 +174,7 @@ fi
 # registry, so grab the prebuilt release binary on both macOS and Linux.
 if ! command -v mdt &> /dev/null; then
     echo "📰 Installing md-tui..."
-    MDTUI_VERSION="0.10.3"
+    MDTUI_VERSION="0.11.2"
     {{ if eq .chezmoi.os "darwin" -}}
     if [[ "$ARCH" == "x86_64" ]]; then
         MDTUI_ARCH="x86_64-apple-darwin"
