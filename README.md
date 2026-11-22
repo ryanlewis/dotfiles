@@ -551,7 +551,7 @@ contains no version pins.
 
 ### How It Works
 
-1. **Automated Runs**: the shared preset (`github>ryanlewis/renovate-config`) batches non-major updates into one PR, opened Monday mornings after a 5-day release soak
+1. **Automated Runs**: the shared preset (`github>ryanlewis/renovate-config`) batches non-major updates into one PR, opened any day between 7am and 11pm (Europe/London) after a 5-day release soak
 2. **Pull Requests**: conventional commits, one grouped non-major PR plus separate PRs per major
 3. **Auto-merge**: limited to GitHub Actions minor/patch and dev-dependency patches; everything else gets a human
 4. **Major Updates**: parked on the Dependency Dashboard until manually approved
