@@ -209,6 +209,8 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - `https` alias for HTTPS requests
 - **[jq](https://stedolan.github.io/jq/)** - JSON processor
   - Query and manipulate JSON data
+- **[yq](https://github.com/mikefarah/yq)** - `jq` for YAML
+  - Query and edit YAML, TOML and XML (and JSON)
 - **[just](https://github.com/casey/just)** - Modern `make`
   - Simpler command runner
 - **[worktrunk](https://github.com/worktrunk/worktrunk)** - Git worktree manager
@@ -291,7 +293,7 @@ Java, Python/Miniconda** — are off by default and opted into per machine:
 
 **CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
-- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, uv
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, yq, just, gum, uv
 - Editor: neovim (`nvim`), tree-sitter CLI (builds nvim-treesitter parsers)
 - Kubernetes tools: kubectl, kubectx, kubens
 - AWS tools: granted (`assume`)
