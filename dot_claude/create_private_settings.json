@@ -277,7 +277,8 @@
       "Bash(git worktree remove:*)",
       "Bash(git worktree prune:*)",
       "Bash(wt remove:*)",
-      "Bash(rmdir:*)"
+      "Bash(rmdir:*)",
+      "Bash(git-prune-merged:*)"
     ],
     "deny": [
       "Bash(rm -* /etc*)",
