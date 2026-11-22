@@ -209,6 +209,8 @@ This configuration includes a comprehensive suite of modern CLI tools:
   - `https` alias for HTTPS requests
 - **[jq](https://stedolan.github.io/jq/)** - JSON processor
   - Query and manipulate JSON data
+- **[yq](https://github.com/mikefarah/yq)** - `jq` for YAML
+  - Query and edit YAML, TOML and XML (and JSON)
 - **[just](https://github.com/casey/just)** - Modern `make`
   - Simpler command runner
 - **[worktrunk](https://github.com/worktrunk/worktrunk)** - Git worktree manager
@@ -291,7 +293,7 @@ Java, Python/Miniconda** — are off by default and opted into per machine:
 
 **CLI Tools via the mise aqua backend**:
 - Modern CLI replacements: bat, fd, eza, ripgrep, zoxide, duf, dust
-- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, just, gum, uv
+- Development tools: fzf, starship, atuin, delta, lazygit, gh, jq, yq, just, gum, uv
 - Editor: neovim (`nvim`), tree-sitter CLI (builds nvim-treesitter parsers)
 - Kubernetes tools: kubectl, kubectx, kubens
 - AWS tools: granted (`assume`)
@@ -549,7 +551,7 @@ contains no version pins.
 
 ### How It Works
 
-1. **Automated Runs**: the shared preset (`github>ryanlewis/renovate-config`) batches non-major updates into one PR, opened Monday mornings after a 5-day release soak
+1. **Automated Runs**: the shared preset (`github>ryanlewis/renovate-config`) batches non-major updates into one PR, opened any day between 7am and 11pm (Europe/London) after a 5-day release soak
 2. **Pull Requests**: conventional commits, one grouped non-major PR plus separate PRs per major
 3. **Auto-merge**: limited to GitHub Actions minor/patch and dev-dependency patches; everything else gets a human
 4. **Major Updates**: parked on the Dependency Dashboard until manually approved

@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>ryanlewis/renovate-config"],
-  "description": "prCreation immediate: CI runs on pull_request only, so not-pending waits ~25h for checks that never come, which lands outside the Monday-morning schedule and the PR is never opened.",
-  "prCreation": "immediate",
   "packageRules": [
     {
       "description": "Deliberately held back: v0.39.0 assets are missing from releases.commonfate.io (see comment in mise config)",

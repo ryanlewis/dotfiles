@@ -130,6 +130,7 @@ check_command lazygit
 check_command btop
 check_command tldr
 check_command jq
+check_command yq
 check_command http
 check_command gh
 check_command cf

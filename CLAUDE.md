@@ -70,5 +70,5 @@ Zsh is the only managed shell. When adding a tool alias, shell function, or `too
 
 - The canonical list of installed tools and shell functions is the `tools` function (in `tools.zsh`) and the mise config — prefer those over re-listing here. README.md has the long-form human-facing tool descriptions.
 - Scripts continue on non-fatal failures (e.g. Miniconda ToS) rather than aborting the whole apply.
-- Renovate (`renovate.json`) opens PRs for mise tool versions, GitHub Actions, and binary versions pinned in scripts — all via regex `customManagers`, because the templated mise files aren't valid TOML. Non-majors batch weekly (Monday, 5-day soak); majors wait for Dependency Dashboard approval.
+- Renovate (`renovate.json`) opens PRs for mise tool versions, GitHub Actions, and binary versions pinned in scripts — all via regex `customManagers`, because the templated mise files aren't valid TOML. Non-majors batch into one PR, opened any day 07:00–22:59 London after a 5-day soak; majors get their own PR and never automerge.
 - This repo replaces traditional Unix tools: `ls`→eza, `cat`→bat, `find`→fd, `grep`→rg, `cd`→zoxide (z), `top`→btop, `df`→duf, `du`→dust.
