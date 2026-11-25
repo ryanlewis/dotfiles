@@ -22,9 +22,16 @@ if [[ -z "$CHEZMOI_USER_EMAIL" ]]; then
     export CHEZMOI_USER_EMAIL
 fi
 
+# Apply a local checkout instead of cloning main (CI uses this to test the PR's own content)
+if [[ -n "$DOTFILES_SOURCE_DIR" ]]; then
+    init_args=(--source "$DOTFILES_SOURCE_DIR")
+else
+    init_args=(ryanlewis/dotfiles)
+fi
+
 # Install chezmoi and initialize dotfiles in one command
-echo "📦 Installing chezmoi and initializing dotfiles..."
-TMPDIR="$TMPDIR" bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply ryanlewis/dotfiles
+echo "📦 Installing chezmoi and initializing dotfiles from ${init_args[*]}..."
+TMPDIR="$TMPDIR" bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply "${init_args[@]}"
 
 echo ""
 echo "✨ Dotfiles installation complete!"
