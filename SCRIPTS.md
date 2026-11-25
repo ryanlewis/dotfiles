@@ -14,6 +14,7 @@ Minimal bootstrap: installs chezmoi and runs `chezmoi init --apply`. It takes no
 - `CI=true` - non-interactive mode; skips prompts and the login-shell step
 - `QUICK_INSTALL=true` - skip language runtimes and Claude plugin setup
 - `CHEZMOI_USER_NAME` / `CHEZMOI_USER_EMAIL` - pre-seed identity (defaults from git config)
+- `DOTFILES_SOURCE_DIR` - apply this local checkout instead of cloning `ryanlewis/dotfiles` (CI sets it to the checked-out PR). One-off: later `chezmoi` commands still use `~/.local/share/chezmoi`
 
 **What an apply installs:**
 - Zsh configuration
