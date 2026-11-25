@@ -24,13 +24,17 @@ fi
 
 # Apply a local checkout instead of cloning main (CI uses this to test the PR's own content)
 if [[ -n "$DOTFILES_SOURCE_DIR" ]]; then
+    if [[ ! -f "$DOTFILES_SOURCE_DIR/.chezmoi.toml.tmpl" ]]; then
+        echo "❌ DOTFILES_SOURCE_DIR is not a dotfiles checkout: $DOTFILES_SOURCE_DIR" >&2
+        exit 1
+    fi
     init_args=(--source "$DOTFILES_SOURCE_DIR")
 else
     init_args=(ryanlewis/dotfiles)
 fi
 
 # Install chezmoi and initialize dotfiles in one command
-echo "📦 Installing chezmoi and initializing dotfiles from ${init_args[*]}..."
+echo "📦 Installing chezmoi and initializing dotfiles from ${DOTFILES_SOURCE_DIR:-ryanlewis/dotfiles}..."
 TMPDIR="$TMPDIR" bash -c "$(curl -fsLS get.chezmoi.io)" -- init --apply "${init_args[@]}"
 
 echo ""
