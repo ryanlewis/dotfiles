@@ -40,6 +40,7 @@ jobs:
         CI: true
         CHEZMOI_USER_NAME: "GitHub Actions"
         CHEZMOI_USER_EMAIL: "actions@github.com"
+        DOTFILES_SOURCE_DIR: ${{ github.workspace }}
 
     - name: Verify installation
       run: |
@@ -77,6 +78,7 @@ jobs:
         CI: true
         CHEZMOI_USER_NAME: "GitHub Actions"
         CHEZMOI_USER_EMAIL: "actions@github.com"
+        DOTFILES_SOURCE_DIR: ${{ github.workspace }}
 
     - name: Verify installation
       run: |
